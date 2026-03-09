@@ -1,0 +1,133 @@
+"use client";
+
+import { Rating } from "@/models/Rating";
+import ConfirmDialog from "@/components/ConfirmDialog/ConfirmDialog";
+import { useState } from "react";
+import "./RatingsTable.css";
+
+interface RatingsTableProps {
+  ratings: Rating[];
+  onViewDetails: (rating: Rating) => void;
+  onDelete: (id: number) => void;
+}
+
+export default function RatingsTable({ ratings, onViewDetails, onDelete }: RatingsTableProps) {
+  const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; id: number; tripId: number }>({
+    show: false,
+    id: 0,
+    tripId: 0,
+  });
+
+  const renderStars = (stars: number) => {
+    return "⭐".repeat(stars);
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleString("ar-EG", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  const handleDeleteClick = (id: number, tripId: number) => {
+    setDeleteConfirm({ show: true, id, tripId });
+  };
+
+  const confirmDelete = () => {
+    onDelete(deleteConfirm.id);
+    setDeleteConfirm({ show: false, id: 0, tripId: 0 });
+  };
+
+  return (
+    <>
+      <div className="ratings-table-container">
+        <table className="ratings-table">
+          <thead>
+            <tr>
+              <th>رقم التقييم</th>
+              <th>رقم الرحلة</th>
+              <th>المُقيِّم</th>
+              <th>المُقيَّم</th>
+              <th>التقييم</th>
+              <th>الوسوم</th>
+              <th>التاريخ</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            {ratings.map((rating) => (
+              <tr key={rating.id}>
+                <td data-label="رقم التقييم" className="rating-id">#{rating.id}</td>
+                <td data-label="رقم الرحلة" className="trip-id">#{rating.trip_request_id}</td>
+                <td data-label="المُقيِّم">
+                  <div className="user-cell">
+                    <span className="user-name">{rating.rater_name}</span>
+                    <span className={`user-type ${rating.rater_type}`}>
+                      {rating.rater_type === "driver" ? "سائق" : "راكب"}
+                    </span>
+                  </div>
+                </td>
+                <td data-label="المُقيَّم">
+                  <div className="user-cell">
+                    <span className="user-name">{rating.rated_name}</span>
+                    <span className={`user-type ${rating.rated_type}`}>
+                      {rating.rated_type === "driver" ? "سائق" : "راكب"}
+                    </span>
+                  </div>
+                </td>
+                <td data-label="التقييم" className="stars-cell">{renderStars(rating.stars)}</td>
+                <td data-label="الوسوم">
+                  <div className="tags-cell">
+                    {rating.tags.slice(0, 2).map((tag) => (
+                      <span key={tag.id} className={`tag ${tag.is_positive ? "positive" : "negative"}`}>
+                        {tag.label}
+                      </span>
+                    ))}
+                    {rating.tags.length > 2 && <span className="tag-more">+{rating.tags.length - 2}</span>}
+                  </div>
+                </td>
+                <td data-label="التاريخ" className="date-cell">{formatDate(rating.created_at)}</td>
+                <td data-label="الإجراءات">
+                  <div className="actions-cell">
+                    <button className="action-btn view" onClick={() => onViewDetails(rating)} title="عرض التفاصيل">
+                      <span style={{ fontSize: '20px' }}>📄</span>
+                    </button>
+                    <button
+                      className="action-btn delete"
+                      onClick={() => handleDeleteClick(rating.id, rating.trip_request_id)}
+                      title="حذف"
+                    >
+                      <span style={{ color: '#fff', fontSize: '20px', fontWeight: 'bold' }}>✕</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {ratings.length === 0 && (
+          <div className="empty-state">
+            <span className="empty-icon">📭</span>
+            <p>لا توجد تقييمات</p>
+          </div>
+        )}
+      </div>
+
+      {deleteConfirm.show && (
+        <ConfirmDialog
+          title="تأكيد الحذف"
+          message={`هل أنت متأكد من حذف التقييم للرحلة #${deleteConfirm.tripId}؟ سيتم إزالة تأثيره على التقييم الإجمالي.`}
+          confirmText="حذف"
+          cancelText="إلغاء"
+          type="danger"
+          onConfirm={confirmDelete}
+          onCancel={() => setDeleteConfirm({ show: false, id: 0, tripId: 0 })}
+        />
+      )}
+    </>
+  );
+}

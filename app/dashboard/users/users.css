@@ -1,0 +1,12 @@
+.users-management-page {
+  padding: 5px;
+  max-width: 1400px;
+  margin: 0 auto;
+  direction: rtl;
+}
+
+@media (max-width: 768px) {
+  .users-management-page {
+    padding: 16px;
+  }
+}

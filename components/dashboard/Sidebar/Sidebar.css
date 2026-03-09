@@ -1,0 +1,154 @@
+.sidebar {
+  width: 280px;
+  background: linear-gradient(180deg, #1a1a1a 0%, #2d2d2d 100%);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  overflow: hidden;
+}
+
+.sidebar-logo {
+  padding: 30px 20px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 20px 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* تحسين تصميم الاسكرول */
+.sidebar-nav::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  margin: 10px 0;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background: rgba(253, 185, 19, 0.5);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(253, 185, 19, 0.8);
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 25px;
+  color: #ccc;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border-right: 3px solid transparent;
+  gap: 15px;
+}
+
+.sidebar-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #FDB913;
+  border-right-color: #FDB913;
+}
+
+.sidebar-item.active {
+  background: rgba(253, 185, 19, 0.1);
+  color: #FDB913;
+  border-right-color: #FDB913;
+}
+
+.sidebar-icon {
+  font-size: 24px;
+  width: 30px;
+  text-align: center;
+}
+
+.sidebar-text {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.sidebar-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 0;
+  flex-shrink: 0;
+  
+}
+.logout{
+  height: 50px;
+}
+
+.sidebar-item.logout:hover {
+  background: rgba(255, 68, 68, 0.1);
+  color: #ff4444;
+  border-right-color: #ff4444;
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-close-btn {
+  display: none;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.sidebar-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: rotate(90deg);
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: -100%;
+    top: 0;
+    z-index: 1000;
+    transition: left 0.3s ease;
+    width: 280px;
+  }
+
+  .sidebar.sidebar-open {
+    left: 0;
+  }
+
+  .sidebar-header {
+    display: flex;
+  }
+
+  .sidebar-close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sidebar-logo {
+    padding: 10px;
+    border-bottom: none;
+  }
+}

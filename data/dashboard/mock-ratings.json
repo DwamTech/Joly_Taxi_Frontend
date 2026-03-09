@@ -1,0 +1,143 @@
+{
+  "ratings": [
+    {
+      "id": 1,
+      "trip_request_id": 101,
+      "rater_user_id": 5,
+      "rated_user_id": 12,
+      "rater_name": "أحمد محمد",
+      "rated_name": "محمود السائق",
+      "rater_type": "rider",
+      "rated_type": "driver",
+      "stars": 5,
+      "comment": "سائق ممتاز، قيادة آمنة ووصول في الوقت المحدد",
+      "tags": [
+        {"id": 1, "label": "قيادة آمنة", "is_positive": true},
+        {"id": 2, "label": "في الوقت", "is_positive": true}
+      ],
+      "created_at": "2026-03-01T10:30:00",
+      "updated_at": "2026-03-01T10:30:00"
+    },
+    {
+      "id": 2,
+      "trip_request_id": 102,
+      "rater_user_id": 12,
+      "rated_user_id": 5,
+      "rater_name": "محمود السائق",
+      "rated_name": "أحمد محمد",
+      "rater_type": "driver",
+      "rated_type": "rider",
+      "stars": 4,
+      "comment": "راكب محترم ومهذب",
+      "tags": [
+        {"id": 13, "label": "عميل مهذب", "is_positive": true}
+      ],
+      "created_at": "2026-03-01T11:00:00",
+      "updated_at": "2026-03-01T11:00:00"
+    },
+    {
+      "id": 3,
+      "trip_request_id": 103,
+      "rater_user_id": 8,
+      "rated_user_id": 15,
+      "rater_name": "فاطمة علي",
+      "rated_name": "خالد السائق",
+      "rater_type": "rider",
+      "rated_type": "driver",
+      "stars": 2,
+      "comment": "تأخر كثيراً وقيادة غير آمنة",
+      "tags": [
+        {"id": 5, "label": "تأخر", "is_positive": false},
+        {"id": 6, "label": "قيادة سيئة", "is_positive": false}
+      ],
+      "created_at": "2026-03-02T14:20:00",
+      "updated_at": "2026-03-02T14:20:00"
+    },
+    {
+      "id": 4,
+      "trip_request_id": 104,
+      "rater_user_id": 20,
+      "rated_user_id": 9,
+      "rater_name": "سارة أحمد",
+      "rated_name": "علي السائق",
+      "rater_type": "rider",
+      "rated_type": "driver",
+      "stars": 5,
+      "comment": "تجربة رائعة، سيارة نظيفة وسائق محترم",
+      "tags": [
+        {"id": 3, "label": "سيارة نظيفة", "is_positive": true},
+        {"id": 4, "label": "سائق محترم", "is_positive": true}
+      ],
+      "created_at": "2026-03-02T16:45:00",
+      "updated_at": "2026-03-02T16:45:00"
+    },
+    {
+      "id": 5,
+      "trip_request_id": 105,
+      "rater_user_id": 15,
+      "rated_user_id": 20,
+      "rater_name": "خالد السائق",
+      "rated_name": "سارة أحمد",
+      "rater_type": "driver",
+      "rated_type": "rider",
+      "stars": 3,
+      "comment": null,
+      "tags": [],
+      "created_at": "2026-03-02T17:00:00",
+      "updated_at": "2026-03-02T17:00:00"
+    },
+    {
+      "id": 6,
+      "trip_request_id": 106,
+      "rater_user_id": 25,
+      "rated_user_id": 18,
+      "rater_name": "محمد حسن",
+      "rated_name": "يوسف السائق",
+      "rater_type": "rider",
+      "rated_type": "driver",
+      "stars": 4,
+      "comment": "جيد بشكل عام",
+      "tags": [
+        {"id": 2, "label": "في الوقت", "is_positive": true}
+      ],
+      "created_at": "2026-03-03T09:15:00",
+      "updated_at": "2026-03-03T09:15:00"
+    },
+    {
+      "id": 7,
+      "trip_request_id": 107,
+      "rater_user_id": 18,
+      "rated_user_id": 25,
+      "rater_name": "يوسف السائق",
+      "rated_name": "محمد حسن",
+      "rater_type": "driver",
+      "rated_type": "rider",
+      "stars": 5,
+      "comment": "راكب ممتاز، جاهز في الوقت المحدد",
+      "tags": [
+        {"id": 14, "label": "جاهز في الوقت", "is_positive": true},
+        {"id": 15, "label": "تواصل ممتاز", "is_positive": true}
+      ],
+      "created_at": "2026-03-03T09:30:00",
+      "updated_at": "2026-03-03T09:30:00"
+    },
+    {
+      "id": 8,
+      "trip_request_id": 108,
+      "rater_user_id": 30,
+      "rated_user_id": 22,
+      "rater_name": "نور الدين",
+      "rated_name": "أحمد السائق",
+      "rater_type": "rider",
+      "rated_type": "driver",
+      "stars": 1,
+      "comment": "تجربة سيئة جداً، سائق غير محترم",
+      "tags": [
+        {"id": 7, "label": "غير محترم", "is_positive": false},
+        {"id": 8, "label": "سيارة متسخة", "is_positive": false}
+      ],
+      "created_at": "2026-03-03T12:00:00",
+      "updated_at": "2026-03-03T12:00:00"
+    }
+  ]
+}

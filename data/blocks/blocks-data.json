@@ -1,0 +1,118 @@
+{
+  "hero": {
+    "title": "إدارة الحظر",
+    "subtitle": "مراقبة وإدارة حالات الحظر بين المستخدمين"
+  },
+  "stats": {
+    "total": 156,
+    "active": 89,
+    "cancelled": 67,
+    "topBlockers": 12
+  },
+  "blocks": [
+    {
+      "id": 14,
+      "blocker_user_id": 7,
+      "blocker_name": "أحمد محمد",
+      "blocker_type": "driver",
+      "blocked_user_id": 8,
+      "blocked_name": "سارة علي",
+      "blocked_type": "rider",
+      "reason": "سلوك غير لائق",
+      "status": "active",
+      "created_at": "2026-02-16T13:39:59",
+      "updated_at": "2026-02-16T13:44:06"
+    },
+    {
+      "id": 15,
+      "blocker_user_id": 9,
+      "blocker_name": "محمد حسن",
+      "blocker_type": "rider",
+      "blocked_user_id": 6,
+      "blocked_name": "خالد أحمد",
+      "blocked_type": "driver",
+      "reason": "تأخير متكرر",
+      "status": "active",
+      "created_at": "2026-02-28T15:56:40",
+      "updated_at": "2026-02-28T15:56:53"
+    },
+    {
+      "id": 16,
+      "blocker_user_id": 20,
+      "blocker_name": "فاطمة عبدالله",
+      "blocker_type": "rider",
+      "blocked_user_id": 79,
+      "blocked_name": "عمر سعيد",
+      "blocked_type": "driver",
+      "reason": "قيادة غير آمنة",
+      "status": "active",
+      "created_at": "2026-02-28T16:04:34",
+      "updated_at": "2026-02-28T16:12:00"
+    },
+    {
+      "id": 17,
+      "blocker_user_id": 35,
+      "blocker_name": "يوسف إبراهيم",
+      "blocker_type": "driver",
+      "blocked_user_id": 42,
+      "blocked_name": "نور الدين",
+      "blocked_type": "rider",
+      "reason": "إلغاء متكرر",
+      "status": "cancelled",
+      "created_at": "2026-02-20T10:30:27",
+      "updated_at": "2026-02-25T14:20:15"
+    },
+    {
+      "id": 18,
+      "blocker_user_id": 12,
+      "blocker_name": "ليلى حسين",
+      "blocker_type": "rider",
+      "blocked_user_id": 55,
+      "blocked_name": "طارق محمود",
+      "blocked_type": "driver",
+      "reason": "عدم الالتزام بالمسار",
+      "status": "active",
+      "created_at": "2026-03-01T09:15:30",
+      "updated_at": "2026-03-01T09:15:30"
+    },
+    {
+      "id": 19,
+      "blocker_user_id": 88,
+      "blocker_name": "حسام الدين",
+      "blocker_type": "driver",
+      "blocked_user_id": 91,
+      "blocked_name": "مريم أحمد",
+      "blocked_type": "rider",
+      "reason": "تقييم سلبي متكرر",
+      "status": "cancelled",
+      "created_at": "2026-02-18T14:22:10",
+      "updated_at": "2026-02-22T11:30:45"
+    },
+    {
+      "id": 20,
+      "blocker_user_id": 45,
+      "blocker_name": "رانيا سمير",
+      "blocker_type": "rider",
+      "blocked_user_id": 33,
+      "blocked_name": "وليد عادل",
+      "blocked_type": "driver",
+      "reason": "طلب مبالغ إضافية",
+      "status": "active",
+      "created_at": "2026-03-05T16:45:20",
+      "updated_at": "2026-03-05T16:45:20"
+    },
+    {
+      "id": 21,
+      "blocker_user_id": 67,
+      "blocker_name": "كريم صلاح",
+      "blocker_type": "driver",
+      "blocked_user_id": 72,
+      "blocked_name": "هدى محمد",
+      "blocked_type": "rider",
+      "reason": "عدم الرد على الاتصال",
+      "status": "active",
+      "created_at": "2026-03-07T11:20:15",
+      "updated_at": "2026-03-07T11:20:15"
+    }
+  ]
+}

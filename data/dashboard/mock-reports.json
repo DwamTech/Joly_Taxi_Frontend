@@ -1,0 +1,293 @@
+[
+  {
+    "id": 1,
+    "trip_request_id": 1234,
+    "reporter_id": 101,
+    "reported_id": 202,
+    "reason": "سلوك غير لائق",
+    "description": "السائق كان يتحدث بطريقة غير محترمة ويستخدم ألفاظ غير لائقة أثناء الرحلة",
+    "status": "pending",
+    "priority": "high",
+    "admin_notes": "",
+    "action_taken": "",
+    "created_at": "2024-03-04T10:30:00",
+    "updated_at": "2024-03-04T10:30:00",
+    "reporter": {
+      "id": 101,
+      "name": "أحمد محمد علي",
+      "phone": "01012345678",
+      "type": "rider",
+      "reports_count": 2
+    },
+    "reported": {
+      "id": 202,
+      "name": "محمود علي حسن",
+      "phone": "01098765432",
+      "type": "driver",
+      "reports_received_count": 3,
+      "rating_avg": 3.5
+    },
+    "trip": {
+      "id": 1234,
+      "pickup_location": "المعادي، القاهرة",
+      "dropoff_location": "مدينة نصر، القاهرة",
+      "status": "completed",
+      "created_at": "2024-03-04T09:00:00"
+    }
+  },
+  {
+    "id": 2,
+    "trip_request_id": 1235,
+    "reporter_id": 103,
+    "reported_id": 204,
+    "reason": "تأخير",
+    "description": "السائق تأخر 30 دقيقة عن الموعد المحدد دون إبلاغ مسبق",
+    "status": "pending",
+    "priority": "medium",
+    "admin_notes": "",
+    "action_taken": "",
+    "created_at": "2024-03-04T11:15:00",
+    "updated_at": "2024-03-04T11:15:00",
+    "reporter": {
+      "id": 103,
+      "name": "فاطمة أحمد",
+      "phone": "01123456789",
+      "type": "rider",
+      "reports_count": 1
+    },
+    "reported": {
+      "id": 204,
+      "name": "خالد محمود",
+      "phone": "01087654321",
+      "type": "driver",
+      "reports_received_count": 1,
+      "rating_avg": 4.2
+    },
+    "trip": {
+      "id": 1235,
+      "pickup_location": "الزمالك، القاهرة",
+      "dropoff_location": "المهندسين، الجيزة",
+      "status": "completed",
+      "created_at": "2024-03-04T10:00:00"
+    }
+  },
+  {
+    "id": 3,
+    "trip_request_id": 1236,
+    "reporter_id": 205,
+    "reported_id": 105,
+    "reason": "إلغاء متكرر",
+    "description": "الراكب قام بإلغاء الرحلة للمرة الثالثة هذا الأسبوع بعد قبولها",
+    "status": "resolved",
+    "priority": "low",
+    "admin_notes": "تم التواصل مع الراكب وتحذيره",
+    "action_taken": "إرسال تحذير للراكب",
+    "resolved_at": "2024-03-03T16:30:00",
+    "created_at": "2024-03-03T14:20:00",
+    "updated_at": "2024-03-03T16:30:00",
+    "reporter": {
+      "id": 205,
+      "name": "عمر سعيد",
+      "phone": "01076543210",
+      "type": "driver",
+      "reports_count": 4
+    },
+    "reported": {
+      "id": 105,
+      "name": "سارة محمد",
+      "phone": "01134567890",
+      "type": "rider",
+      "reports_received_count": 2,
+      "rating_avg": 3.8
+    },
+    "trip": {
+      "id": 1236,
+      "pickup_location": "مصر الجديدة، القاهرة",
+      "dropoff_location": "التجمع الخامس، القاهرة الجديدة",
+      "status": "cancelled",
+      "created_at": "2024-03-03T14:00:00"
+    }
+  },
+  {
+    "id": 4,
+    "trip_request_id": 1237,
+    "reporter_id": 106,
+    "reported_id": 206,
+    "reason": "قيادة خطرة",
+    "description": "السائق كان يقود بسرعة عالية جداً ولا يلتزم بقواعد المرور",
+    "status": "pending",
+    "priority": "high",
+    "admin_notes": "",
+    "action_taken": "",
+    "created_at": "2024-03-04T13:45:00",
+    "updated_at": "2024-03-04T13:45:00",
+    "reporter": {
+      "id": 106,
+      "name": "محمد حسن",
+      "phone": "01145678901",
+      "type": "rider",
+      "reports_count": 1
+    },
+    "reported": {
+      "id": 206,
+      "name": "أحمد سالم",
+      "phone": "01065432109",
+      "type": "driver",
+      "reports_received_count": 5,
+      "rating_avg": 2.8
+    },
+    "trip": {
+      "id": 1237,
+      "pickup_location": "الدقي، الجيزة",
+      "dropoff_location": "6 أكتوبر، الجيزة",
+      "status": "completed",
+      "created_at": "2024-03-04T12:30:00"
+    }
+  },
+  {
+    "id": 5,
+    "trip_request_id": 1238,
+    "reporter_id": 107,
+    "reported_id": 207,
+    "reason": "نظافة السيارة",
+    "description": "السيارة كانت غير نظيفة ورائحتها سيئة",
+    "status": "resolved",
+    "priority": "low",
+    "admin_notes": "تم التواصل مع السائق وتنبيهه بضرورة الحفاظ على نظافة السيارة",
+    "action_taken": "تحذير السائق",
+    "resolved_at": "2024-03-02T18:00:00",
+    "created_at": "2024-03-02T15:30:00",
+    "updated_at": "2024-03-02T18:00:00",
+    "reporter": {
+      "id": 107,
+      "name": "نور الدين",
+      "phone": "01156789012",
+      "type": "rider",
+      "reports_count": 3
+    },
+    "reported": {
+      "id": 207,
+      "name": "حسام الدين",
+      "phone": "01054321098",
+      "type": "driver",
+      "reports_received_count": 2,
+      "rating_avg": 3.9
+    },
+    "trip": {
+      "id": 1238,
+      "pickup_location": "المقطم، القاهرة",
+      "dropoff_location": "حلوان، القاهرة",
+      "status": "completed",
+      "created_at": "2024-03-02T14:00:00"
+    }
+  },
+  {
+    "id": 6,
+    "trip_request_id": 1239,
+    "reporter_id": 108,
+    "reported_id": 208,
+    "reason": "احتيال",
+    "description": "السائق طلب دفع مبلغ إضافي نقداً خارج التطبيق",
+    "status": "pending",
+    "priority": "high",
+    "admin_notes": "",
+    "action_taken": "",
+    "created_at": "2024-03-04T14:20:00",
+    "updated_at": "2024-03-04T14:20:00",
+    "reporter": {
+      "id": 108,
+      "name": "ليلى أحمد",
+      "phone": "01167890123",
+      "type": "rider",
+      "reports_count": 1
+    },
+    "reported": {
+      "id": 208,
+      "name": "طارق عبدالله",
+      "phone": "01043210987",
+      "type": "driver",
+      "reports_received_count": 4,
+      "rating_avg": 3.2
+    },
+    "trip": {
+      "id": 1239,
+      "pickup_location": "الشيخ زايد، الجيزة",
+      "dropoff_location": "مدينة الإنتاج الإعلامي، الجيزة",
+      "status": "completed",
+      "created_at": "2024-03-04T13:00:00"
+    }
+  },
+  {
+    "id": 7,
+    "trip_request_id": 1240,
+    "reporter_id": 209,
+    "reported_id": 109,
+    "reason": "سلوك غير لائق",
+    "description": "الراكب كان يتحدث بصوت عالٍ ويزعج السائق",
+    "status": "resolved",
+    "priority": "medium",
+    "admin_notes": "تم حل المشكلة بالتواصل مع الطرفين",
+    "action_taken": "تحذير الراكب",
+    "resolved_at": "2024-03-01T20:00:00",
+    "created_at": "2024-03-01T17:45:00",
+    "updated_at": "2024-03-01T20:00:00",
+    "reporter": {
+      "id": 209,
+      "name": "ياسر محمود",
+      "phone": "01032109876",
+      "type": "driver",
+      "reports_count": 2
+    },
+    "reported": {
+      "id": 109,
+      "name": "كريم سامي",
+      "phone": "01178901234",
+      "type": "rider",
+      "reports_received_count": 1,
+      "rating_avg": 4.1
+    },
+    "trip": {
+      "id": 1240,
+      "pickup_location": "العباسية، القاهرة",
+      "dropoff_location": "شبرا، القاهرة",
+      "status": "completed",
+      "created_at": "2024-03-01T17:00:00"
+    }
+  },
+  {
+    "id": 8,
+    "trip_request_id": 1241,
+    "reporter_id": 110,
+    "reported_id": 210,
+    "reason": "أخرى",
+    "description": "السائق رفض تشغيل المكيف رغم الطقس الحار",
+    "status": "pending",
+    "priority": "low",
+    "admin_notes": "",
+    "action_taken": "",
+    "created_at": "2024-03-04T15:10:00",
+    "updated_at": "2024-03-04T15:10:00",
+    "reporter": {
+      "id": 110,
+      "name": "هدى عبدالرحمن",
+      "phone": "01189012345",
+      "type": "rider",
+      "reports_count": 2
+    },
+    "reported": {
+      "id": 210,
+      "name": "سامي فتحي",
+      "phone": "01021098765",
+      "type": "driver",
+      "reports_received_count": 1,
+      "rating_avg": 4.0
+    },
+    "trip": {
+      "id": 1241,
+      "pickup_location": "المنيل، القاهرة",
+      "dropoff_location": "الجيزة، الجيزة",
+      "status": "completed",
+      "created_at": "2024-03-04T14:30:00"
+    }
+  }
+]

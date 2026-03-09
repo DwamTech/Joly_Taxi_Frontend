@@ -1,0 +1,80 @@
+.settings-hero {
+  background: linear-gradient(135deg, #2d2d2d 0%, #ababab5e 50%, #FDB913 100%);
+  border-radius: 16px;
+  padding: 35px 40px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  margin-bottom: 30px;
+  color: white;
+}
+
+.settings-hero::before {
+  content: '⚙️';
+  position: absolute;
+  font-size: 120px;
+  top: -20px;
+  right: 15%;
+  opacity: 0.06;
+  transform: rotate(-15deg);
+  pointer-events: none;
+  animation: rotateGear 20s linear infinite;
+}
+
+.settings-hero::after {
+  content: '🔧';
+  position: absolute;
+  font-size: 100px;
+  bottom: -15px;
+  left: 10%;
+  opacity: 0.06;
+  transform: rotate(15deg);
+  pointer-events: none;
+  animation: rotateGear 15s linear infinite reverse;
+}
+
+@keyframes rotateGear {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.settings-hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.settings-hero-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.5px;
+}
+
+.settings-hero-subtitle {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.6;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+  .settings-hero {
+    padding: 25px 20px;
+  }
+
+  .settings-hero-title {
+    font-size: 24px;
+  }
+
+  .settings-hero-subtitle {
+    font-size: 14px;
+  }
+}

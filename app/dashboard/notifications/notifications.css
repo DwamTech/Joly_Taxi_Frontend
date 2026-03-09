@@ -1,0 +1,77 @@
+.notifications-management-page {
+  min-height: 100vh;
+}
+
+.notifications-tabs {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin: 2rem auto;
+  max-width: 1400px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.tabs-header {
+  display: flex;
+  gap: 1rem;
+  border-bottom: 2px solid #f0f0f0;
+  margin-bottom: 2rem;
+}
+
+.tab-button {
+  padding: 1rem 2rem;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.tab-button:hover {
+  color: #FDB913;
+}
+
+.tab-button.active {
+  color: #FDB913;
+}
+
+.tab-button.active::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #FDB913, #FFA500);
+}
+
+.tab-content {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .tabs-header {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tab-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+}

@@ -1,0 +1,46 @@
+{
+  "trips": [
+    {
+      "id": 1,
+      "tripNumber": "#12345",
+      "customerName": "أحمد محمد",
+      "driverName": "محمود علي",
+      "duration": "15 دقيقة",
+      "customerPhone": "01012345678",
+      "driverPhone": "01098765432",
+      "vehicleType": "سيدان",
+      "vehiclePlate": "أ ب ج 1234",
+      "fromLocation": "مدينة نصر",
+      "toLocation": "التجمع الخامس",
+      "cost": "85 ج.م"
+    },
+    {
+      "id": 2,
+      "tripNumber": "#12346",
+      "customerName": "سارة أحمد",
+      "driverName": "خالد حسن",
+      "duration": "8 دقائق",
+      "customerPhone": "01112345678",
+      "driverPhone": "01198765432",
+      "vehicleType": "SUV",
+      "vehiclePlate": "د هـ و 5678",
+      "fromLocation": "المعادي",
+      "toLocation": "الزمالك",
+      "cost": "120 ج.م"
+    },
+    {
+      "id": 3,
+      "tripNumber": "#12347",
+      "customerName": "محمد حسين",
+      "driverName": "أحمد سعيد",
+      "duration": "22 دقيقة",
+      "customerPhone": "01212345678",
+      "driverPhone": "01298765432",
+      "vehicleType": "فان",
+      "vehiclePlate": "ز ح ط 9012",
+      "fromLocation": "6 أكتوبر",
+      "toLocation": "الشيخ زايد",
+      "cost": "95 ج.م"
+    }
+  ]
+}

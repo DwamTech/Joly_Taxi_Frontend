@@ -1,0 +1,15 @@
+@import "../GeneralSettings/GeneralSettings.css";
+
+.security-settings {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.setting-hint {
+  font-size: 0.85rem;
+  color: #7f8c8d;
+  margin-top: 0.5rem;
+  font-style: italic;
+}

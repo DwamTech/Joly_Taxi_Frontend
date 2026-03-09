@@ -1,0 +1,8 @@
+.vehicle-types-page {
+  min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .vehicle-types-page {
+  }
+}

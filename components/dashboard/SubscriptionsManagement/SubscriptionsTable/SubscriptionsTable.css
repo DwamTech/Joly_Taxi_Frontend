@@ -1,0 +1,337 @@
+.subscriptions-table-container {
+  background: white;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  border-top: 2px solid #FDB913;
+  margin-bottom: 2rem;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.subscriptions-table {
+  width: 100%;
+  border-collapse: collapse;
+  direction: rtl;
+}
+
+.subscriptions-table thead {
+  background: linear-gradient(135deg, #8a8a8a 0%, #F59E0B 100%);
+  color: white;
+}
+
+.subscriptions-table th {
+  padding: 16px;
+  text-align: right;
+  font-weight: 600;
+  color: white;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.subscriptions-table tbody tr {
+  border-bottom: 1px solid #f0f0f0;
+  transition: all 0.2s ease;
+}
+
+.subscriptions-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.subscriptions-table td {
+  padding: 16px;
+  text-align: right;
+  color: #333;
+  font-size: 14px;
+}
+
+.subscription-number-cell {
+  font-weight: 600;
+  color: #f59e0b;
+}
+
+.driver-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.driver-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.driver-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.driver-name {
+  font-weight: 500;
+  color: #1f2937;
+}
+
+.driver-rating {
+  font-size: 0.85rem;
+  color: #f59e0b;
+}
+
+.vehicle-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  background: #eff6ff;
+  color: #1e40af;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.months-cell,
+.price-cell,
+.days-cell {
+  font-weight: 500;
+}
+
+.price-cell {
+  color: #059669;
+}
+
+.days-cell {
+  color: #6b7280;
+}
+
+.date-cell {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.status-pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-active {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-expired {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.status-rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-cancelled {
+  background: #fecaca;
+  color: #7f1d1d;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.action-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.view-btn {
+  background: #eff6ff;
+}
+
+.view-btn:hover {
+  background: #dbeafe;
+  transform: scale(1.1);
+}
+
+.activate-btn {
+  background: #d1fae5;
+}
+
+.activate-btn:hover {
+  background: #a7f3d0;
+  transform: scale(1.1);
+}
+
+.reject-btn {
+  background: #fee2e2;
+}
+
+.reject-btn:hover {
+  background: #fecaca;
+  transform: scale(1.1);
+}
+
+.extend-btn {
+  background: #dbeafe;
+}
+
+.extend-btn:hover {
+  background: #bfdbfe;
+  transform: scale(1.1);
+}
+
+.cancel-btn {
+  background: #fecaca;
+}
+
+.cancel-btn:hover {
+  background: #fca5a5;
+  transform: scale(1.1);
+}
+
+.notification-btn {
+  background: #fef3c7;
+}
+
+.notification-btn:hover {
+  background: #fde68a;
+  transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+  .subscriptions-table-container {
+    border-radius: 0 0 8px 8px;
+  }
+
+  .subscriptions-table {
+    font-size: 13px;
+  }
+
+  .subscriptions-table th,
+  .subscriptions-table td {
+    padding: 12px 8px;
+  }
+
+  .driver-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 0.875rem;
+  }
+}
+
+/* Mobile Card View */
+@media (max-width: 768px) {
+  .table-wrapper {
+    overflow-x: visible;
+  }
+
+  .subscriptions-table thead {
+    display: none;
+  }
+
+  .subscriptions-table,
+  .subscriptions-table tbody,
+  .subscriptions-table tr {
+    display: block;
+  }
+
+  .subscriptions-table tbody tr {
+    margin-bottom: 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 16px;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .subscriptions-table tbody tr:hover {
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+
+  .subscriptions-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .subscriptions-table td:last-child {
+    border-bottom: none;
+  }
+
+  .subscriptions-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #666;
+    font-size: 13px;
+    flex-shrink: 0;
+    width: 130px;
+  }
+
+  .driver-cell {
+    flex-direction: row;
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .actions-cell {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    padding-top: 12px;
+    margin-top: 8px;
+    border-top: 1px solid #f0f0f0;
+    gap: 8px;
+  }
+
+  .actions-cell::before {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+
+  .actions-cell .action-btn {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    max-width: 44px !important;
+    max-height: 44px !important;
+    font-size: 18px !important;
+    padding: 0 !important;
+    flex-shrink: 0 !important;
+  }
+
+  .action-btn {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 18px;
+  }
+}

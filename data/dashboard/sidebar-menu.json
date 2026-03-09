@@ -1,0 +1,25 @@
+{
+  "menuItems": [
+    { "name": "الصفحة الرئيسية", "icon": "home", "path": "/dashboard" },
+    { "name": "إدارة المستخدمين", "icon": "users", "path": "/dashboard/users" },
+    { "name": "إدارة الرحلات", "icon": "taxi", "path": "/dashboard/trips" },
+    { "name": "إدارة الاشتراكات", "icon": "clipboard", "path": "/dashboard/subscriptions" },
+    { "name": "إدارة التقييمات", "icon": "star", "path": "/dashboard/ratings" },
+    { "name": "إدارة البلاغات", "icon": "warning", "path": "/dashboard/reports" },
+    { "name": "إدارة أنواع المركبات", "icon": "car", "path": "/dashboard/vehicle-types" },
+    { "name": "إدارة الاشعارات", "icon": "bell", "path": "/dashboard/notifications" },
+    { "name": "التقارير والإحصائيات", "icon": "chart", "path": "/dashboard/statistics" },
+    { "name": "الخريطة المباشرة", "icon": "map", "path": "/dashboard/map" },
+    { "name": "إدارة الصلاحيات", "icon": "lock", "path": "/dashboard/permissions" },
+    { "name": "إدارة الحظر", "icon": "ban", "path": "/dashboard/blocks" },
+    { "name": "سجل النشاطات", "icon": "document", "path": "/dashboard/activity-log" },
+    { "name": "إعدادات الحساب", "icon": "user", "path": "/dashboard/settings" },
+    { "name": "الإعدادات العامة", "icon": "settings", "path": "/dashboard/general-settings" }
+
+  ],
+  "footer": {
+    "name": "تسجيل الخروج",
+    "icon": "logout",
+    "path": "/login"
+  }
+}

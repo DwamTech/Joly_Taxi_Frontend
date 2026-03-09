@@ -1,0 +1,55 @@
+{
+  "hero": {
+    "title": "الإعدادات العامة",
+    "subtitle": "إدارة إعدادات التطبيق العامة والتحكم في جميع الخيارات"
+  },
+  "appInfo": {
+    "email": "support@jolytaxi.com",
+    "phone": "+966 50 123 4567",
+    "supportNumber": "920012345"
+  },
+  "tripSettings": {
+    "maxWaitTime": 15,
+    "offerValidity": 5,
+    "commissionRate": 15,
+    "defaultSearchRadius": 10
+  },
+  "ratingSettings": {
+    "minAcceptableRating": 3.0,
+    "negativeRatingsBeforeWarning": 5,
+    "mandatoryRatings": true
+  },
+  "cancellationSettings": {
+    "maxCancellationsBeforeWarning": 3
+  },
+  "subscriptionSettings": {
+    "prices": {
+      "monthly": 299,
+      "quarterly": 799,
+      "yearly": 2999
+    },
+    "duration": 30,
+    "autoRenewal": true,
+    "reminderDaysBefore": 3
+  },
+  "securitySettings": {
+    "otpValidity": 5,
+    "maxOtpAttempts": 3,
+    "blockDuration": 30
+  },
+  "privacySettings": {
+    "privacyPolicy": "سياسة الخصوصية الخاصة بنا...",
+    "termsOfUse": "شروط الاستخدام...",
+    "dataRetentionDays": 365
+  },
+  "systemSettings": {
+    "maintenanceMode": false,
+    "maintenanceMessage": "جاري العمل على تحديث التطبيق، سيتم إشعاركم قريباً"
+  },
+  "backupSettings": {
+    "autoBackup": true,
+    "backupFrequency": "weekly",
+    "lastBackup": "2024-03-09T10:30:00",
+    "backupSize": "2.5 GB"
+  }
+}

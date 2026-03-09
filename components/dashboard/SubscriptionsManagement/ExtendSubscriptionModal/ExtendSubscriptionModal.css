@@ -1,0 +1,291 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1001;
+  padding: 1rem;
+  backdrop-filter: blur(4px);
+}
+
+.extend-subscription-modal {
+  background: white;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 85vh;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  direction: rtl;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-bottom: 2px solid #f3f4f6;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  flex-shrink: 0;
+}
+
+.modal-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+}
+
+.close-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(90deg);
+}
+
+.modal-body {
+  padding: 2rem;
+  overflow-y: auto;
+  max-height: calc(85vh - 180px);
+}
+
+.subscription-info {
+  background: #f9fafb;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-size: 0.95rem;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 1rem;
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.form-section {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 0.75rem;
+}
+
+.months-selector {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.month-btn {
+  width: 48px;
+  height: 48px;
+  border: 2px solid #f59e0b;
+  background: white;
+  border-radius: 10px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #f59e0b;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.month-btn:hover {
+  background: #f59e0b;
+  color: white;
+  transform: scale(1.05);
+}
+
+.months-input {
+  width: 120px;
+  height: 48px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  transition: all 0.3s ease;
+}
+
+.months-input:focus {
+  outline: none;
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+.form-hint {
+  display: block;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.calculation-section {
+  background: #fef3c7;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 2px solid #fde68a;
+}
+
+.calc-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #fde68a;
+}
+
+.calc-item:last-child {
+  border-bottom: none;
+}
+
+.calc-item.total {
+  padding-top: 1rem;
+  margin-top: 0.5rem;
+  border-top: 2px solid #f59e0b;
+}
+
+.calc-label {
+  font-size: 1rem;
+  color: #92400e;
+  font-weight: 600;
+}
+
+.calc-value {
+  font-size: 1.125rem;
+  color: #92400e;
+  font-weight: 700;
+}
+
+.calc-value.new-date {
+  color: #1e40af;
+}
+
+.calc-value.price {
+  color: #059669;
+}
+
+.modal-footer {
+  padding: 1.5rem 2rem;
+  border-top: 2px solid #f3f4f6;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  background: #f9fafb;
+  flex-shrink: 0;
+}
+
+.cancel-btn,
+.confirm-btn {
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-btn {
+  background: #e5e7eb;
+  color: #374151;
+  flex: 0.4;
+}
+
+.confirm-btn {
+  flex: 1;
+  background: #f59e0b;
+  color: white;
+}
+
+.cancel-btn:hover {
+  background: #d1d5db;
+  transform: translateY(-2px);
+}
+
+.confirm-btn:hover {
+  background: #d97706;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3);
+}
+
+@media (max-width: 768px) {
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding: 1rem 1.5rem;
+  }
+
+  .months-selector {
+    gap: 0.5rem;
+  }
+
+  .month-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1.25rem;
+  }
+
+  .months-input {
+    width: 100px;
+    height: 40px;
+    font-size: 1.25rem;
+  }
+
+  .modal-footer {
+    flex-direction: column;
+  }
+
+  .cancel-btn,
+  .confirm-btn {
+    width: 100%;
+  }
+}

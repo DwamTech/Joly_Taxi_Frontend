@@ -1,0 +1,119 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  z-index: 50;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  padding: 1rem 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 2rem;
+  font-weight: 800;
+  display: flex;
+  gap: 0.5rem;
+  font-family: 'Cairo', sans-serif;
+}
+
+.logoOrange {
+  color: #F97316;
+}
+
+.logoBlue {
+  color: #38BDF8;
+}
+
+.logoImg {
+  height: 70px;
+  width: auto;
+  display: block;
+}
+
+.links {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.link {
+  color: #475569;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.link:hover {
+  color: #F97316;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.downloadBtn {
+  background-color: #FCD34D;
+  color: #1E293B;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+  box-shadow: 0 4px 14px 0 rgba(252, 211, 77, 0.39);
+}
+
+.downloadBtn:hover {
+  background-color: #FBBF24;
+  transform: translateY(-2px);
+}
+
+.mobileMenuBtn {
+  display: none;
+  background: none;
+  border: none;
+  color: #1E293B;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: white;
+    flex-direction: column;
+    padding: 1.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+
+  .links.open {
+    display: flex;
+  }
+
+  .mobileMenuBtn {
+    display: block;
+  }
+  
+  .downloadBtn {
+    display: none;
+  }
+}

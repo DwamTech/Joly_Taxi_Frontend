@@ -1,0 +1,20 @@
+{
+  "week": [
+    { "name": "سيدان", "count": 145 },
+    { "name": "SUV", "count": 98 },
+    { "name": "فان", "count": 67 },
+    { "name": "ميني باص", "count": 45 }
+  ],
+  "month": [
+    { "name": "سيدان", "count": 645 },
+    { "name": "SUV", "count": 412 },
+    { "name": "فان", "count": 289 },
+    { "name": "ميني باص", "count": 178 }
+  ],
+  "year": [
+    { "name": "سيدان", "count": 7845 },
+    { "name": "SUV", "count": 5234 },
+    { "name": "فان", "count": 3456 },
+    { "name": "ميني باص", "count": 2123 }
+  ]
+}

@@ -1,0 +1,11 @@
+.trips-management-page {
+  
+  min-height: 100vh;
+
+}
+
+@media (max-width: 768px) {
+  .trips-management-page {
+    /* padding: 1rem; */
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "title": "الإحصائيات السريعة",
+  "stats": [
+    {
+      "id": 1,
+      "title": "إجمالي عدد المستخدمين",
+      "icon": "users",
+      "color": "blue",
+      "isRealtime": false
+    },
+    {
+      "id": 2,
+      "title": "الركاب النشطين الآن",
+      "icon": "walking",
+      "color": "green",
+      "isRealtime": true
+    },
+    {
+      "id": 3,
+      "title": "السائقين النشطين الآن",
+      "icon": "driver",
+      "color": "yellow",
+      "isRealtime": true
+    },
+    {
+      "id": 4,
+      "titleTemplate": "المستخدمين الجدد - {month}",
+      "icon": "sparkles",
+      "color": "purple",
+      "isRealtime": false
+    },
+    {
+      "id": 5,
+      "title": "الرحلات الجارية الآن",
+      "icon": "taxi",
+      "color": "orange",
+      "isRealtime": true
+    },
+    {
+      "id": 6,
+      "title": "الرحلات المكتملة",
+      "icon": "check",
+      "color": "success",
+      "isRealtime": false
+    },
+    {
+      "id": 7,
+      "titleTemplate": "رحلات اليوم - {day}",
+      "icon": "calendar",
+      "color": "teal",
+      "isRealtime": true
+    },
+    {
+      "id": 8,
+      "titleTemplate": "الرحلات الملغاة ",
+      "icon": "close",
+      "color": "red",
+      "isRealtime": false
+    }
+  ],
+  "months": [
+    "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
+    "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"
+  ],
+  "days": [
+    "الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"
+  ]
+}

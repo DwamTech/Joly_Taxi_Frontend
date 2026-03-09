@@ -1,0 +1,9 @@
+{
+  "totalUsers": 5234,
+  "activePassengers": 42,
+  "activeDrivers": 28,
+  "newUsersThisMonth": 187,
+  "ongoingTrips": 15,
+  "todayTrips": 156,
+  "cancelledTripsThisMonth": 23
+}

@@ -1,0 +1,10 @@
+.subscriptions-management-page {
+  
+  min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .subscriptions-management-page {
+    
+  }
+}

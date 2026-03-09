@@ -1,0 +1,33 @@
+{
+  "title": "الإجراءات السريعة",
+  "actions": [
+    {
+      "id": 1,
+      "title": "رحلة جديدة",
+      "description": "إضافة رحلة جديدة للنظام",
+      "icon": "plus",
+      "color": "yellow"
+    },
+    {
+      "id": 2,
+      "title": "إضافة سائق",
+      "description": "تسجيل سائق جديد",
+      "icon": "user",
+      "color": "blue"
+    },
+    {
+      "id": 3,
+      "title": "التقارير",
+      "description": "عرض التقارير والإحصائيات",
+      "icon": "chart",
+      "color": "green"
+    },
+    {
+      "id": 4,
+      "title": "الإعدادات",
+      "description": "إدارة إعدادات النظام",
+      "icon": "settings",
+      "color": "gray"
+    }
+  ]
+}

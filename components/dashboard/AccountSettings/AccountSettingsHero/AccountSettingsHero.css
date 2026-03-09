@@ -1,0 +1,57 @@
+.account-settings-hero {
+  background: linear-gradient(135deg, #2d2d2d 0%, #ababab5e 50%, #FDB913 100%);
+  border-radius: 16px;
+  padding: 35px 40px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  margin-bottom: 30px;
+  color: white;
+}
+
+.account-settings-hero::before {
+  content: '👤';
+  position: absolute;
+  font-size: 120px;
+  top: -20px;
+  right: 15%;
+  opacity: 0.06;
+  pointer-events: none;
+}
+
+.account-settings-hero-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.account-settings-hero-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.5px;
+}
+
+.account-settings-hero-subtitle {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.6;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+  .account-settings-hero {
+    padding: 25px 20px;
+  }
+
+  .account-settings-hero-title {
+    font-size: 24px;
+  }
+
+  .account-settings-hero-subtitle {
+    font-size: 14px;
+  }
+}

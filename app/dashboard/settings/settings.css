@@ -1,0 +1,11 @@
+.settings-page {
+  /* padding: 2rem; */
+  min-height: 100vh;
+  /* background: #f3f4f6; */
+}
+
+@media (max-width: 768px) {
+  .settings-page {
+    /* padding: 1rem; */
+  }
+}

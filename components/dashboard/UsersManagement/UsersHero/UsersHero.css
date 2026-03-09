@@ -1,0 +1,227 @@
+.users-hero-section {
+  background: linear-gradient(135deg, #2d2d2d 0%, #ababab5e 50%, #FDB913 100%);
+  border-radius: 16px;
+  padding: 32px;
+  margin-bottom: 24px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+}
+
+.users-hero-section::before {
+  content: '👥';
+  position: absolute;
+  font-size: 120px;
+  top: -20px;
+  right: 15%;
+  opacity: 0.06;
+  transform: rotate(-15deg);
+  pointer-events: none;
+  animation: floatIcon 8s ease-in-out infinite;
+}
+
+.users-hero-section::after {
+  content: '👥';
+  position: absolute;
+  font-size: 100px;
+  bottom: -15px;
+  left: 10%;
+  opacity: 0.06;
+  transform: rotate(15deg) scaleX(-1);
+  pointer-events: none;
+  animation: floatIcon 10s ease-in-out infinite reverse;
+}
+
+@keyframes floatIcon {
+  0%, 100% {
+    transform: translateY(0) translateX(0) rotate(-15deg);
+  }
+  50% {
+    transform: translateY(-20px) translateX(10px) rotate(-10deg);
+  }
+}
+
+.users-hero-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 32px;
+  position: relative;
+  z-index: 2;
+}
+
+.users-hero-text {
+  flex: 1;
+}
+
+.users-hero-title {
+  font-size: 36px;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  letter-spacing: -0.5px;
+}
+
+.users-hero-icon {
+  font-size: 42px;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+}
+
+.users-hero-subtitle {
+  font-size: 16px;
+  line-height: 1.6;
+  margin: 0 0 24px 0;
+  opacity: 0.95;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.users-hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.users-hero-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.users-hero-btn-primary {
+  background: white;
+  color: #F59E0B;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.users-hero-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  background: #f8f8f8;
+}
+
+.users-hero-btn-secondary {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(10px);
+}
+
+.users-hero-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.users-hero-stats {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.users-hero-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  min-width: 140px;
+  text-align: center;
+}
+
+.users-hero-stat-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.users-hero-stat-icon {
+  font-size: 20px;
+  filter: grayscale(0) brightness(1.2);
+}
+
+.users-hero-stat-label {
+  font-size: 13px;
+  opacity: 0.9;
+  line-height: 1.2;
+}
+
+.users-hero-stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+}
+
+@media (max-width: 1024px) {
+  .users-hero-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .users-hero-title {
+    justify-content: center;
+  }
+
+  .users-hero-actions {
+    justify-content: center;
+  }
+
+  .users-hero-stats {
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .users-hero-section {
+    padding: 24px;
+  }
+
+  .users-hero-title {
+    font-size: 28px;
+  }
+
+  .users-hero-icon {
+    font-size: 32px;
+  }
+
+  .users-hero-subtitle {
+    font-size: 14px;
+  }
+
+  .users-hero-stats {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .users-hero-stat {
+    width: 100%;
+  }
+
+  .users-hero-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .users-hero-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

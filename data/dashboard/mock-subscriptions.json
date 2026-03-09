@@ -1,0 +1,285 @@
+{
+  "subscriptions": [
+    {
+      "id": 1,
+      "subscription_number": "SUB-2024-001",
+      "driver": {
+        "id": 1,
+        "name": "أحمد محمد علي",
+        "phone": "01012345678",
+        "avatar": "/profile.jpg",
+        "rating": 4.8,
+        "completed_trips": 245,
+        "previous_subscriptions": 3
+      },
+      "vehicle_type": "سيدان",
+      "months_count": 3,
+      "total_price": 1500,
+      "status": "active",
+      "created_at": "2024-01-15T10:00:00Z",
+      "activated_at": "2024-01-15T14:30:00Z",
+      "start_date": "2024-01-15T00:00:00Z",
+      "end_date": "2024-04-15T23:59:59Z",
+      "days_remaining": 45,
+      "payment_info": {
+        "amount_paid": 1500,
+        "reference_number": "REF-2024-001",
+        "receipt_image": "/receipts/receipt1.jpg",
+        "payment_method": "bank_transfer",
+        "payment_date": "2024-01-15T09:30:00Z",
+        "additional_notes": "تم التحويل من بنك مصر"
+      }
+    },
+    {
+      "id": 2,
+      "subscription_number": "SUB-2024-002",
+      "driver": {
+        "id": 7,
+        "name": "عمر حسن",
+        "phone": "01812345678",
+        "avatar": "/profile.jpg",
+        "rating": 4.9,
+        "completed_trips": 189,
+        "previous_subscriptions": 2
+      },
+      "vehicle_type": "SUV",
+      "months_count": 6,
+      "total_price": 3500,
+      "status": "pending",
+      "created_at": "2024-03-01T08:00:00Z",
+      "payment_info": {
+        "amount_paid": 3500,
+        "reference_number": "REF-2024-002",
+        "receipt_image": "/receipts/receipt2.jpg",
+        "payment_method": "bank_transfer",
+        "payment_date": "2024-03-01T07:45:00Z",
+        "additional_notes": "تحويل من البنك الأهلي"
+      }
+    },
+    {
+      "id": 3,
+      "subscription_number": "SUB-2024-003",
+      "driver": {
+        "id": 11,
+        "name": "حسام الدين",
+        "phone": "01213456789",
+        "avatar": "/profile.jpg",
+        "rating": 4.8,
+        "completed_trips": 312,
+        "previous_subscriptions": 5
+      },
+      "vehicle_type": "فان",
+      "months_count": 12,
+      "total_price": 6000,
+      "status": "active",
+      "created_at": "2023-12-01T10:00:00Z",
+      "activated_at": "2023-12-01T15:00:00Z",
+      "start_date": "2023-12-01T00:00:00Z",
+      "end_date": "2024-12-01T23:59:59Z",
+      "days_remaining": 275,
+      "payment_info": {
+        "amount_paid": 6000,
+        "reference_number": "REF-2023-045",
+        "receipt_image": "/receipts/receipt3.jpg",
+        "payment_method": "cash",
+        "payment_date": "2023-12-01T09:00:00Z"
+      }
+    },
+    {
+      "id": 4,
+      "subscription_number": "SUB-2024-004",
+      "driver": {
+        "id": 17,
+        "name": "سامي رضا",
+        "phone": "01813456789",
+        "avatar": "/profile.jpg",
+        "rating": 4.9,
+        "completed_trips": 156,
+        "previous_subscriptions": 1
+      },
+      "vehicle_type": "سيدان",
+      "months_count": 1,
+      "total_price": 550,
+      "status": "expired",
+      "created_at": "2024-01-01T10:00:00Z",
+      "activated_at": "2024-01-01T12:00:00Z",
+      "start_date": "2024-01-01T00:00:00Z",
+      "end_date": "2024-02-01T23:59:59Z",
+      "days_remaining": 0,
+      "payment_info": {
+        "amount_paid": 550,
+        "reference_number": "REF-2024-003",
+        "payment_method": "card",
+        "payment_date": "2024-01-01T09:30:00Z"
+      }
+    },
+    {
+      "id": 5,
+      "subscription_number": "SUB-2024-005",
+      "driver": {
+        "id": 19,
+        "name": "بسام نبيل",
+        "phone": "01014567890",
+        "avatar": "/profile.jpg",
+        "rating": 4.7,
+        "completed_trips": 98,
+        "previous_subscriptions": 0
+      },
+      "vehicle_type": "سيدان",
+      "months_count": 3,
+      "total_price": 1500,
+      "status": "rejected",
+      "created_at": "2024-02-28T10:00:00Z",
+      "payment_info": {
+        "amount_paid": 1500,
+        "reference_number": "REF-2024-004",
+        "receipt_image": "/receipts/receipt5.jpg",
+        "payment_method": "bank_transfer",
+        "payment_date": "2024-02-28T09:00:00Z"
+      },
+      "rejected_reason": "صورة الإيصال غير واضحة"
+    },
+    {
+      "id": 6,
+      "subscription_number": "SUB-2024-006",
+      "driver": {
+        "id": 25,
+        "name": "رامي شريف",
+        "phone": "01614567890",
+        "avatar": "/profile.jpg",
+        "rating": 4.9,
+        "completed_trips": 267,
+        "previous_subscriptions": 4
+      },
+      "vehicle_type": "فان",
+      "months_count": 6,
+      "total_price": 3200,
+      "status": "active",
+      "created_at": "2024-02-01T10:00:00Z",
+      "activated_at": "2024-02-01T16:00:00Z",
+      "start_date": "2024-02-01T00:00:00Z",
+      "end_date": "2024-08-01T23:59:59Z",
+      "days_remaining": 152,
+      "payment_info": {
+        "amount_paid": 3200,
+        "reference_number": "REF-2024-005",
+        "receipt_image": "/receipts/receipt6.jpg",
+        "payment_method": "bank_transfer",
+        "payment_date": "2024-02-01T09:15:00Z",
+        "additional_notes": "دفعة كاملة مقدماً"
+      }
+    },
+    {
+      "id": 7,
+      "subscription_number": "SUB-2024-007",
+      "driver": {
+        "id": 3,
+        "name": "محمود سعيد",
+        "phone": "01212345678",
+        "avatar": "/profile.jpg",
+        "rating": 4.6,
+        "completed_trips": 134,
+        "previous_subscriptions": 2
+      },
+      "vehicle_type": "SUV",
+      "months_count": 3,
+      "total_price": 1800,
+      "status": "pending",
+      "created_at": "2024-03-02T09:00:00Z",
+      "payment_info": {
+        "amount_paid": 1800,
+        "reference_number": "REF-2024-006",
+        "receipt_image": "/receipts/receipt7.jpg",
+        "payment_method": "bank_transfer",
+        "payment_date": "2024-03-02T08:30:00Z"
+      }
+    },
+    {
+      "id": 8,
+      "subscription_number": "SUB-2024-008",
+      "driver": {
+        "id": 5,
+        "name": "خالد عبد الله",
+        "phone": "01512345678",
+        "avatar": "/profile.jpg",
+        "rating": 4.7,
+        "completed_trips": 201,
+        "previous_subscriptions": 3
+      },
+      "vehicle_type": "سيدان",
+      "months_count": 6,
+      "total_price": 2800,
+      "status": "active",
+      "created_at": "2024-01-10T10:00:00Z",
+      "activated_at": "2024-01-10T14:00:00Z",
+      "start_date": "2024-01-10T00:00:00Z",
+      "end_date": "2024-07-10T23:59:59Z",
+      "days_remaining": 130,
+      "payment_info": {
+        "amount_paid": 2800,
+        "reference_number": "REF-2024-007",
+        "payment_method": "cash",
+        "payment_date": "2024-01-10T09:00:00Z"
+      }
+    },
+    {
+      "id": 9,
+      "subscription_number": "SUB-2024-009",
+      "driver": {
+        "id": 13,
+        "name": "ياسر فتحي",
+        "phone": "01312345678",
+        "avatar": "/profile.jpg",
+        "rating": 4.8,
+        "completed_trips": 178,
+        "previous_subscriptions": 2
+      },
+      "vehicle_type": "SUV",
+      "months_count": 12,
+      "total_price": 6500,
+      "status": "active",
+      "created_at": "2023-11-01T10:00:00Z",
+      "activated_at": "2023-11-01T15:30:00Z",
+      "start_date": "2023-11-01T00:00:00Z",
+      "end_date": "2024-11-01T23:59:59Z",
+      "days_remaining": 245,
+      "payment_info": {
+        "amount_paid": 6500,
+        "reference_number": "REF-2023-042",
+        "receipt_image": "/receipts/receipt9.jpg",
+        "payment_method": "bank_transfer",
+        "payment_date": "2023-11-01T09:00:00Z",
+        "additional_notes": "اشتراك سنوي - خصم 10%"
+      }
+    },
+    {
+      "id": 10,
+      "subscription_number": "SUB-2024-010",
+      "driver": {
+        "id": 21,
+        "name": "طارق إبراهيم",
+        "phone": "01112345679",
+        "avatar": "/profile.jpg",
+        "rating": 4.5,
+        "completed_trips": 89,
+        "previous_subscriptions": 1
+      },
+      "vehicle_type": "سيدان",
+      "months_count": 1,
+      "total_price": 550,
+      "status": "cancelled",
+      "created_at": "2024-02-15T10:00:00Z",
+      "activated_at": "2024-02-15T12:00:00Z",
+      "start_date": "2024-02-15T00:00:00Z",
+      "end_date": "2024-03-15T23:59:59Z",
+      "cancelled_at": "2024-02-20T10:00:00Z",
+      "payment_info": {
+        "amount_paid": 550,
+        "reference_number": "REF-2024-008",
+        "payment_method": "card",
+        "payment_date": "2024-02-15T09:30:00Z"
+      },
+      "cancelled_reason": "طلب السائق إلغاء الاشتراك"
+    }
+  ]
+}

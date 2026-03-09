@@ -1,0 +1,1099 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "أحمد محمد علي",
+      "phone": "01012345678",
+      "email": "ahmed@example.com",
+      "role": "driver",
+      "status": "active",
+      "agent_code": "AG001",
+      "delegate_number": "DEL123",
+      "created_at": "2024-01-15T10:30:00Z",
+      "last_active_at": "2024-03-02T14:20:00Z",
+      "last_login_at": "2024-03-02T08:00:00Z",
+      "driver_profile": {
+        "national_id_number": "29501011234567",
+        "driver_license_expiry": "2025-12-31",
+        "expire_profile_at": "2025-06-30",
+        "verification_status": "approved",
+        "online_status": true,
+        "rating_avg": 4.8,
+        "rating_count": 156,
+        "completed_trips_count": 234,
+        "cancelled_trips_count": 12
+      },
+      "vehicle": {
+        "id": 1,
+        "driver_user_id": 1,
+        "vehicle_type_id": 1,
+        "brand_id": 1,
+        "model_id": 1,
+        "vehicle_year_id": 1,
+        "has_ac": true,
+        "vehicle_license_number": "أ ب ج 1234",
+        "vehicle_license_expiry": "2025-08-15",
+        "is_active": true,
+        "created_at": "2024-01-15T10:30:00Z",
+        "updated_at": "2024-01-15T10:30:00Z",
+        "type": "سيدان",
+        "brand": "تويوتا",
+        "model": "كورولا",
+        "year": 2022,
+        "vehicle_type": {
+          "id": 1,
+          "name_ar": "سيدان",
+          "name_en": "Sedan",
+          "name": "سيدان",
+          "icon": "/icons/sedan.png",
+          "base_fare": 10.00,
+          "price_per_km": 2.50,
+          "requires_subscription": true,
+          "wait_time_seconds": 300,
+          "active": true,
+          "sort_order": 1,
+          "max_search_radius_km": 5.00,
+          "created_at": "2024-01-01T00:00:00Z",
+          "updated_at": "2024-01-01T00:00:00Z"
+        }
+      },
+      "subscriptions": [
+        {
+          "id": 1,
+          "driver_id": 1,
+          "vehicle_type_id": 1,
+          "vehicle_type": "سيدان",
+          "months": 3,
+          "total_price": 1500.00,
+          "reference": "SUB-2024-001",
+          "paid_amount": 1500.00,
+          "status": "active",
+          "start_date": "2024-02-01",
+          "end_date": "2024-05-01",
+          "created_at": "2024-02-01T00:00:00Z",
+          "updated_at": "2024-02-01T00:00:00Z"
+        },
+        {
+          "id": 2,
+          "driver_id": 1,
+          "vehicle_type_id": 1,
+          "vehicle_type": "سيدان",
+          "months": 3,
+          "total_price": 1500.00,
+          "reference": "SUB-2023-045",
+          "paid_amount": 1500.00,
+          "status": "expired",
+          "start_date": "2023-11-01",
+          "end_date": "2024-02-01",
+          "created_at": "2023-11-01T00:00:00Z",
+          "updated_at": "2023-11-01T00:00:00Z"
+        }
+      ],
+      "documents": [
+        {
+          "id": 1,
+          "driver_user_id": 1,
+          "type": "driver_photo",
+          "file_path": "/uploads/docs/profile.jpg",
+          "file_url": "/profile.jpg",
+          "expires_at": null,
+          "status": "approved",
+          "created_at": "2024-01-15T10:30:00Z",
+          "updated_at": "2024-01-15T10:30:00Z"
+        },
+        {
+          "id": 2,
+          "driver_user_id": 1,
+          "type": "national_id_front",
+          "file_path": "/uploads/docs/profile.jpg",
+          "file_url": "/profile.jpg",
+          "expires_at": null,
+          "status": "approved",
+          "created_at": "2024-01-15T10:30:00Z",
+          "updated_at": "2024-01-15T10:30:00Z"
+        },
+        {
+          "id": 3,
+          "driver_user_id": 1,
+          "type": "national_id_back",
+          "file_path": "/uploads/docs/profile.jpg",
+          "file_url": "/profile.jpg",
+          "expires_at": null,
+          "status": "approved",
+          "created_at": "2024-01-15T10:30:00Z",
+          "updated_at": "2024-01-15T10:30:00Z"
+        },
+        {
+          "id": 4,
+          "driver_user_id": 1,
+          "type": "driver_license_front",
+          "file_path": "/uploads/docs/profile.jpg",
+          "file_url": "/profile.jpg",
+          "expires_at": "2025-12-31",
+          "status": "approved",
+          "created_at": "2024-01-15T10:30:00Z",
+          "updated_at": "2024-01-15T10:30:00Z"
+        },
+        {
+          "id": 5,
+          "driver_user_id": 1,
+          "type": "driver_license_back",
+          "file_path": "/uploads/docs/profile.jpg",
+          "file_url": "/profile.jpg",
+          "expires_at": "2025-12-31",
+          "status": "approved",
+          "created_at": "2024-01-15T10:30:00Z",
+          "updated_at": "2024-01-15T10:30:00Z"
+        },
+        {
+          "id": 6,
+          "driver_user_id": 1,
+          "type": "vehicle_license_front",
+          "file_path": "/uploads/docs/profile.jpg",
+          "file_url": "/profile.jpg",
+          "expires_at": "2025-08-15",
+          "status": "approved",
+          "created_at": "2024-01-15T10:30:00Z",
+          "updated_at": "2024-01-15T10:30:00Z"
+        },
+        {
+          "id": 7,
+          "driver_user_id": 1,
+          "type": "vehicle_license_back",
+          "file_path": "/uploads/docs/profile.jpg",
+          "file_url": "/profile.jpg",
+          "expires_at": "2025-08-15",
+          "status": "approved",
+          "created_at": "2024-01-15T10:30:00Z",
+          "updated_at": "2024-01-15T10:30:00Z"
+        }
+      ],
+      "devices": [
+        {
+          "id": 1,
+          "user_id": 1,
+          "device_id": "device_abc123",
+          "device_type": "android",
+          "fcm_token": "fcm_token_xyz789",
+          "last_active_at": "2024-03-02T14:20:00Z",
+          "created_at": "2024-01-15T10:30:00Z",
+          "updated_at": "2024-03-02T14:20:00Z"
+        }
+      ],
+      "blocked_users": [],
+      "blocked_by_users": []
+    },
+    {
+      "id": 2,
+      "name": "سارة أحمد حسن",
+      "phone": "01112345678",
+      "email": "sara@example.com",
+      "role": "user",
+      "status": "active",
+      "agent_code": null,
+      "delegate_number": null,
+      "created_at": "2024-02-10T09:15:00Z",
+      "last_active_at": "2024-03-02T16:45:00Z",
+      "last_login_at": "2024-03-02T12:30:00Z",
+      "rider_profile": {
+        "id": 1,
+        "user_id": 2,
+        "rating_avg": 4.9,
+        "rating_count": 89,
+        "reliability_percent": 95,
+        "completed_trips_count": 145,
+        "cancelled_trips_count": 5,
+        "preferences": {
+          "preferred_vehicle_types": ["سيدان", "SUV"],
+          "requires_ac": true,
+          "language": "ar"
+        },
+        "created_at": "2024-02-10T09:15:00Z",
+        "updated_at": "2024-03-02T16:45:00Z"
+      },
+      "favorite_trips": [
+        {
+          "id": 1,
+          "user_id": 2,
+          "trip_id": null,
+          "vehicle_type_id": 1,
+          "title": "من البيت للعمل",
+          "from_lat": 30.0444,
+          "from_lng": 31.2357,
+          "to_lat": 30.0626,
+          "to_lng": 31.2497,
+          "requires_ac": true,
+          "usage_count": 45,
+          "last_estimated_price": 35.50,
+          "last_estimated_at": "2024-03-01T08:00:00Z",
+          "created_at": "2024-02-10T09:15:00Z",
+          "updated_at": "2024-03-01T08:00:00Z"
+        },
+        {
+          "id": 2,
+          "user_id": 2,
+          "trip_id": null,
+          "vehicle_type_id": 1,
+          "title": "من العمل للبيت",
+          "from_lat": 30.0626,
+          "from_lng": 31.2497,
+          "to_lat": 30.0444,
+          "to_lng": 31.2357,
+          "requires_ac": true,
+          "usage_count": 42,
+          "last_estimated_price": 38.00,
+          "last_estimated_at": "2024-03-01T17:30:00Z",
+          "created_at": "2024-02-10T09:15:00Z",
+          "updated_at": "2024-03-01T17:30:00Z"
+        }
+      ],
+      "devices": [
+        {
+          "id": 2,
+          "user_id": 2,
+          "device_id": "device_def456",
+          "device_type": "ios",
+          "fcm_token": "fcm_token_abc123",
+          "last_active_at": "2024-03-02T16:45:00Z",
+          "created_at": "2024-02-10T09:15:00Z",
+          "updated_at": "2024-03-02T16:45:00Z"
+        }
+      ],
+      "blocked_users": [],
+      "blocked_by_users": [],
+      "received_ratings": [
+        {
+          "id": 1,
+          "trip_request_id": 101,
+          "rater_user_id": 1,
+          "rated_user_id": 2,
+          "rater_type": "driver",
+          "stars": 5,
+          "comment": "راكب ممتاز ومحترم",
+          "tags": ["محترم", "دقيق في الموعد"],
+          "created_at": "2024-02-15T10:30:00Z",
+          "updated_at": "2024-02-15T10:30:00Z"
+        }
+      ],
+      "sent_ratings": [
+        {
+          "id": 2,
+          "trip_request_id": 101,
+          "rater_user_id": 2,
+          "rated_user_id": 1,
+          "rater_type": "rider",
+          "stars": 5,
+          "comment": "سائق ممتاز وقيادة آمنة",
+          "tags": ["قيادة آمنة", "سيارة نظيفة"],
+          "created_at": "2024-02-15T10:35:00Z",
+          "updated_at": "2024-02-15T10:35:00Z"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "محمد حسين علي",
+      "phone": "01212345678",
+      "email": "mohamed@example.com",
+      "role": "both",
+      "status": "active",
+      "agent_code": "AG002",
+      "delegate_number": "DEL456",
+      "created_at": "2024-01-20T11:00:00Z",
+      "last_active_at": "2024-03-02T18:10:00Z",
+      "last_login_at": "2024-03-02T07:45:00Z",
+      "driver_profile": {
+        "national_id_number": "28905011234568",
+        "driver_license_expiry": "2026-03-15",
+        "expire_profile_at": "2025-09-30",
+        "verification_status": "approved",
+        "online_status": false,
+        "rating_avg": 4.7,
+        "rating_count": 203,
+        "completed_trips_count": 312,
+        "cancelled_trips_count": 18
+      },
+      "rider_profile": {
+        "rating_avg": 4.8,
+        "rating_count": 67,
+        "completed_trips_count": 98,
+        "cancelled_trips_count": 3
+      },
+      "vehicle": {
+        "type": "SUV",
+        "brand": "هيونداي",
+        "model": "توسان",
+        "year": 2023,
+        "license_number": "د هـ و 5678",
+        "license_expiry": "2025-11-20",
+        "has_ac": true
+      },
+      "subscriptions": [
+        {
+          "id": 3,
+          "vehicle_type": "SUV",
+          "start_date": "2024-01-15",
+          "end_date": "2024-07-15",
+          "paid_amount": 2400,
+          "status": "active"
+        }
+      ],
+      "documents": {
+        "national_id": "/profile.jpg",
+        "driver_license": "/profile.jpg",
+        "vehicle_license": "/profile.jpg"
+      }
+    },
+    {
+      "id": 4,
+      "name": "فاطمة محمود",
+      "phone": "01512345678",
+      "email": null,
+      "role": "user",
+      "status": "blocked",
+      "agent_code": null,
+      "delegate_number": null,
+      "created_at": "2024-02-25T14:20:00Z",
+      "last_active_at": "2024-02-28T10:30:00Z",
+      "last_login_at": "2024-02-28T09:00:00Z",
+      "rider_profile": {
+        "rating_avg": 3.2,
+        "rating_count": 45,
+        "completed_trips_count": 67,
+        "cancelled_trips_count": 23
+      }
+    },
+    {
+      "id": 5,
+      "name": "خالد عبد الله",
+      "phone": "01612345678",
+      "email": "khaled@example.com",
+      "role": "driver",
+      "status": "active",
+      "agent_code": "AG003",
+      "delegate_number": "DEL789",
+      "created_at": "2023-12-05T08:45:00Z",
+      "last_active_at": "2024-03-02T19:30:00Z",
+      "last_login_at": "2024-03-02T06:15:00Z",
+      "driver_profile": {
+        "national_id_number": "29012011234569",
+        "driver_license_expiry": "2025-09-20",
+        "expire_profile_at": "2025-03-31",
+        "verification_status": "pending",
+        "online_status": true,
+        "rating_avg": 4.6,
+        "rating_count": 178,
+        "completed_trips_count": 267,
+        "cancelled_trips_count": 15
+      },
+      "vehicle": {
+        "type": "فان",
+        "brand": "كيا",
+        "model": "كرنفال",
+        "year": 2021,
+        "license_number": "ز ح ط 9012",
+        "license_expiry": "2025-05-10",
+        "has_ac": true
+      },
+      "subscriptions": [
+        {
+          "id": 4,
+          "vehicle_type": "فان",
+          "start_date": "2024-02-20",
+          "end_date": "2024-05-20",
+          "paid_amount": 1800,
+          "status": "pending"
+        }
+      ],
+      "documents": {
+        "national_id": "/profile.jpg",
+        "driver_license": "/profile.jpg",
+        "vehicle_license": "/profile.jpg"
+      }
+    },
+    {
+      "id": 6,
+      "name": "نورا إبراهيم",
+      "phone": "01712345678",
+      "email": "nora@example.com",
+      "role": "user",
+      "status": "active",
+      "agent_code": null,
+      "delegate_number": null,
+      "created_at": "2024-02-15T09:00:00Z",
+      "last_active_at": "2024-03-02T20:15:00Z",
+      "last_login_at": "2024-03-02T19:00:00Z",
+      "rider_profile": {
+        "rating_avg": 4.9,
+        "rating_count": 78,
+        "reliability_percent": 98,
+        "completed_trips_count": 112,
+        "cancelled_trips_count": 2
+      }
+    },
+    {
+      "id": 7,
+      "name": "عمر حسن",
+      "phone": "01812345678",
+      "email": null,
+      "role": "driver",
+      "status": "active",
+      "agent_code": "AG004",
+      "delegate_number": "DEL890",
+      "created_at": "2024-01-10T11:20:00Z",
+      "last_active_at": "2024-03-02T21:00:00Z",
+      "last_login_at": "2024-03-02T06:30:00Z",
+      "driver_profile": {
+        "national_id_number": "29203011234570",
+        "driver_license_expiry": "2026-05-20",
+        "expire_profile_at": "2025-11-30",
+        "verification_status": "approved",
+        "online_status": true,
+        "rating_avg": 4.9,
+        "rating_count": 289,
+        "completed_trips_count": 456,
+        "cancelled_trips_count": 8
+      },
+      "vehicle": {
+        "type": "سيدان",
+        "brand": "نيسان",
+        "model": "صني",
+        "year": 2021,
+        "license_number": "ي ك ل 3456",
+        "license_expiry": "2025-09-10",
+        "has_ac": true
+      }
+    },
+    {
+      "id": 8,
+      "name": "ياسمين أحمد",
+      "phone": "01912345678",
+      "email": "yasmin@example.com",
+      "role": "both",
+      "status": "active",
+      "agent_code": "AG005",
+      "delegate_number": null,
+      "created_at": "2024-01-25T13:45:00Z",
+      "last_active_at": "2024-03-02T18:30:00Z",
+      "last_login_at": "2024-03-02T08:15:00Z",
+      "driver_profile": {
+        "national_id_number": "29108011234571",
+        "driver_license_expiry": "2026-08-15",
+        "expire_profile_at": "2026-02-28",
+        "verification_status": "approved",
+        "online_status": false,
+        "rating_avg": 4.7,
+        "rating_count": 145,
+        "completed_trips_count": 198,
+        "cancelled_trips_count": 11
+      },
+      "rider_profile": {
+        "rating_avg": 4.8,
+        "rating_count": 34,
+        "reliability_percent": 94,
+        "completed_trips_count": 52,
+        "cancelled_trips_count": 3
+      },
+      "vehicle": {
+        "type": "SUV",
+        "brand": "شيفروليه",
+        "model": "كابتيفا",
+        "year": 2022,
+        "license_number": "م ن س 7890",
+        "license_expiry": "2025-12-20",
+        "has_ac": true
+      }
+    },
+    {
+      "id": 9,
+      "name": "طارق عبد الرحمن",
+      "phone": "01013456789",
+      "email": "tarek@example.com",
+      "role": "user",
+      "status": "active",
+      "agent_code": null,
+      "delegate_number": null,
+      "created_at": "2024-02-20T10:15:00Z",
+      "last_active_at": "2024-03-02T17:45:00Z",
+      "last_login_at": "2024-03-02T16:00:00Z",
+      "rider_profile": {
+        "rating_avg": 4.6,
+        "rating_count": 56,
+        "reliability_percent": 91,
+        "completed_trips_count": 89,
+        "cancelled_trips_count": 8
+      }
+    },
+    {
+      "id": 10,
+      "name": "منى سعيد",
+      "phone": "01113456789",
+      "email": null,
+      "role": "user",
+      "status": "blocked",
+      "agent_code": null,
+      "delegate_number": null,
+      "created_at": "2024-02-28T14:30:00Z",
+      "last_active_at": "2024-03-01T09:20:00Z",
+      "last_login_at": "2024-03-01T08:00:00Z",
+      "rider_profile": {
+        "rating_avg": 3.5,
+        "rating_count": 28,
+        "reliability_percent": 75,
+        "completed_trips_count": 45,
+        "cancelled_trips_count": 15
+      }
+    },
+    {
+      "id": 11,
+      "name": "حسام الدين",
+      "phone": "01213456789",
+      "email": "hossam@example.com",
+      "role": "driver",
+      "status": "active",
+      "agent_code": "AG006",
+      "delegate_number": "DEL234",
+      "created_at": "2023-12-20T08:00:00Z",
+      "last_active_at": "2024-03-02T22:00:00Z",
+      "last_login_at": "2024-03-02T05:45:00Z",
+      "driver_profile": {
+        "national_id_number": "28907011234572",
+        "driver_license_expiry": "2025-11-30",
+        "expire_profile_at": "2025-05-31",
+        "verification_status": "approved",
+        "online_status": true,
+        "rating_avg": 4.8,
+        "rating_count": 312,
+        "completed_trips_count": 489,
+        "cancelled_trips_count": 14
+      },
+      "vehicle": {
+        "type": "فان",
+        "brand": "ميتسوبيشي",
+        "model": "L300",
+        "year": 2020,
+        "license_number": "ع غ ف 2345",
+        "license_expiry": "2025-07-15",
+        "has_ac": true
+      }
+    },
+    {
+      "id": 12,
+      "name": "ريم محمود",
+      "phone": "01313456789",
+      "email": "reem@example.com",
+      "role": "user",
+      "status": "active",
+      "agent_code": null,
+      "delegate_number": null,
+      "created_at": "2024-01-30T11:00:00Z",
+      "last_active_at": "2024-03-02T19:30:00Z",
+      "last_login_at": "2024-03-02T18:00:00Z",
+      "rider_profile": {
+        "rating_avg": 4.9,
+        "rating_count": 92,
+        "reliability_percent": 97,
+        "completed_trips_count": 134,
+        "cancelled_trips_count": 4
+      }
+    },
+    {
+      "id": 13,
+      "name": "كريم فتحي",
+      "phone": "01413456789",
+      "email": null,
+      "role": "driver",
+      "status": "active",
+      "agent_code": "AG007",
+      "delegate_number": "DEL567",
+      "created_at": "2024-01-05T09:30:00Z",
+      "last_active_at": "2024-03-02T20:45:00Z",
+      "last_login_at": "2024-03-02T07:00:00Z",
+      "driver_profile": {
+        "national_id_number": "29405011234573",
+        "driver_license_expiry": "2026-03-20",
+        "expire_profile_at": "2025-09-30",
+        "verification_status": "pending",
+        "online_status": true,
+        "rating_avg": 4.5,
+        "rating_count": 98,
+        "completed_trips_count": 156,
+        "cancelled_trips_count": 19
+      },
+      "vehicle": {
+        "type": "سيدان",
+        "brand": "بيجو",
+        "model": "301",
+        "year": 2021,
+        "license_number": "ق ر ش 6789",
+        "license_expiry": "2025-10-25",
+        "has_ac": false
+      }
+    },
+    {
+      "id": 14,
+      "name": "دينا صلاح",
+      "phone": "01513456789",
+      "email": "dina@example.com",
+      "role": "both",
+      "status": "active",
+      "agent_code": "AG008",
+      "delegate_number": null,
+      "created_at": "2024-02-05T12:15:00Z",
+      "last_active_at": "2024-03-02T16:20:00Z",
+      "last_login_at": "2024-03-02T15:00:00Z",
+      "driver_profile": {
+        "national_id_number": "29206011234574",
+        "driver_license_expiry": "2026-06-30",
+        "expire_profile_at": "2025-12-31",
+        "verification_status": "approved",
+        "online_status": false,
+        "rating_avg": 4.6,
+        "rating_count": 167,
+        "completed_trips_count": 223,
+        "cancelled_trips_count": 13
+      },
+      "rider_profile": {
+        "rating_avg": 4.7,
+        "rating_count": 41,
+        "reliability_percent": 93,
+        "completed_trips_count": 67,
+        "cancelled_trips_count": 5
+      },
+      "vehicle": {
+        "type": "سيدان",
+        "brand": "سكودا",
+        "model": "أوكتافيا",
+        "year": 2023,
+        "license_number": "ت ث خ 1122",
+        "license_expiry": "2026-01-15",
+        "has_ac": true
+      }
+    },
+    {
+      "id": 15,
+      "name": "وليد جمال",
+      "phone": "01613456789",
+      "email": "walid@example.com",
+      "role": "user",
+      "status": "active",
+      "agent_code": null,
+      "delegate_number": null,
+      "created_at": "2024-02-12T15:30:00Z",
+      "last_active_at": "2024-03-02T21:10:00Z",
+      "last_login_at": "2024-03-02T20:00:00Z",
+      "rider_profile": {
+        "rating_avg": 4.8,
+        "rating_count": 63,
+        "reliability_percent": 95,
+        "completed_trips_count": 98,
+        "cancelled_trips_count": 5
+      }
+    },
+    {
+      "id": 16,
+      "name": "هدى عادل",
+      "phone": "01713456789",
+      "email": null,
+      "role": "user",
+      "status": "active",
+      "agent_code": null,
+      "delegate_number": null,
+      "created_at": "2024-01-18T10:45:00Z",
+      "last_active_at": "2024-03-02T18:50:00Z",
+      "last_login_at": "2024-03-02T17:30:00Z",
+      "rider_profile": {
+        "rating_avg": 4.7,
+        "rating_count": 71,
+        "reliability_percent": 92,
+        "completed_trips_count": 105,
+        "cancelled_trips_count": 9
+      }
+    },
+    {
+      "id": 17,
+      "name": "سامي رضا",
+      "phone": "01813456789",
+      "email": "samy@example.com",
+      "role": "driver",
+      "status": "active",
+      "agent_code": "AG009",
+      "delegate_number": "DEL678",
+      "created_at": "2023-12-15T07:20:00Z",
+      "last_active_at": "2024-03-02T23:00:00Z",
+      "last_login_at": "2024-03-02T06:00:00Z",
+      "driver_profile": {
+        "national_id_number": "28804011234575",
+        "driver_license_expiry": "2025-10-15",
+        "expire_profile_at": "2025-04-30",
+        "verification_status": "approved",
+        "online_status": true,
+        "rating_avg": 4.9,
+        "rating_count": 378,
+        "completed_trips_count": 567,
+        "cancelled_trips_count": 9
+      },
+      "vehicle": {
+        "type": "SUV",
+        "brand": "فورد",
+        "model": "إكسبلورر",
+        "year": 2022,
+        "license_number": "ذ ض ظ 3344",
+        "license_expiry": "2025-11-20",
+        "has_ac": true
+      }
+    },
+    {
+      "id": 18,
+      "name": "لمياء كمال",
+      "phone": "01913456789",
+      "email": "lamia@example.com",
+      "role": "user",
+      "status": "inactive",
+      "agent_code": null,
+      "delegate_number": null,
+      "created_at": "2024-02-22T13:00:00Z",
+      "last_active_at": "2024-02-28T10:00:00Z",
+      "last_login_at": "2024-02-28T09:00:00Z",
+      "rider_profile": {
+        "rating_avg": 4.4,
+        "rating_count": 18,
+        "reliability_percent": 88,
+        "completed_trips_count": 27,
+        "cancelled_trips_count": 4
+      }
+    },
+    {
+      "id": 19,
+      "name": "بسام نبيل",
+      "phone": "01014567890",
+      "email": null,
+      "role": "driver",
+      "status": "active",
+      "agent_code": "AG010",
+      "delegate_number": "DEL789",
+      "created_at": "2024-01-12T08:45:00Z",
+      "last_active_at": "2024-03-02T19:15:00Z",
+      "last_login_at": "2024-03-02T07:30:00Z",
+      "driver_profile": {
+        "national_id_number": "29301011234576",
+        "driver_license_expiry": "2026-02-28",
+        "expire_profile_at": "2025-08-31",
+        "verification_status": "approved",
+        "online_status": false,
+        "rating_avg": 4.7,
+        "rating_count": 201,
+        "completed_trips_count": 289,
+        "cancelled_trips_count": 16
+      },
+      "vehicle": {
+        "type": "سيدان",
+        "brand": "رينو",
+        "model": "ميجان",
+        "year": 2021,
+        "license_number": "أ ب ت 5566",
+        "license_expiry": "2025-08-30",
+        "has_ac": true
+      }
+    },
+    {
+      "id": 20,
+      "name": "إيمان حسين",
+      "phone": "01114567890",
+      "email": "eman@example.com",
+      "role": "user",
+      "status": "active",
+      "agent_code": null,
+      "delegate_number": null,
+      "created_at": "2024-02-08T11:30:00Z",
+      "last_active_at": "2024-03-02T20:00:00Z",
+      "last_login_at": "2024-03-02T19:15:00Z",
+      "rider_profile": {
+        "rating_avg": 4.9,
+        "rating_count": 84,
+        "reliability_percent": 96,
+        "completed_trips_count": 126,
+        "cancelled_trips_count": 5
+      }
+    },
+    {
+      "id": 21,
+      "name": "مصطفى سمير",
+      "phone": "01214567890",
+      "email": "mostafa@example.com",
+      "role": "both",
+      "status": "active",
+      "agent_code": "AG011",
+      "delegate_number": "DEL890",
+      "created_at": "2024-01-22T09:00:00Z",
+      "last_active_at": "2024-03-02T22:30:00Z",
+      "last_login_at": "2024-03-02T06:45:00Z",
+      "driver_profile": {
+        "national_id_number": "29109011234577",
+        "driver_license_expiry": "2026-07-15",
+        "expire_profile_at": "2026-01-31",
+        "verification_status": "approved",
+        "online_status": true,
+        "rating_avg": 4.8,
+        "rating_count": 234,
+        "completed_trips_count": 345,
+        "cancelled_trips_count": 12
+      },
+      "rider_profile": {
+        "rating_avg": 4.7,
+        "rating_count": 52,
+        "reliability_percent": 94,
+        "completed_trips_count": 78,
+        "cancelled_trips_count": 5
+      },
+      "vehicle": {
+        "type": "سيدان",
+        "brand": "مازدا",
+        "model": "3",
+        "year": 2022,
+        "license_number": "ث ج ح 7788",
+        "license_expiry": "2026-02-10",
+        "has_ac": true
+      }
+    },
+    {
+      "id": 22,
+      "name": "سلمى فؤاد",
+      "phone": "01314567890",
+      "email": null,
+      "role": "user",
+      "status": "active",
+      "agent_code": null,
+      "delegate_number": null,
+      "created_at": "2024-02-18T14:15:00Z",
+      "last_active_at": "2024-03-02T17:20:00Z",
+      "last_login_at": "2024-03-02T16:30:00Z",
+      "rider_profile": {
+        "rating_avg": 4.6,
+        "rating_count": 47,
+        "reliability_percent": 90,
+        "completed_trips_count": 72,
+        "cancelled_trips_count": 8
+      }
+    },
+    {
+      "id": 23,
+      "name": "عصام طه",
+      "phone": "01414567890",
+      "email": "essam@example.com",
+      "role": "driver",
+      "status": "active",
+      "agent_code": "AG012",
+      "delegate_number": "DEL901",
+      "created_at": "2024-01-08T10:00:00Z",
+      "last_active_at": "2024-03-02T21:45:00Z",
+      "last_login_at": "2024-03-02T07:15:00Z",
+      "driver_profile": {
+        "national_id_number": "29002011234578",
+        "driver_license_expiry": "2025-12-20",
+        "expire_profile_at": "2025-06-30",
+        "verification_status": "rejected",
+        "online_status": false,
+        "rating_avg": 4.3,
+        "rating_count": 87,
+        "completed_trips_count": 134,
+        "cancelled_trips_count": 22
+      },
+      "vehicle": {
+        "type": "سيدان",
+        "brand": "شيري",
+        "model": "تيجو",
+        "year": 2020,
+        "license_number": "خ د ذ 9900",
+        "license_expiry": "2025-06-15",
+        "has_ac": false
+      }
+    },
+    {
+      "id": 24,
+      "name": "نادية وليد",
+      "phone": "01514567890",
+      "email": "nadia@example.com",
+      "role": "user",
+      "status": "active",
+      "agent_code": null,
+      "delegate_number": null,
+      "created_at": "2024-02-14T12:45:00Z",
+      "last_active_at": "2024-03-02T18:10:00Z",
+      "last_login_at": "2024-03-02T17:00:00Z",
+      "rider_profile": {
+        "rating_avg": 4.8,
+        "rating_count": 69,
+        "reliability_percent": 95,
+        "completed_trips_count": 103,
+        "cancelled_trips_count": 5
+      }
+    },
+    {
+      "id": 25,
+      "name": "رامي شريف",
+      "phone": "01614567890",
+      "email": null,
+      "role": "driver",
+      "status": "active",
+      "agent_code": "AG013",
+      "delegate_number": "DEL012",
+      "created_at": "2023-12-28T08:30:00Z",
+      "last_active_at": "2024-03-02T23:15:00Z",
+      "last_login_at": "2024-03-02T05:30:00Z",
+      "driver_profile": {
+        "national_id_number": "28906011234579",
+        "driver_license_expiry": "2025-11-10",
+        "expire_profile_at": "2025-05-31",
+        "verification_status": "approved",
+        "online_status": true,
+        "rating_avg": 4.9,
+        "rating_count": 423,
+        "completed_trips_count": 612,
+        "cancelled_trips_count": 7
+      },
+      "vehicle": {
+        "type": "فان",
+        "brand": "هيونداي",
+        "model": "H1",
+        "year": 2023,
+        "license_number": "ر ز س 1122",
+        "license_expiry": "2026-03-25",
+        "has_ac": true
+      }
+    },
+    {
+      "id": 26,
+      "name": "غادة محمد",
+      "phone": "01714567890",
+      "email": "ghada@example.com",
+      "role": "user",
+      "status": "active",
+      "agent_code": null,
+      "delegate_number": null,
+      "created_at": "2024-02-10T15:00:00Z",
+      "last_active_at": "2024-03-02T19:45:00Z",
+      "last_login_at": "2024-03-02T18:30:00Z",
+      "rider_profile": {
+        "rating_avg": 4.7,
+        "rating_count": 55,
+        "reliability_percent": 93,
+        "completed_trips_count": 86,
+        "cancelled_trips_count": 6
+      }
+    },
+    {
+      "id": 27,
+      "name": "أيمن صابر",
+      "phone": "01814567890",
+      "email": "ayman@example.com",
+      "role": "driver",
+      "status": "active",
+      "agent_code": "AG014",
+      "delegate_number": "DEL123",
+      "created_at": "2024-01-16T09:15:00Z",
+      "last_active_at": "2024-03-02T20:30:00Z",
+      "last_login_at": "2024-03-02T07:45:00Z",
+      "driver_profile": {
+        "national_id_number": "29204011234580",
+        "driver_license_expiry": "2026-04-30",
+        "expire_profile_at": "2025-10-31",
+        "verification_status": "pending",
+        "online_status": true,
+        "rating_avg": 4.6,
+        "rating_count": 156,
+        "completed_trips_count": 212,
+        "cancelled_trips_count": 15
+      },
+      "vehicle": {
+        "type": "SUV",
+        "brand": "ميتسوبيشي",
+        "model": "باجيرو",
+        "year": 2021,
+        "license_number": "ش ص ض 3344",
+        "license_expiry": "2025-09-20",
+        "has_ac": true
+      }
+    },
+    {
+      "id": 28,
+      "name": "سميرة علي",
+      "phone": "01914567890",
+      "email": null,
+      "role": "user",
+      "status": "blocked",
+      "agent_code": null,
+      "delegate_number": null,
+      "created_at": "2024-02-26T16:30:00Z",
+      "last_active_at": "2024-03-01T11:00:00Z",
+      "last_login_at": "2024-03-01T10:00:00Z",
+      "rider_profile": {
+        "rating_avg": 3.8,
+        "rating_count": 32,
+        "reliability_percent": 78,
+        "completed_trips_count": 51,
+        "cancelled_trips_count": 14
+      }
+    },
+    {
+      "id": 29,
+      "name": "حازم فريد",
+      "phone": "01015678901",
+      "email": "hazem@example.com",
+      "role": "both",
+      "status": "active",
+      "agent_code": "AG015",
+      "delegate_number": null,
+      "created_at": "2024-02-01T10:30:00Z",
+      "last_active_at": "2024-03-02T21:20:00Z",
+      "last_login_at": "2024-03-02T08:00:00Z",
+      "driver_profile": {
+        "national_id_number": "29107011234581",
+        "driver_license_expiry": "2026-09-15",
+        "expire_profile_at": "2026-03-31",
+        "verification_status": "approved",
+        "online_status": false,
+        "rating_avg": 4.7,
+        "rating_count": 178,
+        "completed_trips_count": 256,
+        "cancelled_trips_count": 14
+      },
+      "rider_profile": {
+        "rating_avg": 4.6,
+        "rating_count": 38,
+        "reliability_percent": 91,
+        "completed_trips_count": 61,
+        "cancelled_trips_count": 6
+      },
+      "vehicle": {
+        "type": "سيدان",
+        "brand": "فولكس فاجن",
+        "model": "جيتا",
+        "year": 2022,
+        "license_number": "ط ظ ع 5566",
+        "license_expiry": "2026-01-20",
+        "has_ac": true
+      }
+    },
+    {
+      "id": 30,
+      "name": "ليلى حمدي",
+      "phone": "01115678901",
+      "email": "laila@example.com",
+      "role": "user",
+      "status": "active",
+      "agent_code": null,
+      "delegate_number": null,
+      "created_at": "2024-02-16T13:20:00Z",
+      "last_active_at": "2024-03-02T22:10:00Z",
+      "last_login_at": "2024-03-02T21:00:00Z",
+      "rider_profile": {
+        "rating_avg": 4.9,
+        "rating_count": 76,
+        "reliability_percent": 97,
+        "completed_trips_count": 118,
+        "cancelled_trips_count": 4
+      }
+    }
+  ]
+}

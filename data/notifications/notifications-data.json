@@ -1,0 +1,181 @@
+{
+  "hero": {
+    "title": "إدارة الإشعارات",
+    "subtitle": "إرسال وإدارة الإشعارات للمستخدمين والسائقين",
+    "stats": {
+      "total": "إجمالي الإشعارات المرسلة",
+      "today": "الإشعارات اليوم",
+      "failed": "الإشعارات الفاشلة"
+    }
+  },
+  "notificationTypes": [
+    { "value": "trip_dispatched_to_driver", "label": "إرسال رحلة للسائق" },
+    { "value": "trip_offer_accepted", "label": "قبول عرض رحلة" },
+    { "value": "trip_offer_rejected", "label": "رفض عرض رحلة" },
+    { "value": "trip_started", "label": "بدء الرحلة" },
+    { "value": "trip_ended", "label": "انتهاء الرحلة" },
+    { "value": "trip_cancelled", "label": "إلغاء الرحلة" },
+    { "value": "trip_no_longer_available", "label": "الرحلة لم تعد متاحة" },
+    { "value": "new_rating", "label": "تقييم جديد" },
+    { "value": "subscription_expiring", "label": "اشتراك على وشك الانتهاء" },
+    { "value": "subscription_expired", "label": "انتهاء الاشتراك" }
+  ],
+  "sentViaChannels": [
+    { "value": "database", "label": "قاعدة البيانات" },
+    { "value": "push", "label": "إشعار Push" },
+    { "value": "sms", "label": "رسالة SMS" },
+    { "value": "email", "label": "بريد إلكتروني" }
+  ],
+  "recipientTypes": [
+    { "value": "all", "label": "جميع المستخدمين" },
+    { "value": "drivers", "label": "السائقين فقط" },
+    { "value": "riders", "label": "الركاب فقط" },
+    { "value": "specific", "label": "مستخدم محدد" },
+    { "value": "custom", "label": "مجموعة مخصصة" }
+  ],
+  "priorityTypes": [
+    { "value": "info", "label": "معلومة", "color": "#3498db" },
+    { "value": "warning", "label": "تحذير", "color": "#f39c12" },
+    { "value": "urgent", "label": "عاجل", "color": "#e74c3c" }
+  ],
+  "templates": [
+    {
+      "id": 1,
+      "name": "ترحيب بمستخدم جديد",
+      "title_ar": "مرحباً بك في التطبيق",
+      "title_en": "Welcome to the App",
+      "body_ar": "نحن سعداء بانضمامك إلينا. استمتع بتجربة رائعة!",
+      "body_en": "We're happy to have you. Enjoy a great experience!",
+      "type": "info"
+    },
+    {
+      "id": 2,
+      "name": "تذكير بتجديد الاشتراك",
+      "title_ar": "تذكير: اشتراكك على وشك الانتهاء",
+      "title_en": "Reminder: Your subscription is expiring soon",
+      "body_ar": "اشتراكك سينتهي خلال 3 أيام. قم بالتجديد الآن للاستمرار في الخدمة.",
+      "body_en": "Your subscription will expire in 3 days. Renew now to continue service.",
+      "type": "warning"
+    },
+    {
+      "id": 3,
+      "name": "تحذير من معدل إلغاء رحلات عالي",
+      "title_ar": "تحذير: معدل إلغاء مرتفع",
+      "title_en": "Warning: High cancellation rate",
+      "body_ar": "لاحظنا ارتفاع معدل إلغاء الرحلات. يرجى الالتزام بالرحلات المقبولة.",
+      "body_en": "We noticed a high trip cancellation rate. Please commit to accepted trips.",
+      "type": "warning"
+    },
+    {
+      "id": 4,
+      "name": "إشعار بتحديث التطبيق",
+      "title_ar": "تحديث جديد متاح",
+      "title_en": "New Update Available",
+      "body_ar": "يتوفر تحديث جديد للتطبيق مع ميزات محسنة. قم بالتحديث الآن!",
+      "body_en": "A new app update is available with improved features. Update now!",
+      "type": "info"
+    },
+    {
+      "id": 5,
+      "name": "إشعار بعرض خاص",
+      "title_ar": "عرض خاص لفترة محدودة",
+      "title_en": "Limited Time Special Offer",
+      "body_ar": "احصل على خصم 20% على جميع الرحلات لمدة 24 ساعة!",
+      "body_en": "Get 20% off on all trips for 24 hours!",
+      "type": "urgent"
+    }
+  ],
+  "sentNotifications": [
+    {
+      "id": 1,
+      "type": "info",
+      "title_ar": "مرحباً بك في التطبيق",
+      "title_en": "Welcome to the App",
+      "body_ar": "نحن سعداء بانضمامك إلينا",
+      "body_en": "We're happy to have you",
+      "recipient_type": "all",
+      "recipient_count": 1250,
+      "sent_at": "2024-03-09T10:30:00",
+      "status": "sent",
+      "sent_via": ["database", "push"]
+    },
+    {
+      "id": 2,
+      "type": "warning",
+      "title_ar": "تذكير بتجديد الاشتراك",
+      "title_en": "Subscription Renewal Reminder",
+      "body_ar": "اشتراكك سينتهي قريباً",
+      "body_en": "Your subscription is expiring soon",
+      "recipient_type": "drivers",
+      "recipient_count": 45,
+      "sent_at": "2024-03-09T09:15:00",
+      "status": "sent",
+      "sent_via": ["database", "push", "sms"]
+    },
+    {
+      "id": 3,
+      "type": "urgent",
+      "title_ar": "عرض خاص",
+      "title_en": "Special Offer",
+      "body_ar": "خصم 20% لفترة محدودة",
+      "body_en": "20% off for limited time",
+      "recipient_type": "riders",
+      "recipient_count": 890,
+      "sent_at": "2024-03-09T08:00:00",
+      "status": "sent",
+      "sent_via": ["database", "push"]
+    },
+    {
+      "id": 4,
+      "type": "info",
+      "title_ar": "تحديث التطبيق",
+      "title_en": "App Update",
+      "body_ar": "تحديث جديد متاح الآن",
+      "body_en": "New update available now",
+      "recipient_type": "all",
+      "recipient_count": 1250,
+      "sent_at": "2024-03-08T16:45:00",
+      "status": "sent",
+      "sent_via": ["database", "push"]
+    },
+    {
+      "id": 5,
+      "type": "warning",
+      "title_ar": "تحذير من معدل إلغاء",
+      "title_en": "Cancellation Rate Warning",
+      "body_ar": "معدل إلغاء مرتفع",
+      "body_en": "High cancellation rate",
+      "recipient_type": "specific",
+      "recipient_count": 1,
+      "sent_at": "2024-03-08T14:20:00",
+      "status": "sent",
+      "sent_via": ["database", "push", "sms"]
+    },
+    {
+      "id": 6,
+      "type": "info",
+      "title_ar": "إشعار مجدول",
+      "title_en": "Scheduled Notification",
+      "body_ar": "سيتم إرساله لاحقاً",
+      "body_en": "Will be sent later",
+      "recipient_type": "drivers",
+      "recipient_count": 120,
+      "sent_at": "2024-03-10T10:00:00",
+      "status": "pending",
+      "sent_via": ["database", "push"]
+    },
+    {
+      "id": 7,
+      "type": "urgent",
+      "title_ar": "إشعار فاشل",
+      "title_en": "Failed Notification",
+      "body_ar": "فشل في الإرسال",
+      "body_en": "Failed to send",
+      "recipient_type": "custom",
+      "recipient_count": 50,
+      "sent_at": "2024-03-08T12:00:00",
+      "status": "failed",
+      "sent_via": ["database", "push"]
+    }
+  ]
+}

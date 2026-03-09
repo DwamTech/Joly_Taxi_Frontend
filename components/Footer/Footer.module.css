@@ -1,0 +1,264 @@
+.footer {
+  background-color: #1E293B;
+  color: white;
+  padding: 20px 20px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  /* padding: 0 1.5rem; */
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1.5fr;
+  gap: 4rem;
+  margin-bottom: 4rem;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.logo {
+  font-size: 2.5rem;
+  font-weight: 800;
+  display: flex;
+  gap: 0.5rem;
+  font-family: 'Cairo', sans-serif;
+}
+
+.logoOrange {
+  color: #F97316;
+}
+
+.logoBlue {
+  color: #38BDF8;
+}
+
+.description {
+  color: #94A3B8;
+  line-height: 1.6;
+  max-width: 300px;
+}
+
+.socials {
+  display: flex;
+  gap: 1rem;
+}
+
+.socialLink {
+  color: #94A3B8;
+  transition: color 0.3s ease;
+}
+
+.socialLink:hover {
+  color: #FCD34D;
+}
+
+.linksColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.columnTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.link {
+  color: #94A3B8;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.link:hover {
+  color: #F97316;
+}
+
+.downloadButtons {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+.bottomActions .downloadButtons {
+  margin-top: 0.5rem;
+}
+
+.storeBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.5rem 0.9rem;
+  border-radius: 0.6rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  text-align: right;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.storeBtn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.storeIcon {
+  font-size: 1.5rem;
+}
+
+.storeIconImg {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+
+.storeText {
+  display: flex;
+  flex-direction: column;
+}
+
+.storeText span {
+  font-size: 0.7rem;
+  color: #94A3B8;
+}
+
+.storeText strong {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.bottom {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  /* align-items: center; */
+  /* padding-top: 2rem; */
+  /* border-top: 1px solid rgba(255, 255, 255, 0.1); */
+  gap: 2.25rem;
+}
+
+.footerSideLogo {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.footerLogo {
+  width: 140px;
+  height: auto;
+  object-fit: contain;
+}
+
+.bottomCenter {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.bottomCenter .socials {
+  justify-content: center;
+  margin-top: 0.25rem;
+}
+
+.centerLinks {
+  display: inline-flex;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.divider {
+  color: #94A3B8;
+  opacity: 0.8;
+}
+
+.bottomActions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.bottomActions .socials {
+  align-self: center;
+  justify-content: center;
+  margin-top: 0.25rem;
+}
+
+.soonBadge {
+  background-color: #F97316;
+  color: white;
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  line-height: 1;
+  animation: floatY 1.8s ease-in-out infinite;
+}
+
+@keyframes floatY {
+  0% { transform: translateY(0); opacity: 0.85; }
+  50% { transform: translateY(-2px); opacity: 1; }
+  100% { transform: translateY(0); opacity: 0.85; }
+}
+
+.copyright {
+  color: #94A3B8;
+  font-size: 0.875rem;
+}
+
+.legalLinks {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.legalLink {
+  color: #94A3B8;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.legalLink:hover {
+  color: white;
+}
+
+@media (max-width: 1024px) {
+  .bottom {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .footerSideLogo {
+    justify-content: center;
+  }
+  .bottomActions {
+    align-items: center;
+  }
+  .bottomActions .downloadButtons {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .bottom {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .downloadButtons {
+    justify-content: center;
+  }
+  .bottomActions .downloadButtons {
+    margin-top: 0;
+  }
+}
