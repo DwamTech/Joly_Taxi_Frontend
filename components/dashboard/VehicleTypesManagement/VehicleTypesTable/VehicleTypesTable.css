@@ -37,17 +37,18 @@
 /* تحديد عرض الأعمدة */
 .vehicle-types-table thead tr th:nth-child(1) { width: 4%; } /* Drag handle */
 .vehicle-types-table thead tr th:nth-child(2) { width: 5%; } /* الأيقونة */
-.vehicle-types-table thead tr th:nth-child(3) { width: 10%; } /* الاسم بالعربية */
-.vehicle-types-table thead tr th:nth-child(4) { width: 9%; } /* الاسم بالإنجليزية */
-.vehicle-types-table thead tr th:nth-child(5) { width: 8%; } /* الأجرة */
-.vehicle-types-table thead tr th:nth-child(6) { width: 7%; } /* السعر/كم */
-.vehicle-types-table thead tr th:nth-child(7) { width: 8%; } /* وقت الانتظار */
-.vehicle-types-table thead tr th:nth-child(8) { width: 8%; } /* نطاق البحث */
-.vehicle-types-table thead tr th:nth-child(9) { width: 8%; } /* الحالة */
-.vehicle-types-table thead tr th:nth-child(10) { width: 6%; } /* الترتيب */
-.vehicle-types-table thead tr th:nth-child(11) { width: 7%; } /* المركبات */
-.vehicle-types-table thead tr th:nth-child(12) { width: 7%; } /* الرحلات */
-.vehicle-types-table thead tr th:nth-child(13) { width: 13%; } /* الإجراءات */
+.vehicle-types-table thead tr th:nth-child(3) { width: 9%; } /* الاسم بالعربية */
+.vehicle-types-table thead tr th:nth-child(4) { width: 8%; } /* الاسم بالإنجليزية */
+.vehicle-types-table thead tr th:nth-child(5) { width: 8%; } /* التكييف */
+.vehicle-types-table thead tr th:nth-child(6) { width: 7%; } /* الأجرة */
+.vehicle-types-table thead tr th:nth-child(7) { width: 7%; } /* السعر/كم */
+.vehicle-types-table thead tr th:nth-child(8) { width: 7%; } /* وقت الانتظار */
+.vehicle-types-table thead tr th:nth-child(9) { width: 7%; } /* نطاق البحث */
+.vehicle-types-table thead tr th:nth-child(10) { width: 7%; } /* الحالة */
+.vehicle-types-table thead tr th:nth-child(11) { width: 6%; } /* الترتيب */
+.vehicle-types-table thead tr th:nth-child(12) { width: 7%; } /* المركبات */
+.vehicle-types-table thead tr th:nth-child(13) { width: 6%; } /* الرحلات */
+.vehicle-types-table thead tr th:nth-child(14) { width: 12%; } /* الإجراءات */
 
 .vehicle-types-table tbody tr {
   border-bottom: 1px solid #f0f0f0;
@@ -96,9 +97,10 @@
   text-align: right;
   font-size: 0.8rem;
   color: #374151;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow: visible;
+  white-space: normal;
+  word-wrap: break-word;
+  vertical-align: middle;
 }
 
 .vehicle-icon {
@@ -125,16 +127,16 @@
   color: #1f2937;
   font-size: 0.85rem;
   display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 .vehicle-name-en {
   color: #6b7280;
   font-size: 0.75rem;
   display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 .price {
@@ -155,22 +157,17 @@
 }
 
 .status-badge {
-  padding: 0.4rem 0.6rem;
-  border-radius: 15px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  display: inline-block;
-  white-space: nowrap;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #374151;
 }
 
 .status-badge.active {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: white;
+  color: #059669;
 }
 
 .status-badge.inactive {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  color: white;
+  color: #dc2626;
 }
 
 .sort-order {
@@ -187,6 +184,20 @@
   font-weight: 700;
   color: #1f2937;
   font-size: 0.9rem;
+}
+
+.ac-badge {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.ac-badge.has-ac {
+  color: #2563eb;
+}
+
+.ac-badge.no-ac {
+  color: #d97706;
 }
 
 .actions {

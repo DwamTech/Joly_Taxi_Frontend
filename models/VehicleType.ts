@@ -10,6 +10,7 @@ export interface VehicleType {
   active: boolean;
   sort_order: number;
   max_search_radius_km: number;
+  has_ac: boolean; // مكيفة أو غير مكيفة
   registered_vehicles?: number;
   active_drivers?: number;
   total_trips?: number;

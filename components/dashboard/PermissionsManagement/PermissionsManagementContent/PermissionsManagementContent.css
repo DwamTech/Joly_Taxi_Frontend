@@ -1,0 +1,47 @@
+.permissions-management-content {
+  background: white;
+  min-height: 100vh;
+}
+
+.permissions-content-wrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.permissions-actions {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.add-admin-btn {
+  padding: 0.75rem 2rem;
+  background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.add-admin-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+}
+
+@media (max-width: 768px) {
+  .permissions-content-wrapper {
+    padding: 1rem;
+  }
+
+  .add-admin-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

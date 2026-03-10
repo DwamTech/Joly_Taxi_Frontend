@@ -26,6 +26,7 @@ export default function VehicleTypeModal({
     active: true,
     sort_order: 1,
     requires_subscription: false,
+    has_ac: true,
   });
 
   useEffect(() => {
@@ -76,7 +77,7 @@ export default function VehicleTypeModal({
             </div>
 
             <div className="form-group">
-              <label>الأجرة الأساسية (ر.س) *</label>
+              <label>الأجرة الأساسية (ج.م) *</label>
               <input
                 type="number"
                 step="0.01"
@@ -87,7 +88,7 @@ export default function VehicleTypeModal({
             </div>
 
             <div className="form-group">
-              <label>السعر لكل كم (ر.س) *</label>
+              <label>السعر لكل كم (ج.م) *</label>
               <input
                 type="number"
                 step="0.01"
@@ -147,6 +148,17 @@ export default function VehicleTypeModal({
                 <span>يتطلب اشتراك</span>
               </label>
             </div>
+
+            <div className="form-group checkbox-group">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={formData.has_ac}
+                  onChange={(e) => handleChange("has_ac", e.target.checked)}
+                />
+                <span>❄️ مكيفة</span>
+              </label>
+            </div>
           </div>
 
           {vehicleType && (
@@ -171,11 +183,11 @@ export default function VehicleTypeModal({
                 </div>
                 <div className="stat-card">
                   <span className="stat-label">متوسط السعر</span>
-                  <span className="stat-value">{vehicleType.avg_trip_price || 0} ر.س</span>
+                  <span className="stat-value">{vehicleType.avg_trip_price || 0} ج.م</span>
                 </div>
                 <div className="stat-card">
                   <span className="stat-label">إجمالي الإيرادات</span>
-                  <span className="stat-value">{vehicleType.total_revenue?.toLocaleString() || 0} ر.س</span>
+                  <span className="stat-value">{vehicleType.total_revenue?.toLocaleString() || 0} ج.م</span>
                 </div>
               </div>
             </div>

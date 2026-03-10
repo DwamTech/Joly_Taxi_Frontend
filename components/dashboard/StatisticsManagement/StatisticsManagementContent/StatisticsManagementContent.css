@@ -1,8 +1,8 @@
-.vehicle-types-page {
+.statistics-management-page {
   min-height: 100vh;
 }
 
-.ac-filter-tabs {
+.statistics-tabs {
   display: flex;
   gap: 1rem;
   margin-bottom: 2rem;
@@ -12,7 +12,7 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-.filter-tab {
+.stat-tab {
   flex: 1;
   display: flex;
   align-items: center;
@@ -29,14 +29,14 @@
   color: #666;
 }
 
-.filter-tab:hover {
+.stat-tab:hover {
   border-color: #FDB913;
   background: #fffbf0;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(253, 185, 19, 0.2);
 }
 
-.filter-tab.active {
+.stat-tab.active {
   background: linear-gradient(135deg, #FDB913 0%, #FFA500 100%);
   border-color: #FDB913;
   color: white;
@@ -51,24 +51,27 @@
   font-size: 1rem;
 }
 
-.tab-count {
-  background: rgba(0, 0, 0, 0.1);
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  font-size: 0.9rem;
-  font-weight: 700;
+.statistics-content {
+  animation: fadeIn 0.3s ease;
 }
 
-.filter-tab.active .tab-count {
-  background: rgba(255, 255, 255, 0.3);
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 768px) {
-  .ac-filter-tabs {
+  .statistics-tabs {
     flex-direction: column;
   }
 
-  .filter-tab {
+  .stat-tab {
     padding: 0.875rem 1rem;
   }
 

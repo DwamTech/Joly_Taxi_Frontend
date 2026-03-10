@@ -1,0 +1,115 @@
+{
+  "statistics": {
+    "online_drivers": 156,
+    "active_trips": 42,
+    "open_requests": 8,
+    "available_drivers": 106
+  },
+  "drivers": [
+    {
+      "driver_id": 1,
+      "driver_name": "أحمد محمد علي",
+      "phone": "01012345678",
+      "vehicle_type": "سيارة اقتصادية",
+      "vehicle_type_icon": "🚗",
+      "status": "available",
+      "rating": 4.8,
+      "trips_today": 12,
+      "latitude": 30.0444,
+      "longitude": 31.2357,
+      "last_update": "2026-03-09T14:30:00"
+    },
+    {
+      "driver_id": 2,
+      "driver_name": "محمد حسن",
+      "phone": "01023456789",
+      "vehicle_type": "سيارة مريحة",
+      "vehicle_type_icon": "🚙",
+      "status": "on_trip",
+      "rating": 4.9,
+      "trips_today": 15,
+      "latitude": 30.0500,
+      "longitude": 31.2400,
+      "last_update": "2026-03-09T14:29:00"
+    },
+    {
+      "driver_id": 3,
+      "driver_name": "خالد عبدالله",
+      "phone": "01034567890",
+      "vehicle_type": "سيارة فاخرة",
+      "vehicle_type_icon": "🚘",
+      "status": "available",
+      "rating": 4.95,
+      "trips_today": 8,
+      "latitude": 30.0600,
+      "longitude": 31.2500,
+      "last_update": "2026-03-09T14:28:00"
+    },
+    {
+      "driver_id": 4,
+      "driver_name": "عمر سعيد",
+      "phone": "01045678901",
+      "vehicle_type": "سيارة كبيرة",
+      "vehicle_type_icon": "🚐",
+      "status": "busy",
+      "rating": 4.7,
+      "trips_today": 10,
+      "latitude": 30.0350,
+      "longitude": 31.2250,
+      "last_update": "2026-03-09T14:27:00"
+    },
+    {
+      "driver_id": 5,
+      "driver_name": "يوسف إبراهيم",
+      "phone": "01056789012",
+      "vehicle_type": "سيارة اقتصادية",
+      "vehicle_type_icon": "🚗",
+      "status": "available",
+      "rating": 4.6,
+      "trips_today": 14,
+      "latitude": 30.0550,
+      "longitude": 31.2300,
+      "last_update": "2026-03-09T14:30:00"
+    }
+  ],
+  "activeTrips": [
+    {
+      "trip_id": 1001,
+      "trip_number": "TR-2026-001001",
+      "driver_id": 2,
+      "driver_name": "محمد حسن",
+      "rider_id": 501,
+      "rider_name": "سارة أحمد",
+      "pickup_location": "مدينة نصر",
+      "dropoff_location": "التجمع الخامس",
+      "pickup_lat": 30.0500,
+      "pickup_lng": 31.2400,
+      "dropoff_lat": 30.0700,
+      "dropoff_lng": 31.4200,
+      "status": "in_progress",
+      "elapsed_time": "12 دقيقة",
+      "estimated_time": "8 دقائق",
+      "distance_km": 15.5,
+      "price": 85.50
+    },
+    {
+      "trip_id": 1002,
+      "trip_number": "TR-2026-001002",
+      "driver_id": 6,
+      "driver_name": "حسام الدين",
+      "rider_id": 502,
+      "rider_name": "فاطمة محمد",
+      "pickup_location": "المعادي",
+      "dropoff_location": "وسط البلد",
+      "pickup_lat": 29.9600,
+      "pickup_lng": 31.2500,
+      "dropoff_lat": 30.0444,
+      "dropoff_lng": 31.2357,
+      "status": "in_progress",
+      "elapsed_time": "5 دقائق",
+      "estimated_time": "15 دقيقة",
+      "distance_km": 12.3,
+      "price": 68.00
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+.permissions-hero {
+  background: linear-gradient(135deg, #2d2d2d 0%, #ababab5e 50%, #FDB913 100%);
+  padding: 1.5rem;
+  margin-bottom: 0;
+  border-radius: 20px;
+}
+
+.permissions-hero-content {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.permissions-hero-text {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.permissions-hero-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 0.3rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.permissions-hero-subtitle {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 500;
+}
+
+.permissions-hero-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.permissions-stat-card {
+  background: rgba(190, 190, 190, 0.527);
+  border-radius: 12px;
+  padding: 0.75rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.permissions-stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 15px rgba(253, 185, 19, 0.3);
+}
+
+.permissions-stat-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  text-align: center;
+}
+
+.permissions-stat-icon {
+  font-size: 35px;
+}
+
+.permissions-stat-value {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #2c3e50;
+}
+
+.permissions-stat-label {
+  font-size: 1rem;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .permissions-hero-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .permissions-hero-title {
+    font-size: 2rem;
+  }
+}

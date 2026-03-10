@@ -25,6 +25,8 @@ interface ConfirmState {
 
 export default function VehicleTypesPage() {
   const [vehicleTypes, setVehicleTypes] = useState<VehicleType[]>(mockVehicleTypes);
+  const [filteredVehicleTypes, setFilteredVehicleTypes] = useState<VehicleType[]>(mockVehicleTypes);
+  const [acFilter, setAcFilter] = useState<"all" | "ac" | "non-ac">("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedVehicleType, setSelectedVehicleType] = useState<VehicleType | null>(null);
   const [toast, setToast] = useState<ToastState>({ show: false, message: "", type: "success" });
@@ -34,6 +36,33 @@ export default function VehicleTypesPage() {
     message: "",
     onConfirm: () => {},
   });
+
+  // Apply filter whenever vehicleTypes or acFilter changes
+  const applyFilter = () => {
+    if (acFilter === "all") {
+      setFilteredVehicleTypes(vehicleTypes);
+    } else if (acFilter === "ac") {
+      setFilteredVehicleTypes(vehicleTypes.filter(vt => vt.has_ac));
+    } else {
+      setFilteredVehicleTypes(vehicleTypes.filter(vt => !vt.has_ac));
+    }
+  };
+
+  // Apply filter on mount and when dependencies change
+  useState(() => {
+    applyFilter();
+  });
+
+  const handleFilterChange = (filter: "all" | "ac" | "non-ac") => {
+    setAcFilter(filter);
+    if (filter === "all") {
+      setFilteredVehicleTypes(vehicleTypes);
+    } else if (filter === "ac") {
+      setFilteredVehicleTypes(vehicleTypes.filter(vt => vt.has_ac));
+    } else {
+      setFilteredVehicleTypes(vehicleTypes.filter(vt => !vt.has_ac));
+    }
+  };
 
   const showToast = (message: string, type: ToastType) => {
     setToast({ show: true, message, type });
@@ -56,7 +85,9 @@ export default function VehicleTypesPage() {
       title: "تأكيد الحذف",
       message: `هل أنت متأكد من حذف "${vehicleType?.name_ar}"؟ لا يمكن التراجع عن هذا الإجراء.`,
       onConfirm: () => {
-        setVehicleTypes(vehicleTypes.filter((vt) => vt.id !== id));
+        const updatedTypes = vehicleTypes.filter((vt) => vt.id !== id);
+        setVehicleTypes(updatedTypes);
+        handleFilterChange(acFilter); // Re-apply filter
         setConfirm({ ...confirm, show: false });
         showToast("تم حذف نوع المركبة بنجاح", "success");
       },
@@ -65,11 +96,11 @@ export default function VehicleTypesPage() {
 
   const handleToggleActive = (id: number) => {
     const vehicleType = vehicleTypes.find((vt) => vt.id === id);
-    setVehicleTypes(
-      vehicleTypes.map((vt) =>
-        vt.id === id ? { ...vt, active: !vt.active } : vt
-      )
+    const updatedTypes = vehicleTypes.map((vt) =>
+      vt.id === id ? { ...vt, active: !vt.active } : vt
     );
+    setVehicleTypes(updatedTypes);
+    handleFilterChange(acFilter); // Re-apply filter
     showToast(
       `تم ${vehicleType?.active ? "تعطيل" : "تفعيل"} "${vehicleType?.name_ar}" بنجاح`,
       "success"
@@ -78,31 +109,62 @@ export default function VehicleTypesPage() {
 
   const handleReorder = (reorderedTypes: VehicleType[]) => {
     setVehicleTypes(reorderedTypes);
+    handleFilterChange(acFilter); // Re-apply filter
     showToast("تم إعادة ترتيب الأنواع بنجاح", "success");
   };
 
   const handleSave = (vehicleType: VehicleType) => {
+    let updatedTypes;
     if (vehicleType.id) {
-      setVehicleTypes(
-        vehicleTypes.map((vt) => (vt.id === vehicleType.id ? vehicleType : vt))
-      );
+      updatedTypes = vehicleTypes.map((vt) => (vt.id === vehicleType.id ? vehicleType : vt));
+      setVehicleTypes(updatedTypes);
       showToast("تم تحديث نوع المركبة بنجاح", "success");
     } else {
       const newVehicleType = {
         ...vehicleType,
         id: Math.max(...vehicleTypes.map((vt) => vt.id)) + 1,
       };
-      setVehicleTypes([...vehicleTypes, newVehicleType]);
+      updatedTypes = [...vehicleTypes, newVehicleType];
+      setVehicleTypes(updatedTypes);
       showToast("تم إضافة نوع المركبة بنجاح", "success");
     }
+    handleFilterChange(acFilter); // Re-apply filter
     setIsModalOpen(false);
   };
 
   return (
     <div className="vehicle-types-page">
       <VehicleTypesHero onAddNew={handleAddNew} />
+      
+      <div className="ac-filter-tabs">
+        <button
+          className={`filter-tab ${acFilter === "all" ? "active" : ""}`}
+          onClick={() => handleFilterChange("all")}
+        >
+          <span className="tab-icon">🚗</span>
+          <span className="tab-text">جميع المركبات</span>
+          <span className="tab-count">{vehicleTypes.length}</span>
+        </button>
+        <button
+          className={`filter-tab ${acFilter === "ac" ? "active" : ""}`}
+          onClick={() => handleFilterChange("ac")}
+        >
+          <span className="tab-icon">❄️</span>
+          <span className="tab-text">مكيفة</span>
+          <span className="tab-count">{vehicleTypes.filter(vt => vt.has_ac).length}</span>
+        </button>
+        <button
+          className={`filter-tab ${acFilter === "non-ac" ? "active" : ""}`}
+          onClick={() => handleFilterChange("non-ac")}
+        >
+          <span className="tab-icon">🌡️</span>
+          <span className="tab-text">غير مكيفة</span>
+          <span className="tab-count">{vehicleTypes.filter(vt => !vt.has_ac).length}</span>
+        </button>
+      </div>
+
       <VehicleTypesTable
-        vehicleTypes={vehicleTypes}
+        vehicleTypes={filteredVehicleTypes}
         onEdit={handleEdit}
         onDelete={handleDelete}
         onToggleActive={handleToggleActive}

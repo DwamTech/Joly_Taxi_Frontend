@@ -79,6 +79,7 @@ export default function VehicleTypesTable({
               <th>الأيقون</th>
               <th>الاسم بالعربية</th>
               <th>الاسم بالإنجليزية</th>
+              <th>التكييف</th>
               <th>الأجرة الأساسية</th>
               <th>السعر/كم</th>
               <th>وقت الانتظار</th>
@@ -128,10 +129,15 @@ export default function VehicleTypesTable({
                   <span className="vehicle-name-en">{vehicleType.name_en}</span>
                 </td>
                 <td>
-                  <span className="price">{vehicleType.base_fare} ر.س</span>
+                  <span className={`ac-badge ${vehicleType.has_ac ? "has-ac" : "no-ac"}`}>
+                    {vehicleType.has_ac ? "مكيفة" : "غير مكيفة"}
+                  </span>
                 </td>
                 <td>
-                  <span className="price">{vehicleType.price_per_km} ر.س</span>
+                  <span className="price">{vehicleType.base_fare} ج.م</span>
+                </td>
+                <td>
+                  <span className="price">{vehicleType.price_per_km} ج.م</span>
                 </td>
                 <td>
                   <span className="wait-time">{vehicleType.wait_time_seconds}ث</span>

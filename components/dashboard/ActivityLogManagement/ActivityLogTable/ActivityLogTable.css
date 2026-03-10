@@ -1,0 +1,209 @@
+.activity-log-table-container {
+  background: white;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  border-top: 2px solid #FDB913;
+}
+
+.activity-log-table {
+  width: 100%;
+  border-collapse: collapse;
+  direction: rtl;
+}
+
+.activity-log-table thead {
+  background: linear-gradient(135deg, #8a8a8a 0%, #F59E0B 100%);
+  color: white;
+}
+
+.activity-log-table th {
+  padding: 16px;
+  text-align: right;
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.activity-log-table tbody tr {
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.2s;
+}
+
+.activity-log-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.activity-log-table td {
+  padding: 16px;
+  font-size: 14px;
+  color: #333;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.admin-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.admin-avatar-small {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #FDB913 0%, #F59E0B 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.admin-name-small {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.action-cell {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.action-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  white-space: nowrap;
+}
+
+.entity-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.entity-type {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 13px;
+}
+
+.entity-id {
+  font-size: 12px;
+  color: #7f8c8d;
+  font-family: 'Courier New', monospace;
+}
+
+.details-cell {
+  max-width: 300px;
+  color: #555;
+  line-height: 1.5;
+}
+
+.ip-cell {
+  font-family: 'Courier New', monospace;
+  color: #7f8c8d;
+  font-size: 13px;
+}
+
+.date-cell {
+  color: #666;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.no-results {
+  text-align: center;
+  padding: 3rem;
+  color: #95a5a6;
+  font-size: 1.1rem;
+}
+
+.no-results-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 1200px) {
+  .activity-log-table th,
+  .activity-log-table td {
+    padding: 12px 8px;
+    font-size: 13px;
+  }
+
+  .admin-avatar-small {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+
+  .details-cell {
+    max-width: 200px;
+  }
+}
+
+/* Mobile Card View */
+@media (max-width: 768px) {
+  .activity-log-table thead {
+    display: none;
+  }
+
+  .activity-log-table,
+  .activity-log-table tbody,
+  .activity-log-table tr {
+    display: block;
+  }
+
+  .activity-log-table tbody tr {
+    margin-bottom: 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 16px;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .activity-log-table tbody tr:hover {
+    background: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+
+  .activity-log-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .activity-log-table td:last-child {
+    border-bottom: none;
+  }
+
+  .activity-log-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #666;
+    font-size: 13px;
+    flex-shrink: 0;
+    width: 120px;
+  }
+
+  .admin-cell {
+    flex-direction: row;
+    justify-content: flex-start;
+    width: 100%;
+  }
+
+  .details-cell {
+    max-width: 100%;
+  }
+}

@@ -18,6 +18,9 @@
   justify-content: space-between;
   gap: 8px;
   user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .custom-select-trigger:hover {

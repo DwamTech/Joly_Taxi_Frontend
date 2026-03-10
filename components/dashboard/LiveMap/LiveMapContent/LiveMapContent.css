@@ -1,0 +1,18 @@
+.live-map-page {
+  min-height: 100vh;
+}
+
+.map-container {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 1.5rem;
+  height: calc(100vh - 400px);
+  min-height: 600px;
+}
+
+@media (max-width: 1200px) {
+  .map-container {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+}

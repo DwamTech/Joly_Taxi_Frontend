@@ -1,0 +1,207 @@
+{
+  "tripStatistics": {
+    "total_trips": 35990,
+    "completed_trips": 32450,
+    "cancelled_trips": 3540,
+    "cancellation_rate": 9.8,
+    "avg_duration_minutes": 28.5,
+    "avg_distance_km": 12.3,
+    "avg_price": 58.75,
+    "total_revenue": 2114625.00
+  },
+  "tripsByVehicleType": [
+    {
+      "vehicle_type_id": 1,
+      "vehicle_type_name": "سيارة اقتصادية",
+      "trip_count": 15420,
+      "revenue": 701610.00,
+      "avg_price": 45.50
+    },
+    {
+      "vehicle_type_id": 2,
+      "vehicle_type_name": "سيارة مريحة",
+      "trip_count": 9850,
+      "revenue": 610700.00,
+      "avg_price": 62.00
+    },
+    {
+      "vehicle_type_id": 3,
+      "vehicle_type_name": "سيارة فاخرة",
+      "trip_count": 4520,
+      "revenue": 429400.00,
+      "avg_price": 95.00
+    },
+    {
+      "vehicle_type_id": 4,
+      "vehicle_type_name": "سيارة كبيرة",
+      "trip_count": 6200,
+      "revenue": 465000.00,
+      "avg_price": 75.00
+    }
+  ],
+  "tripsByHour": [
+    { "hour": 0, "trip_count": 450 },
+    { "hour": 1, "trip_count": 320 },
+    { "hour": 2, "trip_count": 180 },
+    { "hour": 3, "trip_count": 120 },
+    { "hour": 4, "trip_count": 200 },
+    { "hour": 5, "trip_count": 580 },
+    { "hour": 6, "trip_count": 1250 },
+    { "hour": 7, "trip_count": 2100 },
+    { "hour": 8, "trip_count": 2450 },
+    { "hour": 9, "trip_count": 1980 },
+    { "hour": 10, "trip_count": 1650 },
+    { "hour": 11, "trip_count": 1520 },
+    { "hour": 12, "trip_count": 1850 },
+    { "hour": 13, "trip_count": 1720 },
+    { "hour": 14, "trip_count": 1580 },
+    { "hour": 15, "trip_count": 1680 },
+    { "hour": 16, "trip_count": 1920 },
+    { "hour": 17, "trip_count": 2350 },
+    { "hour": 18, "trip_count": 2580 },
+    { "hour": 19, "trip_count": 2200 },
+    { "hour": 20, "trip_count": 1850 },
+    { "hour": 21, "trip_count": 1520 },
+    { "hour": 22, "trip_count": 980 },
+    { "hour": 23, "trip_count": 650 }
+  ],
+  "tripsByDay": [
+    { "day": "السبت", "trip_count": 5200 },
+    { "day": "الأحد", "trip_count": 4850 },
+    { "day": "الاثنين", "trip_count": 5100 },
+    { "day": "الثلاثاء", "trip_count": 5350 },
+    { "day": "الأربعاء", "trip_count": 5280 },
+    { "day": "الخميس", "trip_count": 5420 },
+    { "day": "الجمعة", "trip_count": 4790 }
+  ],
+  "tripsByMonth": [
+    { "month": "يناير", "trip_count": 2850 },
+    { "month": "فبراير", "trip_count": 2920 },
+    { "month": "مارس", "trip_count": 3150 },
+    { "month": "أبريل", "trip_count": 2980 },
+    { "month": "مايو", "trip_count": 3050 },
+    { "month": "يونيو", "trip_count": 3200 },
+    { "month": "يوليو", "trip_count": 3350 },
+    { "month": "أغسطس", "trip_count": 3180 },
+    { "month": "سبتمبر", "trip_count": 2950 },
+    { "month": "أكتوبر", "trip_count": 3100 },
+    { "month": "نوفمبر", "trip_count": 2980 },
+    { "month": "ديسمبر", "trip_count": 3280 }
+  ],
+  "driverStatistics": {
+    "total_drivers": 690,
+    "active_drivers": 516,
+    "inactive_drivers": 174
+  },
+  "topDriversByRating": [
+    { "id": 1, "name": "أحمد محمد علي", "phone": "01012345678", "rating": 4.95, "trip_count": 1250 },
+    { "id": 2, "name": "محمد حسن إبراهيم", "phone": "01023456789", "rating": 4.92, "trip_count": 1180 },
+    { "id": 3, "name": "خالد عبدالله", "phone": "01034567890", "rating": 4.90, "trip_count": 1050 },
+    { "id": 4, "name": "عمر سعيد", "phone": "01045678901", "rating": 4.88, "trip_count": 980 },
+    { "id": 5, "name": "يوسف إبراهيم", "phone": "01056789012", "rating": 4.85, "trip_count": 920 },
+    { "id": 6, "name": "حسام الدين", "phone": "01067890123", "rating": 4.83, "trip_count": 890 },
+    { "id": 7, "name": "طارق محمود", "phone": "01078901234", "rating": 4.80, "trip_count": 850 },
+    { "id": 8, "name": "وليد عادل", "phone": "01089012345", "rating": 4.78, "trip_count": 820 },
+    { "id": 9, "name": "كريم صلاح", "phone": "01090123456", "rating": 4.75, "trip_count": 780 },
+    { "id": 10, "name": "مصطفى أحمد", "phone": "01001234567", "rating": 4.72, "trip_count": 750 }
+  ],
+  "topDriversByTrips": [
+    { "id": 1, "name": "أحمد محمد علي", "phone": "01012345678", "rating": 4.95, "trip_count": 1250, "total_revenue": 73125.00 },
+    { "id": 2, "name": "محمد حسن إبراهيم", "phone": "01023456789", "rating": 4.92, "trip_count": 1180, "total_revenue": 69320.00 },
+    { "id": 3, "name": "خالد عبدالله", "phone": "01034567890", "rating": 4.90, "trip_count": 1050, "total_revenue": 61687.50 },
+    { "id": 4, "name": "عمر سعيد", "phone": "01045678901", "rating": 4.88, "trip_count": 980, "total_revenue": 57575.00 },
+    { "id": 5, "name": "يوسف إبراهيم", "phone": "01056789012", "rating": 4.85, "trip_count": 920, "total_revenue": 54050.00 },
+    { "id": 6, "name": "حسام الدين", "phone": "01067890123", "rating": 4.83, "trip_count": 890, "total_revenue": 52287.50 },
+    { "id": 7, "name": "طارق محمود", "phone": "01078901234", "rating": 4.80, "trip_count": 850, "total_revenue": 49937.50 },
+    { "id": 8, "name": "وليد عادل", "phone": "01089012345", "rating": 4.78, "trip_count": 820, "total_revenue": 48175.00 },
+    { "id": 9, "name": "كريم صلاح", "phone": "01090123456", "rating": 4.75, "trip_count": 780, "total_revenue": 45825.00 },
+    { "id": 10, "name": "مصطفى أحمد", "phone": "01001234567", "rating": 4.72, "trip_count": 750, "total_revenue": 44062.50 }
+  ],
+  "driversWithHighCancellation": [
+    { "id": 45, "name": "سامي محمود", "phone": "01098765432", "cancellation_count": 85, "cancellation_rate": 18.5 },
+    { "id": 67, "name": "عادل حسن", "phone": "01087654321", "cancellation_count": 72, "cancellation_rate": 16.2 },
+    { "id": 89, "name": "ماجد علي", "phone": "01076543210", "cancellation_count": 68, "cancellation_rate": 15.8 }
+  ],
+  "riderStatistics": {
+    "total_riders": 8520,
+    "active_riders": 6840,
+    "inactive_riders": 1680,
+    "avg_rating": 4.65
+  },
+  "topRidersByRating": [
+    { "id": 101, "name": "سارة أحمد", "phone": "01112345678", "rating": 4.98, "trip_count": 320 },
+    { "id": 102, "name": "فاطمة محمد", "phone": "01123456789", "rating": 4.96, "trip_count": 285 },
+    { "id": 103, "name": "نور الدين", "phone": "01134567890", "rating": 4.94, "trip_count": 260 },
+    { "id": 104, "name": "مريم حسن", "phone": "01145678901", "rating": 4.92, "trip_count": 245 },
+    { "id": 105, "name": "هدى عبدالله", "phone": "01156789012", "rating": 4.90, "trip_count": 230 },
+    { "id": 106, "name": "ليلى إبراهيم", "phone": "01167890123", "rating": 4.88, "trip_count": 215 },
+    { "id": 107, "name": "رانيا سمير", "phone": "01178901234", "rating": 4.85, "trip_count": 200 },
+    { "id": 108, "name": "دينا محمود", "phone": "01189012345", "rating": 4.83, "trip_count": 185 },
+    { "id": 109, "name": "ياسمين علي", "phone": "01190123456", "rating": 4.80, "trip_count": 170 },
+    { "id": 110, "name": "منى حسام", "phone": "01101234567", "rating": 4.78, "trip_count": 155 }
+  ],
+  "topRidersByTrips": [
+    { "id": 101, "name": "سارة أحمد", "phone": "01112345678", "rating": 4.98, "trip_count": 320 },
+    { "id": 102, "name": "فاطمة محمد", "phone": "01123456789", "rating": 4.96, "trip_count": 285 },
+    { "id": 103, "name": "نور الدين", "phone": "01134567890", "rating": 4.94, "trip_count": 260 },
+    { "id": 104, "name": "مريم حسن", "phone": "01145678901", "rating": 4.92, "trip_count": 245 },
+    { "id": 105, "name": "هدى عبدالله", "phone": "01156789012", "rating": 4.90, "trip_count": 230 },
+    { "id": 106, "name": "ليلى إبراهيم", "phone": "01167890123", "rating": 4.88, "trip_count": 215 },
+    { "id": 107, "name": "رانيا سمير", "phone": "01178901234", "rating": 4.85, "trip_count": 200 },
+    { "id": 108, "name": "دينا محمود", "phone": "01189012345", "rating": 4.83, "trip_count": 185 },
+    { "id": 109, "name": "ياسمين علي", "phone": "01190123456", "rating": 4.80, "trip_count": 170 },
+    { "id": 110, "name": "منى حسام", "phone": "01101234567", "rating": 4.78, "trip_count": 155 }
+  ],
+  "ridersWithHighCancellation": [
+    { "id": 456, "name": "علي حسن", "phone": "01198765432", "cancellation_count": 42, "cancellation_rate": 22.5 },
+    { "id": 567, "name": "محمود سعيد", "phone": "01187654321", "cancellation_count": 38, "cancellation_rate": 20.8 },
+    { "id": 678, "name": "حسين أحمد", "phone": "01176543210", "cancellation_count": 35, "cancellation_rate": 19.2 }
+  ],
+  "userGrowth": [
+    { "month": "يناير", "new_drivers": 45, "new_riders": 520, "total_users": 565 },
+    { "month": "فبراير", "new_drivers": 52, "new_riders": 580, "total_users": 632 },
+    { "month": "مارس", "new_drivers": 68, "new_riders": 720, "total_users": 788 },
+    { "month": "أبريل", "new_drivers": 58, "new_riders": 650, "total_users": 708 },
+    { "month": "مايو", "new_drivers": 62, "new_riders": 690, "total_users": 752 },
+    { "month": "يونيو", "new_drivers": 71, "new_riders": 780, "total_users": 851 }
+  ],
+  "revenueStatistics": {
+    "trip_revenue": 2114625.00,
+    "subscription_revenue": 285000.00,
+    "total_revenue": 2399625.00
+  },
+  "revenueByDay": [
+    { "period": "السبت", "revenue": 305250.00 },
+    { "period": "الأحد", "revenue": 284875.00 },
+    { "period": "الاثنين", "revenue": 299625.00 },
+    { "period": "الثلاثاء", "revenue": 314312.50 },
+    { "period": "الأربعاء", "revenue": 310200.00 },
+    { "period": "الخميس", "revenue": 318425.00 },
+    { "period": "الجمعة", "revenue": 281437.50 }
+  ],
+  "revenueByWeek": [
+    { "period": "الأسبوع 1", "revenue": 520000.00 },
+    { "period": "الأسبوع 2", "revenue": 545000.00 },
+    { "period": "الأسبوع 3", "revenue": 510000.00 },
+    { "period": "الأسبوع 4", "revenue": 538625.00 }
+  ],
+  "revenueByMonth": [
+    { "period": "يناير", "revenue": 167437.50 },
+    { "period": "فبراير", "revenue": 171550.00 },
+    { "period": "مارس", "revenue": 185062.50 },
+    { "period": "أبريل", "revenue": 175075.00 },
+    { "period": "مايو", "revenue": 179187.50 },
+    { "period": "يونيو", "revenue": 188000.00 },
+    { "period": "يوليو", "revenue": 196812.50 },
+    { "period": "أغسطس", "revenue": 186850.00 },
+    { "period": "سبتمبر", "revenue": 173312.50 },
+    { "period": "أكتوبر", "revenue": 182125.00 },
+    { "period": "نوفمبر", "revenue": 175075.00 },
+    { "period": "ديسمبر", "revenue": 192700.00 }
+  ],
+  "revenueByYear": [
+    { "period": "2023", "revenue": 1850000.00 },
+    { "period": "2024", "revenue": 2150000.00 },
+    { "period": "2025", "revenue": 2399625.00 }
+  ]
+}
