@@ -16,7 +16,7 @@ export default function TripsTable({ trips, onViewTrip }: TripsTableProps) {
       started: "جارية",
       ended: "منتهية",
       cancelled: "ملغاة",
-      expired: "منتهية الصلاحية",
+      
     };
     return labels[status] || status;
   };

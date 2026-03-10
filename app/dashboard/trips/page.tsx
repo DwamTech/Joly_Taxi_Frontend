@@ -10,9 +10,8 @@ import TripsFilters, {
 } from "@/components/dashboard/TripsManagement/TripsFilters/TripsFilters";
 import TripsTable from "@/components/dashboard/TripsManagement/TripsTable/TripsTable";
 import TripDetailsModal from "@/components/dashboard/TripsManagement/TripDetailsModal/TripDetailsModal";
-import mockData from "@/data/dashboard/mock-trips.json";
 import { exportTripsToExcel } from "@/utils/exportTripsToExcel";
-import { fetchTripUpdates, mergeTripUpdates } from "@/services/tripsService";
+import { getTrips, fetchTripUpdates, mergeTripUpdates, getTripById } from "@/services/tripsService";
 import "./trips.css";
 
 function TripsManagementContent() {
@@ -34,12 +33,37 @@ function TripsManagementContent() {
     requiresAc: "all",
     sortBy: "newest",
   });
+  const [isFiltersLoaded, setIsFiltersLoaded] = useState(false);
 
-  // Load trips from mock data
   useEffect(() => {
-    const tripsData = mockData as unknown as { trips: Trip[] };
-    setTrips(tripsData.trips);
-    setFilteredTrips(tripsData.trips);
+    const load = async () => {
+      try {
+        const data = await getTrips(1);
+        setTrips(data);
+        setFilteredTrips(data);
+        if (typeof window !== 'undefined') {
+          const savedFilters = localStorage.getItem('tripsFilters');
+          if (savedFilters && !isFiltersLoaded) {
+            try {
+              const parsedFilters = JSON.parse(savedFilters);
+              setFilters(parsedFilters);
+              setIsFiltersLoaded(true);
+            } catch (error) {
+              console.error('Error parsing saved filters:', error);
+              setIsFiltersLoaded(true);
+            }
+          } else {
+            setIsFiltersLoaded(true);
+          }
+        } else {
+          setIsFiltersLoaded(true);
+        }
+      } catch (error) {
+        console.error('Error fetching trips:', error);
+        setIsFiltersLoaded(true);
+      }
+    };
+    load();
   }, []);
 
   // Calculate stats for hero
@@ -63,6 +87,9 @@ function TripsManagementContent() {
 
   // Apply filters
   useEffect(() => {
+    // Only apply filters after they are loaded from localStorage
+    if (!isFiltersLoaded) return;
+    
     let result = [...trips];
 
     // Search by trip number
@@ -99,7 +126,11 @@ function TripsManagementContent() {
 
     // Filter by vehicle type
     if (filters.vehicleType !== "all") {
-      result = result.filter((trip) => trip.vehicle_type === filters.vehicleType);
+      result = result.filter(
+        (trip) =>
+          String(trip.vehicle_type_id) === filters.vehicleType ||
+          (trip.vehicle_type && trip.vehicle_type === filters.vehicleType)
+      );
     }
 
     // Filter by price range
@@ -149,7 +180,12 @@ function TripsManagementContent() {
 
     setFilteredTrips(result);
     setCurrentPage(1); // Reset to first page when filters change
-  }, [filters, trips]);
+    
+    // Save results count to localStorage for persistence
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('tripsResultsCount', result.length.toString());
+    }
+  }, [filters, trips, isFiltersLoaded]);
 
   // Apply pagination
   useEffect(() => {
@@ -167,10 +203,31 @@ function TripsManagementContent() {
 
   const handleFilterChange = (newFilters: TripFilterValues) => {
     setFilters(newFilters);
+    setIsFiltersLoaded(true);
+    
+    // Force immediate update of results count in localStorage
+    setTimeout(() => {
+      if (typeof window !== 'undefined') {
+        const currentCount = localStorage.getItem('tripsResultsCount');
+        if (currentCount) {
+          // Trigger a small update to ensure the filters component gets the latest count
+          window.dispatchEvent(new CustomEvent('tripsResultsUpdated', { 
+            detail: { count: parseInt(currentCount) } 
+          }));
+        }
+      }
+    }, 100);
   };
 
-  const handleViewTrip = (trip: Trip) => {
-    setSelectedTrip(trip);
+  const handleViewTrip = async (trip: Trip) => {
+    try {
+      const detailed = await getTripById(trip.id);
+      setSelectedTrip(detailed);
+    } catch (error) {
+      console.error("Error fetching trip details:", error);
+      showToast("فشل في جلب تفاصيل الرحلة", "error");
+      setSelectedTrip(trip);
+    }
   };
 
   const handleExportData = () => {

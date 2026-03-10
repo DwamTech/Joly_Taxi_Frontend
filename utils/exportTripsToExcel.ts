@@ -5,21 +5,12 @@ export function exportTripsToExcel(trips: Trip[]) {
     const labels: Record<string, string> = {
       open: "مفتوحة",
       accepted: "مقبولة",
-      ongoing: "جارية",
-      completed: "منتهية",
+      started: "جارية",
+      ended: "منتهية",
       cancelled: "ملغاة",
-      expired: "منتهية الصلاحية",
+    
     };
     return labels[status] || status;
-  };
-
-  const getPaymentMethodLabel = (method?: string) => {
-    const labels: Record<string, string> = {
-      cash: "نقدي",
-      card: "بطاقة",
-      wallet: "محفظة",
-    };
-    return method ? labels[method] || method : "-";
   };
 
   const formatDateTime = (dateString?: string) => {
@@ -47,41 +38,33 @@ export function exportTripsToExcel(trips: Trip[]) {
     "السعر النهائي",
     "يتطلب تكييف",
     "الحالة",
-    "طريقة الدفع",
     "تاريخ الإنشاء",
-    "تاريخ القبول",
-    "تاريخ البدء",
-    "تاريخ الانتهاء",
-    "تاريخ الإلغاء",
+    "آخر تحديث",
     "تم الإلغاء بواسطة",
     "سبب الإلغاء",
     "ملاحظات",
   ];
 
   const rows = trips.map((trip) => [
-    trip.trip_number,
-    trip.rider_name,
-    trip.rider_phone,
+    `TRIP-${trip.id}`,
+    trip.rider_name || "-",
+    trip.rider_phone || "-",
     trip.driver_name || "-",
     trip.driver_phone || "-",
     trip.driver_rating || "-",
-    trip.vehicle_type,
+    trip.vehicle_type || "-",
     trip.vehicle_brand || "-",
     trip.vehicle_model || "-",
     trip.vehicle_license || "-",
-    trip.from_location.address,
-    trip.to_location.address,
+    trip.from_address,
+    trip.to_address,
     trip.distance_km,
-    trip.estimated_price,
+    trip.suggested_price,
     trip.final_price || "-",
     trip.requires_ac ? "نعم" : "لا",
     getStatusLabel(trip.status),
-    getPaymentMethodLabel(trip.payment_method),
     formatDateTime(trip.created_at),
-    formatDateTime(trip.accepted_at),
-    formatDateTime(trip.started_at),
-    formatDateTime(trip.completed_at),
-    formatDateTime(trip.cancelled_at),
+    formatDateTime(trip.updated_at),
     trip.cancelled_by === "rider"
       ? "الراكب"
       : trip.cancelled_by === "driver"

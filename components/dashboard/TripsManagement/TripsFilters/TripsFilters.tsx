@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CustomSelect from "../../UsersManagement/CustomSelect/CustomSelect";
 import "./TripsFilters.css";
+import { getVehicleTypes } from "@/services/tripsService";
 
 export interface TripFilterValues {
   search: string;
@@ -25,17 +26,122 @@ export default function TripsFilters({
   onFilterChange,
   resultsCount,
 }: TripsFiltersProps) {
-  const [filters, setFilters] = useState<TripFilterValues>({
-    search: "",
-    riderName: "",
-    driverName: "",
-    status: "all",
-    vehicleType: "all",
-    priceMin: "",
-    priceMax: "",
-    requiresAc: "all",
-    sortBy: "newest",
-  });
+  // Load initial filters from localStorage or use defaults
+  const getInitialFilters = (): TripFilterValues => {
+    if (typeof window !== 'undefined') {
+      const savedFilters = localStorage.getItem('tripsFilters');
+      if (savedFilters) {
+        try {
+          return JSON.parse(savedFilters);
+        } catch (error) {
+          console.error('Error parsing saved filters:', error);
+        }
+      }
+    }
+    
+    return {
+      search: "",
+      riderName: "",
+      driverName: "",
+      status: "all",
+      vehicleType: "all",
+      priceMin: "",
+      priceMax: "",
+      requiresAc: "all",
+      sortBy: "newest",
+    };
+  };
+
+  const [filters, setFilters] = useState<TripFilterValues>(getInitialFilters);
+  const [savedResultsCount, setSavedResultsCount] = useState<number>(0);
+  const [vehicleOptions, setVehicleOptions] = useState<{ value: string; label: string; icon?: string }[]>([
+    { value: "all", label: "الكل", icon: "🚕" },
+  ]);
+
+  // Save filters to localStorage whenever they change
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('tripsFilters', JSON.stringify(filters));
+    }
+  }, [filters]);
+
+  // Save results count to localStorage
+  useEffect(() => {
+    if (resultsCount !== undefined && resultsCount >= 0) {
+      setSavedResultsCount(resultsCount);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('tripsResultsCount', resultsCount.toString());
+      }
+    }
+  }, [resultsCount]);
+
+  // Load saved results count on component mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedCount = localStorage.getItem('tripsResultsCount');
+      if (savedCount) {
+        setSavedResultsCount(parseInt(savedCount));
+      }
+      
+      // Listen for results updates
+      const handleResultsUpdate = (event: CustomEvent) => {
+        setSavedResultsCount(event.detail.count);
+      };
+      
+      window.addEventListener('tripsResultsUpdated', handleResultsUpdate as EventListener);
+      return () => window.removeEventListener('tripsResultsUpdated', handleResultsUpdate as EventListener);
+    }
+  }, []);
+
+  useEffect(() => {
+    const loadVehicleTypes = async () => {
+      try {
+        const types = await getVehicleTypes();
+        const opts = [
+          { value: "all", label: "الكل", icon: "🚕" },
+          ...types.map((t) => ({
+            value: String(t.id),
+            label: t.name,
+            icon: "🚕",
+          })),
+        ];
+        setVehicleOptions(opts);
+      } catch (error) {
+        setVehicleOptions([{ value: "all", label: "الكل", icon: "🚕" }]);
+      }
+    };
+    loadVehicleTypes();
+  }, []);
+
+  // Apply filters on component mount
+  useEffect(() => {
+    onFilterChange(filters);
+  }, []);
+
+  // Restore page scroll position if saved
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedScrollPosition = sessionStorage.getItem('tripsPageScrollPosition');
+      if (savedScrollPosition) {
+        setTimeout(() => {
+          window.scrollTo(0, parseInt(savedScrollPosition));
+          sessionStorage.removeItem('tripsPageScrollPosition');
+        }, 100);
+      }
+    }
+  }, []);
+
+  // Save scroll position before component unmounts
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('tripsPageScrollPosition', window.scrollY.toString());
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, []);
 
   const statusOptions = [
     { value: "all", label: "الكل", icon: "📋" },
@@ -44,14 +150,7 @@ export default function TripsFilters({
     { value: "started", label: "جارية", icon: "🚗" },
     { value: "ended", label: "منتهية", icon: "✔️" },
     { value: "cancelled", label: "ملغاة", icon: "❌" },
-    { value: "expired", label: "منتهية الصلاحية", icon: "⏰" },
-  ];
-
-  const vehicleOptions = [
-    { value: "all", label: "الكل", icon: "🚕" },
-    { value: "سيدان", label: "سيدان", icon: "🚗" },
-    { value: "SUV", label: "SUV", icon: "🚙" },
-    { value: "فان", label: "فان", icon: "🚐" },
+   
   ];
 
   const acOptions = [
@@ -89,7 +188,17 @@ export default function TripsFilters({
     };
     setFilters(defaultFilters);
     onFilterChange(defaultFilters);
+    
+    // Clear from localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('tripsFilters');
+      localStorage.removeItem('tripsResultsCount');
+    }
+    setSavedResultsCount(0);
   };
+
+  // Use saved results count if current resultsCount is 0 or undefined (during loading)
+  const displayResultsCount = resultsCount > 0 ? resultsCount : savedResultsCount;
 
   return (
     <div className="trips-filters">
@@ -216,8 +325,23 @@ export default function TripsFilters({
       <div className="filters-actions">
         <div className="results-count">
           <span>النتائج:</span>
-          <span className="results-number">{resultsCount}</span>
+          <span className="results-number">
+            {displayResultsCount}
+            {resultsCount === 0 && savedResultsCount > 0 && (
+              <span className="loading-indicator"> ⟳</span>
+            )}
+          </span>
           <span>رحلة</span>
+        </div>
+        <div className="filters-status">
+          {(filters.search || filters.riderName || filters.driverName || 
+            filters.status !== "all" || filters.vehicleType !== "all" || 
+            filters.priceMin || filters.priceMax || filters.requiresAc !== "all" || 
+            filters.sortBy !== "newest") && (
+            <span className="filters-active-indicator">
+              🔍 الفلاتر محفوظة
+            </span>
+          )}
         </div>
         <button className="clear-filters-btn" onClick={clearFilters}>
           مسح الفلاتر
