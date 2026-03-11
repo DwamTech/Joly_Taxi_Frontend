@@ -60,7 +60,7 @@ export default function ReportsFilters({
   const sortOptions = [
     { value: "newest", label: "الأحدث", icon: "🆕" },
     { value: "oldest", label: "الأقدم", icon: "📅" },
-    { value: "priority", label: "الأولوية", icon: "⚡" },
+    // { value: "priority", label: "الأولوية", icon: "⚡" },
   ];
 
   const handleChange = (field: keyof FilterValues, value: string) => {
@@ -121,14 +121,14 @@ export default function ReportsFilters({
           />
         </div>
 
-        <div className="filter-group">
+        {/*<div className="filter-group">
           <label>🎯 الأولوية</label>
           <CustomSelect
             options={priorityOptions}
             value={filters.priority}
             onChange={(value) => handleChange("priority", value)}
           />
-        </div>
+        </div>*/}
 
         <div className="filter-group">
           <label>📅 من تاريخ</label>
