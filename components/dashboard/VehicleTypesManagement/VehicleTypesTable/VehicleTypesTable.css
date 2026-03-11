@@ -46,9 +46,7 @@
 .vehicle-types-table thead tr th:nth-child(9) { width: 7%; } /* نطاق البحث */
 .vehicle-types-table thead tr th:nth-child(10) { width: 7%; } /* الحالة */
 .vehicle-types-table thead tr th:nth-child(11) { width: 6%; } /* الترتيب */
-.vehicle-types-table thead tr th:nth-child(12) { width: 7%; } /* المركبات */
-.vehicle-types-table thead tr th:nth-child(13) { width: 6%; } /* الرحلات */
-.vehicle-types-table thead tr th:nth-child(14) { width: 12%; } /* الإجراءات */
+.vehicle-types-table thead tr th:nth-child(12) { width: 12%; } /* الإجراءات */
 
 .vehicle-types-table tbody tr {
   border-bottom: 1px solid #f0f0f0;
@@ -202,14 +200,15 @@
 
 .actions {
   display: flex;
-  gap: 0.4rem;
+  gap: 6px;
   justify-content: center;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
+  max-width: 100%;
 }
 
 .action-btn {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border: none;
   border-radius: 8px;
   cursor: pointer;

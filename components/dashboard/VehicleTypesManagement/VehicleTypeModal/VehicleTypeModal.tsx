@@ -41,7 +41,12 @@ export default function VehicleTypeModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData as VehicleType);
+    const payload: VehicleType = {
+      ...(formData as VehicleType),
+      name_ar: formData.name_ar || "",
+      name_en: formData.name_en || formData.name_ar || "",
+    };
+    onSave(payload);
   };
 
   return (
@@ -72,7 +77,16 @@ export default function VehicleTypeModal({
                 type="text"
                 value={formData.name_en}
                 onChange={(e) => handleChange("name_en", e.target.value)}
-                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>رابط الأيقونة (اختياري)</label>
+              <input
+                type="text"
+                value={formData.icon || ""}
+                onChange={(e) => handleChange("icon", e.target.value)}
+                placeholder="http://example.com/icon.jpg"
               />
             </div>
 

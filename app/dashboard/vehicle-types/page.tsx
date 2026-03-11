@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import VehicleTypesHero from "@/components/dashboard/VehicleTypesManagement/VehicleTypesHero/VehicleTypesHero";
 import VehicleTypesTable from "@/components/dashboard/VehicleTypesManagement/VehicleTypesTable/VehicleTypesTable";
 import VehicleTypeModal from "@/components/dashboard/VehicleTypesManagement/VehicleTypeModal/VehicleTypeModal";
 import Toast, { ToastType } from "@/components/Toast/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog/ConfirmDialog";
 import { VehicleType } from "@/models/VehicleType";
-import mockVehicleTypes from "@/data/dashboard/mock-vehicle-types.json";
+import { getAdminVehicleTypes, createAdminVehicleType } from "@/services/vehicleTypesService";
 import "./vehicle-types.css";
 
 interface ToastState {
@@ -24,8 +24,8 @@ interface ConfirmState {
 }
 
 export default function VehicleTypesPage() {
-  const [vehicleTypes, setVehicleTypes] = useState<VehicleType[]>(mockVehicleTypes);
-  const [filteredVehicleTypes, setFilteredVehicleTypes] = useState<VehicleType[]>(mockVehicleTypes);
+  const [vehicleTypes, setVehicleTypes] = useState<VehicleType[]>([]);
+  const [filteredVehicleTypes, setFilteredVehicleTypes] = useState<VehicleType[]>([]);
   const [acFilter, setAcFilter] = useState<"all" | "ac" | "non-ac">("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedVehicleType, setSelectedVehicleType] = useState<VehicleType | null>(null);
@@ -48,10 +48,24 @@ export default function VehicleTypesPage() {
     }
   };
 
-  // Apply filter on mount and when dependencies change
-  useState(() => {
+  // Load data from API
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const types = await getAdminVehicleTypes();
+        setVehicleTypes(types);
+        setFilteredVehicleTypes(types);
+      } catch (error: any) {
+        setToast({ show: true, message: error?.message || "فشل في جلب أنواع المركبات", type: "error" });
+      }
+    };
+    load();
+  }, []);
+  
+  // Re-apply filter when data or filter changes
+  useEffect(() => {
     applyFilter();
-  });
+  }, [vehicleTypes, acFilter]);
 
   const handleFilterChange = (filter: "all" | "ac" | "non-ac") => {
     setAcFilter(filter);
@@ -113,23 +127,28 @@ export default function VehicleTypesPage() {
     showToast("تم إعادة ترتيب الأنواع بنجاح", "success");
   };
 
-  const handleSave = (vehicleType: VehicleType) => {
-    let updatedTypes;
-    if (vehicleType.id) {
-      updatedTypes = vehicleTypes.map((vt) => (vt.id === vehicleType.id ? vehicleType : vt));
-      setVehicleTypes(updatedTypes);
-      showToast("تم تحديث نوع المركبة بنجاح", "success");
-    } else {
-      const newVehicleType = {
-        ...vehicleType,
-        id: Math.max(...vehicleTypes.map((vt) => vt.id)) + 1,
-      };
-      updatedTypes = [...vehicleTypes, newVehicleType];
-      setVehicleTypes(updatedTypes);
-      showToast("تم إضافة نوع المركبة بنجاح", "success");
+  const handleSave = async (vehicleType: VehicleType) => {
+    try {
+      let updatedTypes;
+      if (vehicleType.id) {
+        updatedTypes = vehicleTypes.map((vt) => (vt.id === vehicleType.id ? vehicleType : vt));
+        setVehicleTypes(updatedTypes);
+        showToast("تم تحديث نوع المركبة بنجاح", "success");
+      } else {
+        const payload = {
+          ...vehicleType,
+          sort_order: vehicleTypes.length + 1,
+        };
+        await createAdminVehicleType(payload);
+        const refreshed = await getAdminVehicleTypes();
+        setVehicleTypes(refreshed);
+        showToast("تم إضافة نوع المركبة بنجاح", "success");
+      }
+      handleFilterChange(acFilter);
+      setIsModalOpen(false);
+    } catch (error: any) {
+      showToast(error?.message || "فشل في حفظ نوع المركبة", "error");
     }
-    handleFilterChange(acFilter); // Re-apply filter
-    setIsModalOpen(false);
   };
 
   return (

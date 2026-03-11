@@ -22,6 +22,28 @@ export default function VehicleTypesTable({
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
+  const IconCell = ({ icon, alt }: { icon: string | null | undefined; alt: string }) => {
+    const [error, setError] = useState(false);
+    if (!icon || error) {
+      return <span>🚗</span>;
+    }
+    const showImage =
+      icon.startsWith("http://") ||
+      icon.startsWith("https://") ||
+      icon.startsWith("/");
+    return showImage ? (
+      <img
+        src={icon}
+        alt={alt}
+        loading="lazy"
+        referrerPolicy="no-referrer"
+        onError={() => setError(true)}
+      />
+    ) : (
+      <span>{icon}</span>
+    );
+  };
+
   const handleDragStart = (e: React.DragEvent, index: number) => {
     setDraggedIndex(index);
     e.dataTransfer.effectAllowed = "move";
@@ -86,8 +108,8 @@ export default function VehicleTypesTable({
               <th>نطاق البحث</th>
               <th>الحالة</th>
               <th>الترتيب</th>
-              <th>المركبات</th>
-              <th>الرحلات</th>
+              {/* <th>المركبات</th> 
+              <th>الرحلات</th>*/}
               <th>الإجراءات</th>
             </tr>
           </thead>
@@ -113,13 +135,7 @@ export default function VehicleTypesTable({
                 </td>
                 <td>
                   <div className="vehicle-icon">
-                    {vehicleType.icon && !vehicleType.icon.startsWith('/') ? (
-                      <span>{vehicleType.icon}</span>
-                    ) : vehicleType.icon ? (
-                      <img src={vehicleType.icon} alt={vehicleType.name_ar} />
-                    ) : (
-                      <span>🚗</span>
-                    )}
+                    <IconCell icon={vehicleType.icon} alt={vehicleType.name_ar} />
                   </div>
                 </td>
                 <td>
@@ -153,12 +169,12 @@ export default function VehicleTypesTable({
                 <td>
                   <span className="sort-order">{vehicleType.sort_order}</span>
                 </td>
-                <td>
+              {/*  <td>
                   <span className="stat-number">{vehicleType.registered_vehicles || 0}</span>
                 </td>
                 <td>
                   <span className="stat-number">{vehicleType.total_trips || 0}</span>
-                </td>
+                </td>*/}
                 <td>
                   <div className="actions">
                     <button
