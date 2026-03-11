@@ -6,7 +6,7 @@ import "./ReportsTable.css";
 interface ReportsTableProps {
   reports: TripReport[];
   onViewReport: (report: TripReport) => void;
-  onResolveReport: (reportId: number) => void;
+  onResolveReport: (reportId: number) => Promise<void>;
   onDeleteReport: (reportId: number) => void;
 }
 
@@ -27,14 +27,14 @@ export default function ReportsTable({
     });
   };
 
-  const getPriorityBadge = (priority: string) => {
+ {/* const getPriorityBadge = (priority: string) => {
     const badges = {
       high: { text: "عالية", class: "priority-high" },
       medium: { text: "متوسطة", class: "priority-medium" },
       low: { text: "منخفضة", class: "priority-low" },
     };
     return badges[priority as keyof typeof badges] || badges.medium;
-  };
+  }; */}
 
   const getStatusBadge = (status: string) => {
     const badges = {
@@ -68,14 +68,14 @@ export default function ReportsTable({
               <th>المُبلَّغ عنه</th>
               <th>السبب</th>
               <th>الحالة</th>
-              <th>الأولوية</th>
+              {/*<th>الأولوية</th>*/}
               <th>تاريخ البلاغ</th>
               <th>الإجراءات</th>
             </tr>
           </thead>
           <tbody>
             {reports.map((report) => {
-              const priorityBadge = getPriorityBadge(report.priority);
+             {/* const priorityBadge = getPriorityBadge(report.priority);*/}
               const statusBadge = getStatusBadge(report.status);
 
               return (
@@ -115,11 +115,11 @@ export default function ReportsTable({
                       {statusBadge.text}
                     </span>
                   </td>
-                  <td data-label="الأولوية">
+                 {/* <td data-label="الأولوية">
                     <span className={`priority-badge ${priorityBadge.class}`}>
                       {priorityBadge.text}
                     </span>
-                  </td>
+                  </td>*/}
                   <td data-label="تاريخ البلاغ" className="date-cell">
                     {formatDate(report.created_at)}
                   </td>

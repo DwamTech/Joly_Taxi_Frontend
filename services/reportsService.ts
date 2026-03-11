@@ -1,230 +1,278 @@
 import { TripReport } from "@/models/TripReport";
+import { AuthService } from "./authService";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL as string;
 
-export const reportsService = {
-  /**
-   * Get all reports with pagination
-   */
-  async getReports(page: number = 1, perPage: number = 20) {
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/admin/trip-reports?page=${page}&per_page=${perPage}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+interface ApiReportUser {
+  id: number;
+  role: string;
+  name: string;
+  phone: string | null;
+  email: string | null;
+  agent_code: string | null;
+  status: string | null;
+  locale: string | null;
+  created_at: string;
+  updated_at: string;
+  role_name?: string | null;
+}
+
+interface ApiTripRequest {
+  id: number;
+  from_address?: string | null;
+  to_address?: string | null;
+  status?: string | null;
+  status_name?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface ApiReport {
+  id: number;
+  trip_request_id: number;
+  reporter_id: number;
+  reported_id: number;
+  reason: string;
+  report_type: string | null;
+  description: string | null;
+  status: "pending" | "resolved" | string;
+  admin_notes: string | null;
+  resolved_at: string | null;
+  created_at: string;
+  updated_at: string;
+  resolved_by: number | null;
+  reporter?: ApiReportUser | null;
+  reported?: ApiReportUser | null;
+  trip_request?: ApiTripRequest | null;
+}
+
+interface Paginated<T> {
+  current_page: number;
+  data: T[];
+  last_page: number;
+  per_page: number;
+  total: number;
+}
+
+interface AdminReportsResponse {
+  message: string;
+  data: Paginated<ApiReport>;
+}
+
+interface AdminReportDetailsResponse {
+  message: string;
+  data: ApiReport;
+}
+
+interface AdminReportActionResponse {
+  message: string;
+}
+
+interface AdminReportNotesResponse {
+  message: string;
+  data?: ApiReport;
+}
+
+export interface AdminReportsResult {
+  reports: TripReport[];
+  pagination: {
+    currentPage: number;
+    lastPage: number;
+    perPage: number;
+    total: number;
+  };
+}
+
+function mapUser(user: ApiReportUser | null | undefined): TripReport["reporter"] | undefined {
+  if (!user) return undefined;
+  const type: "rider" | "driver" = user.role === "driver" ? "driver" : "rider";
+  return {
+    id: user.id,
+    name: user.name,
+    phone: user.phone || "",
+    type,
+    reports_count: 0,
+  };
+}
+
+function mapReportedUser(user: ApiReportUser | null | undefined): TripReport["reported"] | undefined {
+  if (!user) return undefined;
+  const type: "rider" | "driver" = user.role === "driver" ? "driver" : "rider";
+  return {
+    id: user.id,
+    name: user.name,
+    phone: user.phone || "",
+    type,
+    reports_received_count: 0,
+    rating_avg: 0,
+  };
+}
+
+function mapReport(api: ApiReport): TripReport {
+  const status: "pending" | "resolved" = api.status === "resolved" ? "resolved" : "pending";
+  return {
+    id: api.id,
+    trip_request_id: api.trip_request_id,
+    reporter_id: api.reporter_id,
+    reported_id: api.reported_id,
+    reason: api.reason,
+    report_type: api.report_type,
+    description: api.description ?? undefined,
+    status,
+    priority: "medium",
+    admin_notes: api.admin_notes ?? undefined,
+    resolved_at: api.resolved_at ?? undefined,
+    resolved_by: api.resolved_by,
+    created_at: api.created_at,
+    updated_at: api.updated_at,
+    reporter: mapUser(api.reporter),
+    reported: mapReportedUser(api.reported),
+    trip: api.trip_request
+      ? {
+          id: api.trip_request.id,
+          pickup_location: api.trip_request.from_address || "",
+          dropoff_location: api.trip_request.to_address || "",
+          status: api.trip_request.status_name || api.trip_request.status || "",
+          created_at: api.trip_request.created_at,
         }
-      );
+      : undefined,
+  };
+}
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch reports");
-      }
+export async function getAdminReports(page = 1): Promise<AdminReportsResult> {
+  const token = AuthService.getToken();
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+    "x-lang": "ar",
+    "Accept": "application/json",
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
 
-      return await response.json();
-    } catch (error) {
-      console.error("Error fetching reports:", error);
-      throw error;
-    }
-  },
+  const url = `${API_BASE_URL}/api/admin/reports?page=${page}`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers,
+    credentials: "include",
+  });
 
-  /**
-   * Get report details by ID
-   */
-  async getReportDetails(reportId: number): Promise<TripReport> {
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(text || "فشل في جلب البلاغات");
+  }
+
+  const result: AdminReportsResponse = await response.json();
+  const pageData = result?.data;
+  const list = Array.isArray(pageData?.data) ? pageData.data : [];
+  return {
+    reports: list.map(mapReport),
+    pagination: {
+      currentPage: pageData?.current_page ?? page,
+      lastPage: pageData?.last_page ?? 1,
+      perPage: pageData?.per_page ?? list.length,
+      total: pageData?.total ?? list.length,
+    },
+  };
+}
+
+export async function getAdminReportById(id: number): Promise<TripReport> {
+  const token = AuthService.getToken();
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+    "x-lang": "ar",
+    "Accept": "application/json",
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const url = `${API_BASE_URL}/api/admin/reports/${id}`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers,
+    credentials: "include",
+  });
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(text || "فشل في جلب تفاصيل البلاغ");
+  }
+
+  const result: AdminReportDetailsResponse = await response.json();
+  return mapReport(result.data);
+}
+
+export async function deleteAdminReport(id: number): Promise<void> {
+  const token = AuthService.getToken();
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+    "x-lang": "ar",
+    "Accept": "application/json",
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const url = `${API_BASE_URL}/api/admin/reports/${id}`;
+  const response = await fetch(url, {
+    method: "DELETE",
+    headers,
+    credentials: "include",
+  });
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(text || "فشل في حذف البلاغ");
+  }
+
+  const result: AdminReportActionResponse = await response.json();
+  if (!result?.message) {
+    return;
+  }
+}
+
+export async function saveAdminReportNotes(id: number, adminNotes: string): Promise<TripReport | null> {
+  const token = AuthService.getToken();
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+    "x-lang": "ar",
+    "Accept": "application/json",
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const url = `${API_BASE_URL}/api/admin/reports/${id}/notes`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers,
+    credentials: "include",
+    body: JSON.stringify({ admin_notes: adminNotes }),
+  });
+  if (!response.ok) {
+    let message = "فشل في حفظ ملاحظات الإدارة";
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/admin/trip-reports/${reportId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch report details");
+      const errJson = await response.json();
+      if (errJson?.message) {
+        message = errJson.message;
       }
-
-      return await response.json();
-    } catch (error) {
-      console.error("Error fetching report details:", error);
-      throw error;
-    }
-  },
-
-  /**
-   * Update report status
-   */
-  async updateReportStatus(
-    reportId: number,
-    status: "pending" | "resolved",
-    adminNotes?: string,
-    actionTaken?: string
-  ) {
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/admin/trip-reports/${reportId}/status`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({
-            status,
-            admin_notes: adminNotes,
-            action_taken: actionTaken,
-          }),
+      if (errJson?.errors) {
+        const details = Object.values(errJson.errors)
+          .flat()
+          .join(" | ");
+        if (details) {
+          message = `${message}: ${details}`;
         }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to update report status");
       }
-
-      return await response.json();
-    } catch (error) {
-      console.error("Error updating report status:", error);
-      throw error;
+      throw new Error(message);
+    } catch {
+      const text = await response.text();
+      throw new Error(text || message);
     }
-  },
+  }
 
-  /**
-   * Update report priority
-   */
-  async updateReportPriority(
-    reportId: number,
-    priority: "high" | "medium" | "low"
-  ) {
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/admin/trip-reports/${reportId}/priority`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({ priority }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to update report priority");
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error("Error updating report priority:", error);
-      throw error;
-    }
-  },
-
-  /**
-   * Delete report
-   */
-  async deleteReport(reportId: number) {
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/admin/trip-reports/${reportId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to delete report");
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error("Error deleting report:", error);
-      throw error;
-    }
-  },
-
-  /**
-   * Send warning to user
-   */
-  async sendWarning(userId: number, message: string) {
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/admin/users/${userId}/warning`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({ message }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to send warning");
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error("Error sending warning:", error);
-      throw error;
-    }
-  },
-
-  /**
-   * Send notification to both parties
-   */
-  async sendNotificationToBoth(reportId: number, message: string) {
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/admin/trip-reports/${reportId}/notify`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({ message }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to send notification");
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error("Error sending notification:", error);
-      throw error;
-    }
-  },
-
-  /**
-   * Get reports statistics
-   */
-  async getReportsStats() {
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/admin/trip-reports/stats`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch reports stats");
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error("Error fetching reports stats:", error);
-      throw error;
-    }
-  },
-};
+  const result: AdminReportNotesResponse = await response.json();
+  if (result?.data) {
+    return mapReport(result.data);
+  }
+  return null;
+}

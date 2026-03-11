@@ -4,12 +4,14 @@ export interface TripReport {
   reporter_id: number;
   reported_id: number;
   reason: string;
+  report_type?: string | null;
   description?: string;
   status: "pending" | "resolved";
   priority: "high" | "medium" | "low";
   admin_notes?: string;
   action_taken?: string;
   resolved_at?: string;
+  resolved_by?: number | null;
   created_at: string;
   updated_at: string;
   

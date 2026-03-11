@@ -5,6 +5,8 @@ import { TripReport } from "@/models/TripReport";
 import { useToast } from "@/components/Toast/ToastContainer";
 import ConfirmDialog from "@/components/ConfirmDialog/ConfirmDialog";
 import Pagination from "@/components/Pagination/Pagination";
+import { deleteAdminReport, getAdminReportById, getAdminReports } from "@/services/reportsService";
+import { resolveAdminReport } from "@/services/reportsResolveService";
 import ReportsHero from "../ReportsHero/ReportsHero";
 import ReportsFilters, { FilterValues } from "../ReportsFilters/ReportsFilters";
 import ReportsTable from "../ReportsTable/ReportsTable";
@@ -16,7 +18,12 @@ export default function ReportsManagementContent() {
   const [reports, setReports] = useState<TripReport[]>([]);
   const [filteredReports, setFilteredReports] = useState<TripReport[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(20);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    lastPage: 1,
+    perPage: 20,
+    total: 0,
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [selectedReport, setSelectedReport] = useState<TripReport | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{
@@ -39,25 +46,23 @@ export default function ReportsManagementContent() {
     const loadReports = async () => {
       setIsLoading(true);
       try {
-        // TODO: Replace with API call
-        const response = await fetch("/data/dashboard/mock-reports.json");
-        const mockReports: TripReport[] = await response.json();
-        setReports(mockReports);
-      } catch (error) {
-        console.error("Error loading reports:", error);
-        showToast("فشل في تحميل البيانات", "error");
+        const result = await getAdminReports(currentPage);
+        setReports(result.reports);
+        setPagination(result.pagination);
+      } catch (error: any) {
+        showToast(error?.message || "فشل في تحميل البيانات", "error");
       } finally {
         setIsLoading(false);
       }
     };
 
     loadReports();
-  }, [showToast]);
+  }, [showToast, currentPage]);
 
   // Calculate stats
   const stats = useMemo(() => {
     return {
-      total: reports.length,
+      total: pagination.total || reports.length,
       pending: reports.filter((r) => r.status === "pending").length,
       resolved: reports.filter((r) => r.status === "resolved").length,
       today: reports.filter(
@@ -65,7 +70,7 @@ export default function ReportsManagementContent() {
           new Date(r.created_at).toDateString() === new Date().toDateString()
       ).length,
     };
-  }, [reports]);
+  }, [reports, pagination.total]);
 
   // Apply filters
   useEffect(() => {
@@ -128,11 +133,8 @@ export default function ReportsManagementContent() {
     setFilteredReports(result);
   }, [filters, reports]);
 
-  const totalPages = Math.ceil(filteredReports.length / itemsPerPage);
-  const paginatedReports = filteredReports.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const totalPages = pagination.lastPage || 1;
+  const paginatedReports = filteredReports;
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -144,29 +146,53 @@ export default function ReportsManagementContent() {
     setCurrentPage(1);
   };
 
-  const handleViewReport = (report: TripReport) => {
-    setSelectedReport(report);
+  const handleViewReport = async (report: TripReport) => {
+    try {
+      const details = await getAdminReportById(report.id);
+      setSelectedReport(details);
+    } catch (error: any) {
+      showToast(error?.message || "فشل في جلب تفاصيل البلاغ", "error");
+    }
   };
 
-  const handleResolveReport = (reportId: number) => {
-    setReports((prev) =>
-      prev.map((report) =>
-        report.id === reportId
-          ? { ...report, status: "resolved" as const, resolved_at: new Date().toISOString() }
-          : report
-      )
-    );
-    showToast("تم وضع علامة محلول على البلاغ", "success");
+  const handleResolveReport = async (reportId: number) => {
+    setIsLoading(true);
+    try {
+      await resolveAdminReport(reportId);
+      showToast("تم وضع علامة محلول على البلاغ", "success");
+      const refreshed = await getAdminReports(currentPage);
+      setReports(refreshed.reports);
+      setPagination(refreshed.pagination);
+    } catch (error: any) {
+      showToast(error?.message || "فشل في تغيير حالة البلاغ", "error");
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleDeleteReport = (reportId: number) => {
     setDeleteConfirm({ show: true, reportId });
   };
 
-  const confirmDelete = () => {
-    setReports((prev) => prev.filter((report) => report.id !== deleteConfirm.reportId));
-    showToast("تم حذف البلاغ بنجاح", "success");
-    setDeleteConfirm({ show: false, reportId: 0 });
+  const confirmDelete = async () => {
+    setIsLoading(true);
+    try {
+      await deleteAdminReport(deleteConfirm.reportId);
+      showToast("تم حذف البلاغ بنجاح", "success");
+      setDeleteConfirm({ show: false, reportId: 0 });
+      const refreshed = await getAdminReports(currentPage);
+      setReports(refreshed.reports);
+      setPagination(refreshed.pagination);
+      if (currentPage > refreshed.pagination.lastPage) {
+        setCurrentPage(refreshed.pagination.lastPage);
+      }
+    } catch (error: any) {
+      showToast(error?.message || "فشل في حذف البلاغ", "error");
+      setDeleteConfirm({ show: false, reportId: 0 });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const cancelDelete = () => {
@@ -205,8 +231,8 @@ export default function ReportsManagementContent() {
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}
-        totalItems={filteredReports.length}
-        itemsPerPage={itemsPerPage}
+        totalItems={pagination.total}
+        itemsPerPage={pagination.perPage}
       />
 
       {selectedReport && (

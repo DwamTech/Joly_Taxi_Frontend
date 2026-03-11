@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { TripReport } from "@/models/TripReport";
 import { useToast } from "@/components/Toast/ToastContainer";
+import { saveAdminReportNotes } from "@/services/reportsService";
+import { notifyAdminReport, toggleBlockUserFromReport, warnAdminReport } from "@/services/reportsCommunicationService";
 import "./ReportDetailsModal.css";
 
 interface ReportDetailsModalProps {
   report: TripReport;
   onClose: () => void;
-  onResolve: (reportId: number) => void;
+  onResolve: (reportId: number) => Promise<void>;
 }
 
 export default function ReportDetailsModal({
@@ -20,6 +22,13 @@ export default function ReportDetailsModal({
   const [adminNotes, setAdminNotes] = useState(report.admin_notes || "");
   const [actionTaken, setActionTaken] = useState(report.action_taken || "");
   const [showUserDetails, setShowUserDetails] = useState<"reporter" | "reported" | null>(null);
+  const [isSavingNotes, setIsSavingNotes] = useState(false);
+  const [isNotifyOpen, setIsNotifyOpen] = useState(false);
+  const [isWarningOpen, setIsWarningOpen] = useState(false);
+  const [notifyMessage, setNotifyMessage] = useState("تم حل البلاغ");
+  const [warningMessage, setWarningMessage] = useState("");
+  const [isSendingNotify, setIsSendingNotify] = useState(false);
+  const [isSendingWarning, setIsSendingWarning] = useState(false);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -32,29 +41,85 @@ export default function ReportDetailsModal({
     });
   };
 
-  const handleSaveNotes = () => {
-    // TODO: Call API to save notes
-    showToast("تم حفظ الملاحظات بنجاح", "success");
+  const handleSaveNotes = async () => {
+    setIsSavingNotes(true);
+    try {
+      await saveAdminReportNotes(report.id, adminNotes);
+      showToast("تم حفظ الملاحظات بنجاح", "success");
+    } catch (error: any) {
+      showToast(error?.message || "فشل في حفظ ملاحظات الإدارة", "error");
+    } finally {
+      setIsSavingNotes(false);
+    }
   };
 
-  const handleResolve = () => {
-    onResolve(report.id);
-    onClose();
+  const handleResolve = async () => {
+    try {
+      await onResolve(report.id);
+      onClose();
+    } catch (error: any) {
+      showToast(error?.message || "فشل في تغيير حالة البلاغ", "error");
+    }
   };
 
-  const handleBlockUser = () => {
-    // TODO: Call API to block user
-    showToast("تم حظر المستخدم بنجاح", "warning");
+  const handleBlockUser = async () => {
+    const userId = report.reported?.id ?? report.reported_id;
+    if (!userId) {
+      showToast("لا يمكن تحديد المستخدم المُبلَّغ عنه", "error");
+      return;
+    }
+    try {
+      const result = await toggleBlockUserFromReport(userId);
+      showToast(result.message || "تم تغيير حالة الحظر بنجاح", "success");
+    } catch (error: any) {
+      showToast(error?.message || "فشل في تغيير حالة الحظر", "error");
+    }
   };
 
   const handleSendWarning = () => {
-    // TODO: Call API to send warning
-    showToast("تم إرسال تحذير للمستخدم", "success");
+    setWarningMessage("");
+    setIsWarningOpen(true);
   };
 
   const handleSendNotification = () => {
-    // TODO: Call API to send notification
-    showToast("تم إرسال إشعار للطرفين", "success");
+    setNotifyMessage("تم حل البلاغ");
+    setIsNotifyOpen(true);
+  };
+
+  const submitNotify = async () => {
+    const msg = notifyMessage.trim();
+    if (!msg) {
+      showToast("يرجى كتابة نص الإشعار", "error");
+      return;
+    }
+    setIsSendingNotify(true);
+    try {
+      await notifyAdminReport(report.id, msg);
+      showToast("تم إرسال الإشعار بنجاح", "success");
+      setIsNotifyOpen(false);
+    } catch (error: any) {
+      showToast(error?.message || "فشل في إرسال الإشعار", "error");
+    } finally {
+      setIsSendingNotify(false);
+    }
+  };
+
+  const submitWarning = async () => {
+    const msg = warningMessage.trim();
+    if (!msg) {
+      showToast("يرجى كتابة رسالة التحذير", "error");
+      return;
+    }
+    setIsSendingWarning(true);
+    try {
+      await warnAdminReport(report.id, msg);
+      showToast("تم إرسال التحذير بنجاح", "success");
+      setIsWarningOpen(false);
+    } catch (error: any) {
+      showToast(error?.message || "فشل في إرسال التحذير", "error");
+    } finally {
+      setIsSendingWarning(false);
+    }
   };
 
   const getPriorityColor = (priority: string) => {
@@ -69,6 +134,110 @@ export default function ReportDetailsModal({
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content report-details-modal" onClick={(e) => e.stopPropagation()}>
+        {isNotifyOpen && (
+          <div
+            className="sub-modal-overlay"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsNotifyOpen(false);
+            }}
+          >
+            <div className="sub-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="sub-modal-header">
+                <h3>إشعار للطرفين</h3>
+                <button
+                  type="button"
+                  className="sub-close-btn"
+                  onClick={() => setIsNotifyOpen(false)}
+                  aria-label="إغلاق"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="sub-modal-body">
+                <label className="sub-label">نص الإشعار</label>
+                <textarea
+                  className="sub-textarea"
+                  value={notifyMessage}
+                  onChange={(e) => setNotifyMessage(e.target.value)}
+                  rows={4}
+                  placeholder="اكتب الرسالة التي سيتم إرسالها للطرفين..."
+                />
+              </div>
+              <div className="sub-modal-footer">
+                <button
+                  type="button"
+                  className="sub-secondary-btn"
+                  onClick={() => setIsNotifyOpen(false)}
+                  disabled={isSendingNotify}
+                >
+                  إلغاء
+                </button>
+                <button
+                  type="button"
+                  className="sub-primary-btn sub-primary-notify"
+                  onClick={submitNotify}
+                  disabled={isSendingNotify}
+                >
+                  {isSendingNotify ? "جاري الإرسال..." : "إرسال"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {isWarningOpen && (
+          <div
+            className="sub-modal-overlay"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsWarningOpen(false);
+            }}
+          >
+            <div className="sub-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="sub-modal-header">
+                <h3>إرسال تحذير</h3>
+                <button
+                  type="button"
+                  className="sub-close-btn"
+                  onClick={() => setIsWarningOpen(false)}
+                  aria-label="إغلاق"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="sub-modal-body">
+                <label className="sub-label">رسالة التحذير</label>
+                <textarea
+                  className="sub-textarea"
+                  value={warningMessage}
+                  onChange={(e) => setWarningMessage(e.target.value)}
+                  rows={4}
+                  placeholder="اكتب نص التحذير..."
+                />
+              </div>
+              <div className="sub-modal-footer">
+                <button
+                  type="button"
+                  className="sub-secondary-btn"
+                  onClick={() => setIsWarningOpen(false)}
+                  disabled={isSendingWarning}
+                >
+                  إلغاء
+                </button>
+                <button
+                  type="button"
+                  className="sub-primary-btn sub-primary-warning"
+                  onClick={submitWarning}
+                  disabled={isSendingWarning}
+                >
+                  {isSendingWarning ? "جاري الإرسال..." : "إرسال"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="modal-header">
           <h2>تفاصيل البلاغ #{report.id}</h2>
           <button className="close-btn" onClick={onClose}>
@@ -87,7 +256,7 @@ export default function ReportDetailsModal({
               </div>
             </div>
 
-            <div className="info-card">
+           {/* <div className="info-card">
               <div className="info-label">الأولوية</div>
               <div className="info-value">
                 <span
@@ -101,7 +270,7 @@ export default function ReportDetailsModal({
                     : "منخفضة"}
                 </span>
               </div>
-            </div>
+            </div>*/}
 
             <div className="info-card">
               <div className="info-label">تاريخ البلاغ</div>
@@ -241,7 +410,7 @@ export default function ReportDetailsModal({
             />
           </div>
 
-          <div className="section">
+         {/* <div className="section">
             <h3 className="section-title">⚡ الإجراء المتخذ</h3>
             <textarea
               className="action-input"
@@ -250,12 +419,12 @@ export default function ReportDetailsModal({
               onChange={(e) => setActionTaken(e.target.value)}
               rows={3}
             />
-          </div>
+          </div>*/}
         </div>
 
         <div className="modal-footer">
           <div className="action-buttons">
-            <button className="action-button save-btn" onClick={handleSaveNotes}>
+            <button className="action-button save-btn" onClick={handleSaveNotes} disabled={isSavingNotes}>
               💾 حفظ الملاحظات
             </button>
             {report.status === "pending" && (
