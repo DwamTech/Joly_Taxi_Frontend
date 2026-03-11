@@ -7,7 +7,14 @@ import VehicleTypeModal from "@/components/dashboard/VehicleTypesManagement/Vehi
 import Toast, { ToastType } from "@/components/Toast/Toast";
 import ConfirmDialog from "@/components/ConfirmDialog/ConfirmDialog";
 import { VehicleType } from "@/models/VehicleType";
-import { getAdminVehicleTypes, createAdminVehicleType } from "@/services/vehicleTypesService";
+import {
+  changeAdminVehicleTypesOrder,
+  createAdminVehicleType,
+  getAdminVehicleTypeById,
+  getAdminVehicleTypes,
+  toggleAdminVehicleTypeActive,
+  updateAdminVehicleType,
+} from "@/services/vehicleTypesService";
 import "./vehicle-types.css";
 
 interface ToastState {
@@ -87,9 +94,15 @@ export default function VehicleTypesPage() {
     setIsModalOpen(true);
   };
 
-  const handleEdit = (vehicleType: VehicleType) => {
+  const handleEdit = async (vehicleType: VehicleType) => {
     setSelectedVehicleType(vehicleType);
     setIsModalOpen(true);
+    try {
+      const details = await getAdminVehicleTypeById(vehicleType.id);
+      setSelectedVehicleType(details);
+    } catch (error: any) {
+      showToast(error?.message || "فشل في جلب تفاصيل نوع المركبة", "error");
+    }
   };
 
   const handleDelete = (id: number) => {
@@ -108,42 +121,76 @@ export default function VehicleTypesPage() {
     });
   };
 
-  const handleToggleActive = (id: number) => {
+  const handleToggleActive = async (id: number) => {
     const vehicleType = vehicleTypes.find((vt) => vt.id === id);
-    const updatedTypes = vehicleTypes.map((vt) =>
-      vt.id === id ? { ...vt, active: !vt.active } : vt
-    );
-    setVehicleTypes(updatedTypes);
-    handleFilterChange(acFilter); // Re-apply filter
-    showToast(
-      `تم ${vehicleType?.active ? "تعطيل" : "تفعيل"} "${vehicleType?.name_ar}" بنجاح`,
-      "success"
-    );
-  };
-
-  const handleReorder = (reorderedTypes: VehicleType[]) => {
-    setVehicleTypes(reorderedTypes);
-    handleFilterChange(acFilter); // Re-apply filter
-    showToast("تم إعادة ترتيب الأنواع بنجاح", "success");
-  };
-
-  const handleSave = async (vehicleType: VehicleType) => {
     try {
-      let updatedTypes;
+      await toggleAdminVehicleTypeActive(id);
+      const refreshed = await getAdminVehicleTypes();
+      setVehicleTypes(refreshed);
+      handleFilterChange(acFilter);
+      showToast(
+        `تم ${vehicleType?.active ? "تعطيل" : "تفعيل"} "${vehicleType?.name_ar}" بنجاح`,
+        "success"
+      );
+    } catch (error: any) {
+      showToast(error?.message || "فشل في تغيير حالة نوع المركبة", "error");
+    }
+  };
+
+  const handleReorder = async (reorderedTypes: VehicleType[]) => {
+    setVehicleTypes(reorderedTypes);
+    handleFilterChange(acFilter);
+    try {
+      await changeAdminVehicleTypesOrder(
+        reorderedTypes.map((vt, index) => ({
+          id: vt.id,
+          sort_order: (vt.sort_order as number) ?? index + 1,
+        }))
+      );
+      const refreshed = await getAdminVehicleTypes();
+      setVehicleTypes(refreshed);
+      handleFilterChange(acFilter);
+      showToast("تم إعادة ترتيب الأنواع بنجاح", "success");
+    } catch (error: any) {
+      try {
+        const refreshed = await getAdminVehicleTypes();
+        setVehicleTypes(refreshed);
+        handleFilterChange(acFilter);
+      } catch {}
+      showToast(error?.message || "فشل في تحديث ترتيب الأنواع", "error");
+    }
+  };
+
+  const handleSave = async (vehicleType: VehicleType, iconFile?: File | null) => {
+    try {
       if (vehicleType.id) {
-        updatedTypes = vehicleTypes.map((vt) => (vt.id === vehicleType.id ? vehicleType : vt));
-        setVehicleTypes(updatedTypes);
+        await updateAdminVehicleType(vehicleType.id, { ...vehicleType, iconFile });
+        const refreshed = await getAdminVehicleTypes();
+        setVehicleTypes(refreshed);
         showToast("تم تحديث نوع المركبة بنجاح", "success");
       } else {
         const payload = {
           ...vehicleType,
           sort_order: vehicleTypes.length + 1,
+          iconFile,
         };
         await createAdminVehicleType(payload);
         const refreshed = await getAdminVehicleTypes();
         setVehicleTypes(refreshed);
         showToast("تم إضافة نوع المركبة بنجاح", "success");
       }
+      try {
+        const latest = await getAdminVehicleTypes();
+        const normalized = [...latest].sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+        await changeAdminVehicleTypesOrder(
+          normalized.map((vt, index) => ({
+            id: vt.id,
+            sort_order: index + 1,
+          }))
+        );
+        const refreshedAfterOrder = await getAdminVehicleTypes();
+        setVehicleTypes(refreshedAfterOrder);
+      } catch {}
       handleFilterChange(acFilter);
       setIsModalOpen(false);
     } catch (error: any) {

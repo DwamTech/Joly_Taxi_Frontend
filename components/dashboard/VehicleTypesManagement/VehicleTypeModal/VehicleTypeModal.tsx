@@ -7,7 +7,7 @@ import "./VehicleTypeModal.css";
 interface VehicleTypeModalProps {
   vehicleType: VehicleType | null;
   onClose: () => void;
-  onSave: (vehicleType: VehicleType) => void;
+  onSave: (vehicleType: VehicleType, iconFile?: File | null) => void;
 }
 
 export default function VehicleTypeModal({
@@ -28,11 +28,13 @@ export default function VehicleTypeModal({
     requires_subscription: false,
     has_ac: true,
   });
+  const [iconFile, setIconFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (vehicleType) {
       setFormData(vehicleType);
     }
+    setIconFile(null);
   }, [vehicleType]);
 
   const handleChange = (field: keyof VehicleType, value: any) => {
@@ -46,7 +48,7 @@ export default function VehicleTypeModal({
       name_ar: formData.name_ar || "",
       name_en: formData.name_en || formData.name_ar || "",
     };
-    onSave(payload);
+    onSave(payload, iconFile);
   };
 
   return (
@@ -81,12 +83,12 @@ export default function VehicleTypeModal({
             </div>
 
             <div className="form-group">
-              <label>رابط الأيقونة (اختياري)</label>
+              <label>الأيقونة (صورة)</label>
               <input
-                type="text"
-                value={formData.icon || ""}
-                onChange={(e) => handleChange("icon", e.target.value)}
-                placeholder="http://example.com/icon.jpg"
+                type="file"
+                accept="image/*"
+                onChange={(e) => setIconFile(e.target.files?.[0] ?? null)}
+                required={!vehicleType}
               />
             </div>
 

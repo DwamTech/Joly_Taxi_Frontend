@@ -191,13 +191,13 @@ export default function VehicleTypesTable({
                     >
                       {vehicleType.active ? "🔴" : "II"}
                     </button>
-                    <button
+                    {/*<button
                       className="action-btn delete-btn"
                       onClick={() => onDelete(vehicleType.id)}
                       title="حذف"
                     >
                       X
-                    </button>
+                    </button>*/}
                   </div>
                 </td>
               </tr>
