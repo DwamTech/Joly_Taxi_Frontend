@@ -12,8 +12,10 @@ import SubscriptionsFilters, {
 import SubscriptionsTable from "@/components/dashboard/SubscriptionsManagement/SubscriptionsTable/SubscriptionsTable";
 import SubscriptionDetailsModal from "@/components/dashboard/SubscriptionsManagement/SubscriptionDetailsModal/SubscriptionDetailsModal";
 import ExtendSubscriptionModal from "@/components/dashboard/SubscriptionsManagement/ExtendSubscriptionModal/ExtendSubscriptionModal";
-import mockData from "@/data/dashboard/mock-subscriptions.json";
 import { exportSubscriptionsToExcel } from "@/utils/exportSubscriptionsToExcel";
+import { getAdminSubscriptionById, getAdminSubscriptions } from "@/services/subscriptionsService";
+import { deleteAdminSubscription } from "@/services/subscriptionsDeleteService";
+import { extendAdminSubscription } from "@/services/subscriptionsExtendService";
 import "./subscriptions.css";
 
 function SubscriptionsManagementContent() {
@@ -27,7 +29,7 @@ function SubscriptionsManagementContent() {
   const [extendingSubscription, setExtendingSubscription] = useState<Subscription | null>(null);
   const [actionConfirm, setActionConfirm] = useState<{
     show: boolean;
-    type: "activate" | "reject" | "extend" | "cancel";
+    type: "activate" | "reject" | "extend" | "cancel" | "delete";
     subscriptionId: number;
     subscriptionNumber: string;
   }>({
@@ -44,11 +46,30 @@ function SubscriptionsManagementContent() {
     sortBy: "newest",
   });
 
-  // Load subscriptions from mock data
+  // Load subscriptions from API
   useEffect(() => {
-    setSubscriptions(mockData.subscriptions as Subscription[]);
-    setFilteredSubscriptions(mockData.subscriptions as Subscription[]);
-  }, []);
+    let isActive = true;
+    const load = async () => {
+      try {
+        const firstPage = await getAdminSubscriptions(1);
+        let all = [...firstPage.subscriptions];
+        for (let p = 2; p <= firstPage.pagination.lastPage; p += 1) {
+          const pageResult = await getAdminSubscriptions(p);
+          all = all.concat(pageResult.subscriptions);
+        }
+        if (!isActive) return;
+        setSubscriptions(all);
+        setFilteredSubscriptions(all);
+      } catch (error: any) {
+        if (!isActive) return;
+        showToast(error?.message || "فشل في جلب الاشتراكات", "error");
+      }
+    };
+    load();
+    return () => {
+      isActive = false;
+    };
+  }, [showToast]);
 
   // Calculate stats for hero
   const subscriptionStats = useMemo(() => {
@@ -138,8 +159,24 @@ function SubscriptionsManagementContent() {
     setFilters(newFilters);
   };
 
-  const handleViewSubscription = (subscription: Subscription) => {
+  const handleViewSubscription = async (subscription: Subscription) => {
     setSelectedSubscription(subscription);
+    try {
+      const details = await getAdminSubscriptionById(subscription.id);
+      setSelectedSubscription(details);
+    } catch (error: any) {
+      showToast(error?.message || "فشل في جلب تفاصيل الاشتراك", "error");
+    }
+  };
+
+  const refreshSubscriptions = async () => {
+    try {
+      const { subscriptions: all } = await getAdminSubscriptions(1);
+      setSubscriptions(all);
+      setFilteredSubscriptions(all);
+    } catch (error: any) {
+      showToast(error?.message || "فشل في تحديث الاشتراكات", "error");
+    }
   };
 
   const handleExportData = () => {
@@ -179,32 +216,18 @@ function SubscriptionsManagementContent() {
     }
   };
 
-  const confirmExtendSubscription = (subscriptionId: number, additionalMonths: number) => {
-    setSubscriptions((prev) =>
-      prev.map((sub) => {
-        if (sub.id === subscriptionId && sub.end_date) {
-          const currentEndDate = new Date(sub.end_date);
-          const newEndDate = new Date(currentEndDate);
-          newEndDate.setMonth(newEndDate.getMonth() + additionalMonths);
-          
-          const pricePerMonth = sub.total_price / sub.months_count;
-          const additionalPrice = pricePerMonth * additionalMonths;
-          
-          return {
-            ...sub,
-            months_count: sub.months_count + additionalMonths,
-            total_price: sub.total_price + additionalPrice,
-            end_date: newEndDate.toISOString(),
-            days_remaining: Math.ceil(
-              (newEndDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
-            ),
-          };
-        }
-        return sub;
-      })
-    );
-    showToast(`تم تمديد الاشتراك لمدة ${additionalMonths} شهر بنجاح`, "success");
-    setExtendingSubscription(null);
+  const confirmExtendSubscription = async (subscriptionId: number, additionalMonths: number) => {
+    try {
+      const current = subscriptions.find((s) => s.id === subscriptionId);
+      const newTotalMonths = current ? current.months_count + additionalMonths : undefined;
+      const message = await extendAdminSubscription(subscriptionId, additionalMonths, newTotalMonths);
+      showToast(message, "success");
+      await refreshSubscriptions();
+    } catch (error: any) {
+      showToast(error?.message || "فشل في تمديد الاشتراك", "error");
+    } finally {
+      setExtendingSubscription(null);
+    }
   };
 
   const handleCancelSubscription = (subscriptionId: number) => {
@@ -219,13 +242,25 @@ function SubscriptionsManagementContent() {
     }
   };
 
+  const handleDeleteSubscription = (subscriptionId: number) => {
+    const subscription = subscriptions.find((s) => s.id === subscriptionId);
+    if (subscription) {
+      setActionConfirm({
+        show: true,
+        type: "delete",
+        subscriptionId,
+        subscriptionNumber: subscription.subscription_number,
+      });
+    }
+  };
+
   const handleSendNotification = (driverId: number) => {
     showToast("سيتم فتح نافذة إرسال الإشعار قريباً", "info");
     // TODO: Open notification modal
     console.log("Send notification to driver:", driverId);
   };
 
-  const confirmAction = () => {
+  const confirmAction = async () => {
     const { type, subscriptionId } = actionConfirm;
 
     switch (type) {
@@ -276,6 +311,15 @@ function SubscriptionsManagementContent() {
         );
         showToast("تم إلغاء الاشتراك", "warning");
         break;
+      case "delete":
+        try {
+          const message = await deleteAdminSubscription(subscriptionId);
+          setSubscriptions((prev) => prev.filter((s) => s.id !== subscriptionId));
+          showToast(message, "success");
+        } catch (error: any) {
+          showToast(error?.message || "فشل في حذف الاشتراك", "error");
+        }
+        break;
     }
 
     setActionConfirm({ show: false, type: "activate", subscriptionId: 0, subscriptionNumber: "" });
@@ -295,6 +339,8 @@ function SubscriptionsManagementContent() {
         return `هل أنت متأكد من رفض الاشتراك "${subscriptionNumber}"؟ لا يمكن التراجع عن هذا الإجراء.`;
       case "cancel":
         return `هل أنت متأكد من إلغاء الاشتراك "${subscriptionNumber}"؟ لا يمكن التراجع عن هذا الإجراء.`;
+      case "delete":
+        return `هل أنت متأكد من حذف الاشتراك "${subscriptionNumber}"؟ لا يمكن التراجع عن هذا الإجراء.`;
       default:
         return "";
     }
@@ -321,6 +367,7 @@ function SubscriptionsManagementContent() {
         onRejectSubscription={handleRejectSubscription}
         onExtendSubscription={handleExtendSubscription}
         onCancelSubscription={handleCancelSubscription}
+        onDeleteSubscription={handleDeleteSubscription}
         onSendNotification={handleSendNotification}
       />
 
@@ -341,6 +388,7 @@ function SubscriptionsManagementContent() {
           onExtend={handleExtendSubscription}
           onCancel={handleCancelSubscription}
           onSendNotification={handleSendNotification}
+          onDelete={handleDeleteSubscription}
         />
       )}
 
@@ -358,7 +406,7 @@ function SubscriptionsManagementContent() {
           message={getConfirmMessage()}
           confirmText="تأكيد"
           cancelText="إلغاء"
-          type={actionConfirm.type === "reject" || actionConfirm.type === "cancel" ? "danger" : "warning"}
+          type={actionConfirm.type === "reject" || actionConfirm.type === "cancel" || actionConfirm.type === "delete" ? "danger" : "warning"}
           onConfirm={confirmAction}
           onCancel={cancelAction}
         />

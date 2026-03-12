@@ -8,13 +8,14 @@
 }
 
 .table-wrapper {
-  overflow-x: auto;
+  overflow-x: hidden;
 }
 
 .subscriptions-table {
   width: 100%;
   border-collapse: collapse;
   direction: rtl;
+  table-layout: fixed;
 }
 
 .subscriptions-table thead {
@@ -28,7 +29,8 @@
   font-weight: 600;
   color: white;
   font-size: 14px;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .subscriptions-table tbody tr {
@@ -45,6 +47,7 @@
   text-align: right;
   color: #333;
   font-size: 14px;
+  overflow-wrap: anywhere;
 }
 
 .subscription-number-cell {
@@ -56,6 +59,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
 }
 
 .driver-avatar {
@@ -76,11 +80,15 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
 }
 
 .driver-name {
   font-weight: 500;
   color: #1f2937;
+  overflow: visible;
+  text-overflow: unset;
+  white-space: normal;
 }
 
 .driver-rating {
@@ -154,11 +162,18 @@
   display: flex;
   gap: 8px;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 .action-btn {
   width: 36px;
   height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  flex: 0 0 36px;
+  box-sizing: border-box;
+  padding: 0;
+  line-height: 1;
   border: none;
   border-radius: 8px;
   font-size: 1.1rem;
@@ -220,6 +235,15 @@
 
 .notification-btn:hover {
   background: #fde68a;
+  transform: scale(1.1);
+}
+
+.delete-btn {
+  background: #fee2e2;
+}
+
+.delete-btn:hover {
+  background: #fecaca;
   transform: scale(1.1);
 }
 
@@ -322,6 +346,7 @@
     min-height: 44px !important;
     max-width: 44px !important;
     max-height: 44px !important;
+    flex: 0 0 44px !important;
     font-size: 18px !important;
     padding: 0 !important;
     flex-shrink: 0 !important;
@@ -332,6 +357,7 @@
     height: 44px;
     min-width: 44px;
     min-height: 44px;
+    flex: 0 0 44px;
     font-size: 18px;
   }
 }

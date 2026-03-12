@@ -11,6 +11,7 @@ interface SubscriptionDetailsModalProps {
   onExtend?: (subscriptionId: number) => void;
   onCancel?: (subscriptionId: number) => void;
   onSendNotification?: (driverId: number) => void;
+  onDelete?: (subscriptionId: number) => void;
 }
 
 export default function SubscriptionDetailsModal({
@@ -21,6 +22,7 @@ export default function SubscriptionDetailsModal({
   onExtend,
   onCancel,
   onSendNotification,
+  onDelete,
 }: SubscriptionDetailsModalProps) {
   const getStatusLabel = (status: string) => {
     const labels: Record<string, string> = {
@@ -210,17 +212,24 @@ export default function SubscriptionDetailsModal({
               <span>👤</span>
               معلومات السائق
             </h3>
+            <div className="driver-profile">
+              {subscription.driver.avatar ? (
+                <img
+                  src={subscription.driver.avatar}
+                  alt={subscription.driver.name}
+                  className="driver-profile-avatar"
+                />
+              ) : (
+                <div className="driver-profile-avatar driver-profile-avatar-fallback">
+                  {subscription.driver.name?.charAt(0) || "س"}
+                </div>
+              )}
+              <div className="driver-profile-meta">
+                <div className="driver-profile-name">{subscription.driver.name}</div>
+                <div className="driver-profile-phone">{subscription.driver.phone}</div>
+              </div>
+            </div>
             <div className="details-grid">
-              <div className="detail-item">
-                <span className="detail-label">الاسم:</span>
-                <span className="detail-value driver-name">
-                  {subscription.driver.name}
-                </span>
-              </div>
-              <div className="detail-item">
-                <span className="detail-label">رقم الهاتف:</span>
-                <span className="detail-value">{subscription.driver.phone}</span>
-              </div>
               <div className="detail-item">
                 <span className="detail-label">التقييم العام:</span>
                 <span className="detail-value rating">
@@ -322,6 +331,15 @@ export default function SubscriptionDetailsModal({
                 title="إرسال إشعار"
               >
                 <span>🔔</span>
+              </button>
+            )}
+            {onDelete && (
+              <button
+                className="action-btn delete-btn"
+                onClick={() => onDelete(subscription.id)}
+                title="حذف الاشتراك"
+              >
+                <span>🗑️</span>
               </button>
             )}
           </div>

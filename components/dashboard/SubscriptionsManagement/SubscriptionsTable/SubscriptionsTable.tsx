@@ -10,6 +10,7 @@ interface SubscriptionsTableProps {
   onRejectSubscription: (subscriptionId: number) => void;
   onExtendSubscription: (subscriptionId: number) => void;
   onCancelSubscription: (subscriptionId: number) => void;
+  onDeleteSubscription: (subscriptionId: number) => void;
   onSendNotification: (driverId: number) => void;
 }
 
@@ -20,6 +21,7 @@ export default function SubscriptionsTable({
   onRejectSubscription,
   onExtendSubscription,
   onCancelSubscription,
+  onDeleteSubscription,
   onSendNotification,
 }: SubscriptionsTableProps) {
   const getStatusLabel = (status: string) => {
@@ -67,9 +69,6 @@ export default function SubscriptionsTable({
                 </td>
                 <td data-label="السائق">
                   <div className="driver-cell">
-                    <div className="driver-avatar">
-                      {subscription.driver.name.charAt(0)}
-                    </div>
                     <div className="driver-info">
                       <span className="driver-name">
                         {subscription.driver.name}
@@ -142,13 +141,7 @@ export default function SubscriptionsTable({
                         >
                           📅
                         </button>
-                        <button
-                          className="action-btn cancel-btn"
-                          onClick={() => onCancelSubscription(subscription.id)}
-                          title="إلغاء الاشتراك"
-                        >
-                          🚫
-                        </button>
+                        
                       </>
                     )}
                     <button
@@ -158,6 +151,20 @@ export default function SubscriptionsTable({
                     >
                       🔔
                     </button>
+                    <button
+                      className="action-btn delete-btn"
+                      onClick={() => onDeleteSubscription(subscription.id)}
+                      title="حذف الاشتراك"
+                    >
+                      🗑️
+                    </button>
+                    <button
+                          className="action-btn cancel-btn"
+                          onClick={() => onCancelSubscription(subscription.id)}
+                          title="إلغاء الاشتراك"
+                        >
+                          🚫
+                        </button>
                   </div>
                 </td>
               </tr>

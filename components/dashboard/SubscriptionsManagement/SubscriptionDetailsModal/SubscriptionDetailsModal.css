@@ -180,6 +180,57 @@
   font-style: italic;
 }
 
+.driver-profile {
+  display: flex;
+  gap: 0.9rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+}
+
+.driver-profile-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  border: 2px solid #f59e0b;
+  background: #fff7ed;
+}
+
+.driver-profile-avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.25rem;
+  color: #92400e;
+}
+
+.driver-profile-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.driver-profile-name {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.driver-profile-phone {
+  font-size: 0.95rem;
+  color: #6b7280;
+  direction: ltr;
+  text-align: right;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
 .rejection-section {
   background: #fef2f2;
   border: 1px solid #fecaca;
@@ -281,6 +332,16 @@
 
 .notification-btn:hover {
   background: #fde68a;
+  transform: translateY(-2px);
+}
+
+.delete-btn {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.delete-btn:hover {
+  background: #fecaca;
   transform: translateY(-2px);
 }
 
