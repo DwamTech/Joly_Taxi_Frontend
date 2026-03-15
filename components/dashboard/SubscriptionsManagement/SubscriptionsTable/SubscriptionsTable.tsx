@@ -1,6 +1,7 @@
 "use client";
 
-import { Subscription } from "@/models/Subscription";
+import { Subscription, SubscriptionStatus } from "@/models/Subscription";
+import { formatText, formatNumber, formatDate } from "@/utils/formatters";
 import "./SubscriptionsTable.css";
 
 interface SubscriptionsTableProps {
@@ -9,9 +10,8 @@ interface SubscriptionsTableProps {
   onActivateSubscription: (subscriptionId: number) => void;
   onRejectSubscription: (subscriptionId: number) => void;
   onExtendSubscription: (subscriptionId: number) => void;
-  onCancelSubscription: (subscriptionId: number) => void;
   onDeleteSubscription: (subscriptionId: number) => void;
-  onSendNotification: (driverId: number) => void;
+  onChangeStatus: (subscriptionId: number, status: SubscriptionStatus) => void;
 }
 
 export default function SubscriptionsTable({
@@ -20,28 +20,22 @@ export default function SubscriptionsTable({
   onActivateSubscription,
   onRejectSubscription,
   onExtendSubscription,
-  onCancelSubscription,
   onDeleteSubscription,
-  onSendNotification,
+  onChangeStatus,
 }: SubscriptionsTableProps) {
   const getStatusLabel = (status: string) => {
     const labels: Record<string, string> = {
-      pending: "قيد المراجعة",
+    //  pending: "قيد المراجعة",
       active: "نشط",
-      expired: "منتهي",
+     // expired: "منتهي",
       rejected: "مرفوض",
-      cancelled: "ملغي",
+    //  cancelled: "ملغي",
     };
     return labels[status] || status;
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("ar-EG", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
+  const formatDateString = (dateString: string) => {
+    return formatDate(dateString);
   };
 
   return (
@@ -97,11 +91,16 @@ export default function SubscriptionsTable({
                   {formatDate(subscription.created_at)}
                 </td>
                 <td data-label="الحالة">
-                  <span
-                    className={`status-badge status-${subscription.status}`}
+                  <select
+                    className={`status-select status-${subscription.status}`}
+                    value={subscription.status}
+                    onChange={(e) => onChangeStatus(subscription.id, e.target.value as SubscriptionStatus)}
                   >
-                    {getStatusLabel(subscription.status)}
-                  </span>
+                  {/*  <option value="pending">قيد المراجعة</option>*/}
+                    <option value="active">نشط</option>
+                   {/* <option value="expired">منتهي</option>*/}
+                    <option value="rejected">مرفوض</option>
+                  </select>
                 </td>
                 <td data-label="الإجراءات">
                   <div className="actions-cell">
@@ -141,16 +140,8 @@ export default function SubscriptionsTable({
                         >
                           📅
                         </button>
-                        
                       </>
                     )}
-                    <button
-                      className="action-btn notification-btn"
-                      onClick={() => onSendNotification(subscription.driver.id)}
-                      title="إرسال إشعار للسائق"
-                    >
-                      🔔
-                    </button>
                     <button
                       className="action-btn delete-btn"
                       onClick={() => onDeleteSubscription(subscription.id)}
@@ -158,13 +149,6 @@ export default function SubscriptionsTable({
                     >
                       🗑️
                     </button>
-                    <button
-                          className="action-btn cancel-btn"
-                          onClick={() => onCancelSubscription(subscription.id)}
-                          title="إلغاء الاشتراك"
-                        >
-                          🚫
-                        </button>
                   </div>
                 </td>
               </tr>

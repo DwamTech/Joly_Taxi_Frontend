@@ -9,7 +9,6 @@ interface SubscriptionDetailsModalProps {
   onActivate?: (subscriptionId: number) => void;
   onReject?: (subscriptionId: number) => void;
   onExtend?: (subscriptionId: number) => void;
-  onCancel?: (subscriptionId: number) => void;
   onSendNotification?: (driverId: number) => void;
   onDelete?: (subscriptionId: number) => void;
 }
@@ -20,7 +19,6 @@ export default function SubscriptionDetailsModal({
   onActivate,
   onReject,
   onExtend,
-  onCancel,
   onSendNotification,
   onDelete,
 }: SubscriptionDetailsModalProps) {
@@ -313,15 +311,6 @@ export default function SubscriptionDetailsModal({
                 title="تمديد الاشتراك"
               >
                 <span>📅</span>
-              </button>
-            )}
-            {subscription.status === "active" && onCancel && (
-              <button
-                className="action-btn cancel-btn"
-                onClick={() => onCancel(subscription.id)}
-                title="إلغاء الاشتراك"
-              >
-                <span>🚫</span>
               </button>
             )}
             {onSendNotification && (

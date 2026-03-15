@@ -174,6 +174,16 @@
   background: #1e88e5;
 }
 
+.tag-action-btn.view {
+  background: #17a2b8;
+}
+
+.tag-action-btn.view:hover {
+  background: #138496;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(23, 162, 184, 0.3);
+}
+
 .tag-action-btn.edit:hover {
   background: #1565c0;
   transform: translateY(-2px);
@@ -184,10 +194,27 @@
   background: #f39c12;
 }
 
+.tag-action-btn.toggle.active {
+  background: #27ae60;
+}
+
+.tag-action-btn.toggle.inactive {
+  background: #e74c3c;
+}
+
 .tag-action-btn.toggle:hover {
-  background: #e67e22;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(243, 156, 18, 0.3);
+}
+
+.tag-action-btn.toggle.active:hover {
+  background: #229954;
+  box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+}
+
+.tag-action-btn.toggle.inactive:hover {
+  background: #c0392b;
+  box-shadow: 0 4px 8px rgba(231, 76, 60, 0.3);
 }
 
 .tag-action-btn.delete {
@@ -426,4 +453,105 @@
   .btn-submit {
     width: 100%;
   }
+}
+/* Disabled state for buttons */
+.tag-action-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.tag-action-btn:disabled:hover {
+  transform: none !important;
+  box-shadow: none !important;
+}
+/* Loading State */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f4f6;
+  border-top: 4px solid #f39c12;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-state p {
+  color: #6b7280;
+  font-size: 16px;
+  margin: 0;
+}
+
+/* Error State */
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.error-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.error-state p {
+  color: #dc2626;
+  font-size: 16px;
+  margin: 0 0 20px 0;
+  max-width: 400px;
+}
+
+.retry-btn {
+  background: #f39c12;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.retry-btn:hover {
+  background: #e67e22;
+}
+
+.retry-btn:active {
+  transform: translateY(1px);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.empty-icon {
+  font-size: 64px;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.empty-state p {
+  color: #7f8c8d;
+  font-size: 16px;
+  margin: 0;
 }

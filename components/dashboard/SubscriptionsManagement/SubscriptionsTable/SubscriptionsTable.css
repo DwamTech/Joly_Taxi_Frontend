@@ -158,6 +158,52 @@
   color: #7f1d1d;
 }
 
+.status-select {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1f2937;
+  outline: none;
+  transition: box-shadow 0.2s ease, transform 0.05s ease;
+  cursor: pointer;
+}
+
+.status-select:hover {
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+}
+
+.status-select:focus {
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25);
+}
+
+.status-select.status-pending {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #fde68a;
+}
+
+.status-select.status-active {
+  background: #d1fae5;
+  color: #065f46;
+  border-color: #a7f3d0;
+}
+
+.status-select.status-expired {
+  background: #f3f4f6;
+  color: #6b7280;
+  border-color: #e5e7eb;
+}
+
+.status-select.status-rejected {
+  background: #fee2e2;
+  color: #991b1b;
+  border-color: #fecaca;
+}
+
 .actions-cell {
   display: flex;
   gap: 8px;
@@ -229,14 +275,7 @@
   transform: scale(1.1);
 }
 
-.notification-btn {
-  background: #fef3c7;
-}
 
-.notification-btn:hover {
-  background: #fde68a;
-  transform: scale(1.1);
-}
 
 .delete-btn {
   background: #fee2e2;

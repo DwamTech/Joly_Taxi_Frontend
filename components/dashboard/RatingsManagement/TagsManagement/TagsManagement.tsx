@@ -2,9 +2,17 @@
 
 import { useState, useEffect } from "react";
 import { RatingTagManagement } from "@/models/Rating";
-import mockData from "@/data/dashboard/mock-rating-tags.json";
+import { getAllRatingTags, toggleRatingTagStatus, forceDeleteRatingTag } from "@/services/ratingTagsService";
 import ConfirmDialog from "@/components/ConfirmDialog/ConfirmDialog";
+import Toast from "@/components/Toast/Toast";
+import TagDetailsModal from "../TagDetailsModal/TagDetailsModal";
 import "./TagsManagement.css";
+
+interface ExtendedRatingTag extends RatingTagManagement {
+  created_at?: string;
+  updated_at?: string;
+  label?: string;
+}
 
 interface TagFormData {
   id?: number;
@@ -18,7 +26,7 @@ interface TagFormData {
 }
 
 export default function TagsManagement() {
-  const [tags, setTags] = useState<RatingTagManagement[]>([]);
+  const [tags, setTags] = useState<ExtendedRatingTag[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [editingTag, setEditingTag] = useState<TagFormData | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; id: number; label: string }>({
@@ -26,6 +34,11 @@ export default function TagsManagement() {
     id: 0,
     label: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const [selectedTagId, setSelectedTagId] = useState<number | null>(null);
   const [formData, setFormData] = useState<TagFormData>({
     label_ar: "",
     label_en: "",
@@ -36,8 +49,23 @@ export default function TagsManagement() {
     is_active: true,
   });
 
+  // جلب البيانات من الـ API
+  const fetchTags = async () => {
+    try {
+      setInitialLoading(true);
+      setError(null);
+      const tagsData = await getAllRatingTags();
+      setTags(tagsData);
+    } catch (err: any) {
+      console.error('Error fetching tags:', err);
+      setError(err.message || 'فشل في جلب وسوم التقييمات');
+    } finally {
+      setInitialLoading(false);
+    }
+  };
+
   useEffect(() => {
-    setTags(mockData.tags as RatingTagManagement[]);
+    fetchTags();
   }, []);
 
   const getAppliesTo = (type: string) => {
@@ -63,7 +91,11 @@ export default function TagsManagement() {
     setShowModal(true);
   };
 
-  const handleEditTag = (tag: RatingTagManagement) => {
+  const handleViewDetails = (tagId: number) => {
+    setSelectedTagId(tagId);
+  };
+
+  const handleEditTag = (tag: ExtendedRatingTag) => {
     setEditingTag({
       id: tag.id,
       label_ar: tag.label_ar,
@@ -87,19 +119,61 @@ export default function TagsManagement() {
     setShowModal(true);
   };
 
-  const handleToggleActive = (id: number) => {
-    setTags(tags.map(tag => 
-      tag.id === id ? { ...tag, is_active: !tag.is_active } : tag
-    ));
+  const handleToggleActive = async (id: number) => {
+    try {
+      setLoading(true);
+      const message = await toggleRatingTagStatus(id);
+      
+      // إعادة تحميل البيانات للحصول على أحدث حالة
+      await fetchTags();
+      
+      // إظهار رسالة نجاح
+      setToast({
+        message: `✅ ${message}`,
+        type: 'success'
+      });
+      
+    } catch (error: any) {
+      console.error('Error toggling tag status:', error);
+      setToast({
+        message: `❌ ${error.message || 'فشل في تغيير حالة الوسم'}`,
+        type: 'error'
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDeleteClick = (id: number, label: string) => {
     setDeleteConfirm({ show: true, id, label });
   };
 
-  const confirmDelete = () => {
-    setTags(tags.filter(tag => tag.id !== deleteConfirm.id));
-    setDeleteConfirm({ show: false, id: 0, label: "" });
+  const confirmDelete = async () => {
+    try {
+      setLoading(true);
+      const message = await forceDeleteRatingTag(deleteConfirm.id);
+      
+      // إعادة تحميل البيانات للحصول على أحدث حالة
+      await fetchTags();
+      
+      // إظهار رسالة نجاح
+      setToast({
+        message: `✅ ${message}`,
+        type: 'success'
+      });
+      
+      setDeleteConfirm({ show: false, id: 0, label: "" });
+      
+    } catch (error: any) {
+      console.error('Error deleting tag:', error);
+      setToast({
+        message: `❌ ${error.message || 'فشل في حذف الوسم'}`,
+        type: 'error'
+      });
+      setDeleteConfirm({ show: false, id: 0, label: "" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -135,76 +209,113 @@ export default function TagsManagement() {
           </button>
         </div>
 
-        <div className="tags-table-container">
-          <table className="tags-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>النص بالعربية</th>
-                <th>النص بالإنجليزية</th>
-                <th>ينطبق على</th>
-                <th>النجوم</th>
-                <th>النوع</th>
-                <th>الحالة</th>
-                <th>الاستخدامات</th>
-                <th>الإجراءات</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tags.map((tag) => (
-                <tr key={tag.id}>
-                  <td className="tag-id">#{tag.id}</td>
-                  <td className="tag-label">{tag.label_ar}</td>
-                  <td className="tag-label-en">{tag.label_en}</td>
-                  <td>
-                    <span className={`applies-badge ${tag.applies_to}`}>
-                      {getAppliesTo(tag.applies_to)}
-                    </span>
-                  </td>
-                  <td className="stars-range">
-                    {tag.min_stars} - {tag.max_stars} ⭐
-                  </td>
-                  <td>
-                    <span className={`type-badge ${tag.is_positive ? "positive" : "negative"}`}>
-                      {tag.is_positive ? "إيجابي" : "سلبي"}
-                    </span>
-                  </td>
-                  <td>
-                    <span className={`status-badge ${tag.is_active ? "active" : "inactive"}`}>
-                      {tag.is_active ? "نشط" : "غير نشط"}
-                    </span>
-                  </td>
-                  <td className="usage-count">{tag.usage_count}</td>
-                  <td>
-                    <div className="tag-actions">
-                      <button 
-                        className="tag-action-btn edit" 
-                        title="تعديل"
-                        onClick={() => handleEditTag(tag)}
-                      >
-                        ✏️
-                      </button>
-                      <button 
-                        className="tag-action-btn toggle" 
-                        title={tag.is_active ? "تعطيل" : "تفعيل"}
-                        onClick={() => handleToggleActive(tag.id)}
-                      >
-                        {tag.is_active ? "II" : "▶️"}
-                      </button>
-                      <button 
-                        className="tag-action-btn delete" 
-                        title="حذف"
-                        onClick={() => handleDeleteClick(tag.id, tag.label_ar)}
-                      >
-                        <span style={{ color: '#fff', fontSize: '16px', fontWeight: 'bold' }}>✕</span>
-                      </button>
-                    </div>
-                  </td>
+        {initialLoading && (
+          <div className="loading-state">
+            <div className="loading-spinner"></div>
+            <p>جاري تحميل الوسوم...</p>
+          </div>
+        )}
+
+        {error && (
+          <div className="error-state">
+            <span className="error-icon">⚠️</span>
+            <p>{error}</p>
+            <button className="retry-btn" onClick={fetchTags}>
+              إعادة المحاولة
+            </button>
+          </div>
+        )}
+
+        {!initialLoading && !error && (
+          <div className="tags-table-container">
+            <table className="tags-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>النص بالعربية</th>
+                  <th>النص بالإنجليزية</th>
+                  <th>ينطبق على</th>
+                  <th>النجوم</th>
+                  <th>النوع</th>
+                  <th>الحالة</th>
+                  <th>الإجراءات</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {tags.map((tag) => (
+                  <tr key={tag.id}>
+                    <td className="tag-id">#{tag.id}</td>
+                    <td className="tag-label">{tag.label_ar}</td>
+                    <td className="tag-label-en">{tag.label_en}</td>
+                    <td>
+                      <span className={`applies-badge ${tag.applies_to}`}>
+                        {getAppliesTo(tag.applies_to)}
+                      </span>
+                    </td>
+                    <td className="stars-range">
+                      {tag.min_stars} - {tag.max_stars} ⭐
+                    </td>
+                    <td>
+                      <span className={`type-badge ${tag.is_positive ? "positive" : "negative"}`}>
+                        {tag.is_positive ? "إيجابي" : "سلبي"}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={`status-badge ${tag.is_active ? "active" : "inactive"}`}>
+                        {tag.is_active ? "نشط" : "غير نشط"}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="tag-actions">
+                        <button 
+                          className="tag-action-btn view" 
+                          title="عرض التفاصيل"
+                          onClick={() => handleViewDetails(tag.id)}
+                        >
+                          📄
+                        </button>
+                        <button 
+                          className="tag-action-btn edit" 
+                          title="تعديل"
+                          onClick={() => handleEditTag(tag)}
+                        >
+                          ✏️
+                        </button>
+                        <button 
+                          className={`tag-action-btn toggle ${tag.is_active ? 'active' : 'inactive'}`}
+                          title={loading ? "جاري التحديث..." : (tag.is_active ? "تعطيل الوسم" : "تفعيل الوسم")}
+                          onClick={() => handleToggleActive(tag.id)}
+                          disabled={loading}
+                        >
+                          {loading ? "⏳" : (tag.is_active ? "⏸️" : "▶️")}
+                        </button>
+                        <button 
+                          className="tag-action-btn delete" 
+                          title={loading ? "جاري الحذف..." : "حذف نهائي"}
+                          onClick={() => handleDeleteClick(tag.id, tag.label_ar)}
+                          disabled={loading}
+                        >
+                          {loading ? (
+                            <span style={{ color: '#fff', fontSize: '14px' }}>⏳</span>
+                          ) : (
+                            <span style={{ color: '#fff', fontSize: '16px', fontWeight: 'bold' }}>✕</span>
+                          )}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {tags.length === 0 && (
+              <div className="empty-state">
+                <span className="empty-icon">📭</span>
+                <p>لا توجد وسوم</p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Modal لإضافة/تعديل وسم */}
@@ -319,13 +430,35 @@ export default function TagsManagement() {
       {/* Dialog تأكيد الحذف */}
       {deleteConfirm.show && (
         <ConfirmDialog
-          title="تأكيد الحذف"
-          message={`هل أنت متأكد من حذف الوسم "${deleteConfirm.label}"؟ لن يمكن التراجع عن هذا الإجراء.`}
-          confirmText="حذف"
+          title="تأكيد الحذف النهائي"
+          message={
+            `هل أنت متأكد من حذف الوسم "${deleteConfirm.label}" نهائياً؟\n\n` +
+            `⚠️ تحذير: هذا حذف نهائي ولا يمكن التراجع عنه!\n\n` +
+            `سيتم حذف الوسم من النظام بالكامل وإزالة جميع الارتباطات المتعلقة به.\n` +
+            `هذا الإجراء لا يمكن استرداده.`
+          }
+          confirmText="حذف نهائياً"
           cancelText="إلغاء"
           type="danger"
           onConfirm={confirmDelete}
           onCancel={() => setDeleteConfirm({ show: false, id: 0, label: "" })}
+        />
+      )}
+
+      {/* نافذة تفاصيل الوسم */}
+      {selectedTagId && (
+        <TagDetailsModal
+          tagId={selectedTagId}
+          onClose={() => setSelectedTagId(null)}
+        />
+      )}
+
+      {/* Toast للرسائل */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
         />
       )}
     </>

@@ -2,6 +2,7 @@
 
 import { Rating } from "@/models/Rating";
 import ConfirmDialog from "@/components/ConfirmDialog/ConfirmDialog";
+import { formatDisplayValue } from "@/utils/formatters";
 import { useState } from "react";
 import "./RatingsTable.css";
 
@@ -9,10 +10,17 @@ interface RatingsTableProps {
   ratings: Rating[];
   onViewDetails: (rating: Rating) => void;
   onDelete: (id: number) => void;
+  loading?: boolean;
 }
 
-export default function RatingsTable({ ratings, onViewDetails, onDelete }: RatingsTableProps) {
-  const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; id: number; tripId: number }>({
+export default function RatingsTable({ ratings, onViewDetails, onDelete, loading = false }: RatingsTableProps) {
+  const [deleteConfirm, setDeleteConfirm] = useState<{ 
+    show: boolean; 
+    id: number; 
+    tripId: number;
+    raterName?: string;
+    ratedName?: string;
+  }>({
     show: false,
     id: 0,
     tripId: 0,
@@ -33,7 +41,18 @@ export default function RatingsTable({ ratings, onViewDetails, onDelete }: Ratin
   };
 
   const handleDeleteClick = (id: number, tripId: number) => {
-    setDeleteConfirm({ show: true, id, tripId });
+    // البحث عن التقييم للحصول على معلومات إضافية
+    const rating = ratings.find(r => r.id === id);
+    const raterName = rating?.rater_name || 'غير محدد';
+    const ratedName = rating?.rated_name || 'غير محدد';
+    
+    setDeleteConfirm({ 
+      show: true, 
+      id, 
+      tripId,
+      raterName,
+      ratedName
+    });
   };
 
   const confirmDelete = () => {
@@ -64,7 +83,7 @@ export default function RatingsTable({ ratings, onViewDetails, onDelete }: Ratin
                 <td data-label="رقم الرحلة" className="trip-id">#{rating.trip_request_id}</td>
                 <td data-label="المُقيِّم">
                   <div className="user-cell">
-                    <span className="user-name">{rating.rater_name}</span>
+                    <span className="user-name">{formatDisplayValue(rating.rater_name)}</span>
                     <span className={`user-type ${rating.rater_type}`}>
                       {rating.rater_type === "driver" ? "سائق" : "راكب"}
                     </span>
@@ -72,7 +91,7 @@ export default function RatingsTable({ ratings, onViewDetails, onDelete }: Ratin
                 </td>
                 <td data-label="المُقيَّم">
                   <div className="user-cell">
-                    <span className="user-name">{rating.rated_name}</span>
+                    <span className="user-name">{formatDisplayValue(rating.rated_name)}</span>
                     <span className={`user-type ${rating.rated_type}`}>
                       {rating.rated_type === "driver" ? "سائق" : "راكب"}
                     </span>
@@ -81,26 +100,37 @@ export default function RatingsTable({ ratings, onViewDetails, onDelete }: Ratin
                 <td data-label="التقييم" className="stars-cell">{renderStars(rating.stars)}</td>
                 <td data-label="الوسوم">
                   <div className="tags-cell">
-                    {rating.tags.slice(0, 2).map((tag) => (
-                      <span key={tag.id} className={`tag ${tag.is_positive ? "positive" : "negative"}`}>
-                        {tag.label}
-                      </span>
-                    ))}
-                    {rating.tags.length > 2 && <span className="tag-more">+{rating.tags.length - 2}</span>}
+                    {rating.tags && rating.tags.length > 0 ? (
+                      <>
+                        {rating.tags.slice(0, 2).map((tag) => (
+                          <span key={tag.id} className={`tag ${tag.is_positive ? "positive" : "negative"}`}>
+                            {formatDisplayValue(tag.label)}
+                          </span>
+                        ))}
+                        {rating.tags.length > 2 && <span className="tag-more">+{rating.tags.length - 2}</span>}
+                      </>
+                    ) : (
+                      <span className="no-tags">لا توجد وسوم</span>
+                    )}
                   </div>
                 </td>
                 <td data-label="التاريخ" className="date-cell">{formatDate(rating.created_at)}</td>
                 <td data-label="الإجراءات">
                   <div className="actions-cell">
                     <button className="action-btn view" onClick={() => onViewDetails(rating)} title="عرض التفاصيل">
-                      <span style={{ fontSize: '20px' }}>📄</span>
+                      <span style={{ fontSize: '16px' }}>📄</span>
                     </button>
                     <button
                       className="action-btn delete"
                       onClick={() => handleDeleteClick(rating.id, rating.trip_request_id)}
-                      title="حذف"
+                      disabled={loading}
+                      title={loading ? "جاري الحذف..." : "حذف"}
                     >
-                      <span style={{ color: '#fff', fontSize: '20px', fontWeight: 'bold' }}>✕</span>
+                      {loading ? (
+                        <span style={{ color: '#fff', fontSize: '14px' }}>⏳</span>
+                      ) : (
+                        <span style={{ color: '#fff', fontSize: '16px', fontWeight: 'bold' }}>✕</span>
+                      )}
                     </button>
                   </div>
                 </td>
@@ -119,9 +149,14 @@ export default function RatingsTable({ ratings, onViewDetails, onDelete }: Ratin
 
       {deleteConfirm.show && (
         <ConfirmDialog
-          title="تأكيد الحذف"
-          message={`هل أنت متأكد من حذف التقييم للرحلة #${deleteConfirm.tripId}؟ سيتم إزالة تأثيره على التقييم الإجمالي.`}
-          confirmText="حذف"
+          title="تأكيد حذف التقييم"
+          message={
+            `هل أنت متأكد من حذف التقييم #${deleteConfirm.id} للرحلة #${deleteConfirm.tripId}؟\n\n` +
+            `المُقيِّم: ${deleteConfirm.raterName || 'غير محدد'}\n` +
+            `المُقيَّم: ${deleteConfirm.ratedName || 'غير محدد'}\n\n` +
+            `⚠️ تحذير: سيتم حذف التقييم نهائياً ولا يمكن استرداده، وسيؤثر ذلك على التقييم الإجمالي للمستخدم.`
+          }
+          confirmText="حذف نهائياً"
           cancelText="إلغاء"
           type="danger"
           onConfirm={confirmDelete}

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
-import { Subscription } from "@/models/Subscription";
+import { Subscription, SubscriptionStatus } from "@/models/Subscription";
 import { ToastProvider, useToast } from "@/components/Toast/ToastContainer";
 import ConfirmDialog from "@/components/ConfirmDialog/ConfirmDialog";
 import Pagination from "@/components/Pagination/Pagination";
@@ -16,6 +16,8 @@ import { exportSubscriptionsToExcel } from "@/utils/exportSubscriptionsToExcel";
 import { getAdminSubscriptionById, getAdminSubscriptions } from "@/services/subscriptionsService";
 import { deleteAdminSubscription } from "@/services/subscriptionsDeleteService";
 import { extendAdminSubscription } from "@/services/subscriptionsExtendService";
+import { updateAdminSubscriptionStatus } from "@/services/subscriptionsStatusService";
+import { sendSubscriptionRenewalReminder } from "@/services/subscriptionNotificationsService";
 import "./subscriptions.css";
 
 function SubscriptionsManagementContent() {
@@ -38,6 +40,7 @@ function SubscriptionsManagementContent() {
     subscriptionId: 0,
     subscriptionNumber: "",
   });
+  const [isSendingNotification, setIsSendingNotification] = useState(false);
   const [filters, setFilters] = useState<SubscriptionFilterValues>({
     search: "",
     driverName: "",
@@ -254,10 +257,97 @@ function SubscriptionsManagementContent() {
     }
   };
 
-  const handleSendNotification = (driverId: number) => {
-    showToast("سيتم فتح نافذة إرسال الإشعار قريباً", "info");
-    // TODO: Open notification modal
-    console.log("Send notification to driver:", driverId);
+  const handleSendNotification = async () => {
+    if (isSendingNotification) return; // منع الضغط المتكرر
+    
+    setIsSendingNotification(true);
+    try {
+      const result = await sendSubscriptionRenewalReminder();
+      
+      // عرض رسالة نجاح مبسطة وواضحة
+      const stats = result.data;
+      
+      if (stats.notifications_sent > 0) {
+        showToast(
+          `تم إرسال تذكير التجديد بنجاح! ✅\n\n` +
+          `📊 تم الإرسال: ${stats.notifications_sent} من أصل ${stats.total_subscriptions}\n` +
+          `⏰ للاشتراكات المنتهية خلال ${stats.days_before_expiry} أيام`,
+          "success"
+        );
+      } else {
+        showToast(
+          `لا توجد اشتراكات تحتاج تذكير حالياً ℹ️\n\n` +
+          `📋 تم فحص ${stats.total_subscriptions} اشتراك`,
+          "info"
+        );
+      }
+      
+      // معلومات إضافية في console للمطورين
+      console.log("تفاصيل إرسال الإشعار:", {
+        message: result.message,
+        totalSubscriptions: stats.total_subscriptions,
+        sent: stats.notifications_sent,
+        failed: stats.notifications_failed,
+        daysBeforeExpiry: stats.days_before_expiry,
+        subscriptions: stats.subscriptions
+      });
+      
+    } catch (error: any) {
+      // رسالة خطأ واضحة ومفيدة
+      const errorMessage = error?.message || "حدث خطأ غير متوقع";
+      
+      if (errorMessage.includes("422") || errorMessage.includes("Unprocessable")) {
+        showToast(
+          `خطأ في البيانات المرسلة ❌\n\n` +
+          `🔧 يرجى المحاولة مرة أخرى أو التواصل مع الدعم التقني`,
+          "error"
+        );
+      } else if (errorMessage.includes("401") || errorMessage.includes("Unauthorized")) {
+        showToast(
+          `انتهت صلاحية الجلسة 🔒\n\n` +
+          `🔄 يرجى تسجيل الدخول مرة أخرى`,
+          "error"
+        );
+      } else if (errorMessage.includes("403") || errorMessage.includes("Forbidden")) {
+        showToast(
+          `ليس لديك صلاحية لإرسال الإشعارات ⛔\n\n` +
+          `👤 يرجى التواصل مع المدير`,
+          "error"
+        );
+      } else if (errorMessage.includes("500") || errorMessage.includes("Server Error")) {
+        showToast(
+          `خطأ في الخادم 🔧\n\n` +
+          `⏳ يرجى المحاولة مرة أخرى بعد قليل`,
+          "error"
+        );
+      } else if (errorMessage.includes("Network") || errorMessage.includes("fetch")) {
+        showToast(
+          `مشكلة في الاتصال بالإنترنت 🌐\n\n` +
+          `📶 تأكد من اتصالك وحاول مرة أخرى`,
+          "error"
+        );
+      } else {
+        showToast(
+          `فشل في إرسال تذكير التجديد ❌\n\n` +
+          `💬 ${errorMessage}`,
+          "error"
+        );
+      }
+      
+      console.error("خطأ في إرسال تذكير التجديد:", error);
+    } finally {
+      setIsSendingNotification(false);
+    }
+  };
+
+  const handleChangeSubscriptionStatus = async (subscriptionId: number, status: SubscriptionStatus) => {
+    try {
+      const updated = await updateAdminSubscriptionStatus(subscriptionId, status);
+      setSubscriptions((prev) => prev.map((s) => (s.id === subscriptionId ? updated : s)));
+      showToast("تم تحديث حالة الاشتراك بنجاح", "success");
+    } catch (error: any) {
+      showToast(error?.message || "فشل في تحديث حالة الاشتراك", "error");
+    }
   };
 
   const confirmAction = async () => {
@@ -358,6 +448,8 @@ function SubscriptionsManagementContent() {
       <SubscriptionsFilters
         onFilterChange={handleFilterChange}
         resultsCount={filteredSubscriptions.length}
+        onSendNotification={handleSendNotification}
+        isSendingNotification={isSendingNotification}
       />
 
       <SubscriptionsTable
@@ -366,9 +458,8 @@ function SubscriptionsManagementContent() {
         onActivateSubscription={handleActivateSubscription}
         onRejectSubscription={handleRejectSubscription}
         onExtendSubscription={handleExtendSubscription}
-        onCancelSubscription={handleCancelSubscription}
         onDeleteSubscription={handleDeleteSubscription}
-        onSendNotification={handleSendNotification}
+        onChangeStatus={handleChangeSubscriptionStatus}
       />
 
       <Pagination
@@ -386,7 +477,6 @@ function SubscriptionsManagementContent() {
           onActivate={handleActivateSubscription}
           onReject={handleRejectSubscription}
           onExtend={handleExtendSubscription}
-          onCancel={handleCancelSubscription}
           onSendNotification={handleSendNotification}
           onDelete={handleDeleteSubscription}
         />

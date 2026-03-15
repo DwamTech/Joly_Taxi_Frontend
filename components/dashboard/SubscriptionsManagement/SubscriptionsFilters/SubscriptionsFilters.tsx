@@ -15,11 +15,15 @@ export interface SubscriptionFilterValues {
 interface SubscriptionsFiltersProps {
   onFilterChange: (filters: SubscriptionFilterValues) => void;
   resultsCount: number;
+  onSendNotification: () => void;
+  isSendingNotification?: boolean;
 }
 
 export default function SubscriptionsFilters({
   onFilterChange,
   resultsCount,
+  onSendNotification,
+  isSendingNotification = false,
 }: SubscriptionsFiltersProps) {
   const [filters, setFilters] = useState<SubscriptionFilterValues>({
     search: "",
@@ -73,7 +77,12 @@ export default function SubscriptionsFilters({
     const newFilters = { ...filters, [field]: value };
     setFilters(newFilters);
     onFilterChange(newFilters);
-    localStorage.setItem("subscriptionsFilters", JSON.stringify(newFilters));
+    // حفظ الفلاتر فوراً في localStorage
+    try {
+      localStorage.setItem("subscriptionsFilters", JSON.stringify(newFilters));
+    } catch (error) {
+      console.error("Error saving filters:", error);
+    }
   };
 
   const clearFilters = () => {
@@ -86,7 +95,12 @@ export default function SubscriptionsFilters({
     };
     setFilters(defaultFilters);
     onFilterChange(defaultFilters);
-    localStorage.removeItem("subscriptionsFilters");
+    // إزالة الفلاتر المحفوظة
+    try {
+      localStorage.removeItem("subscriptionsFilters");
+    } catch (error) {
+      console.error("Error clearing filters:", error);
+    }
   };
 
   return (
@@ -163,9 +177,24 @@ export default function SubscriptionsFilters({
           <span className="results-number">{resultsCount}</span>
           <span>اشتراك</span>
         </div>
-        <button className="clear-filters-btn" onClick={clearFilters}>
-          مسح الفلاتر
-        </button>
+        <div className="action-buttons">
+          <button 
+            className={`send-notification-btn ${isSendingNotification ? 'loading' : ''}`}
+            onClick={onSendNotification}
+            disabled={isSendingNotification}
+          >
+            <span className="btn-icon">
+              {isSendingNotification ? '⏳' : '🔔'}
+            </span>
+            <span className="btn-text">
+              {isSendingNotification ? 'جاري الإرسال...' : 'إرسال إشعار'}
+            </span>
+          </button>
+          <button className="clear-filters-btn" onClick={clearFilters}>
+            <span className="btn-icon">🗑️</span>
+            <span className="btn-text">مسح الفلاتر</span>
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -12,14 +12,17 @@ interface ToastProps {
   duration?: number;
 }
 
-export default function Toast({ message, type, onClose, duration = 3000 }: ToastProps) {
+export default function Toast({ message, type, onClose, duration }: ToastProps) {
+  // تحديد المدة بناءً على طول الرسالة إذا لم يتم تحديدها
+  const defaultDuration = duration || (message.length > 100 ? 6000 : message.length > 50 ? 4500 : 3000);
+  
   useEffect(() => {
     const timer = setTimeout(() => {
       onClose();
-    }, duration);
+    }, defaultDuration);
 
     return () => clearTimeout(timer);
-  }, [duration, onClose]);
+  }, [defaultDuration, onClose]);
 
   const icons = {
     success: "✅",

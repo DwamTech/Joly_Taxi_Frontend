@@ -2,12 +2,12 @@
   position: fixed;
   top: 20px;
   right: 20px;
-  min-width: 300px;
-  max-width: 500px;
-  padding: 1rem 1.5rem;
+  min-width: 320px;
+  max-width: 450px;
+  padding: 1.25rem 1.5rem;
   border-radius: 12px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 1rem;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   z-index: 9999;
@@ -49,13 +49,37 @@
 .toast-icon {
   font-size: 1.5rem;
   flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .toast-message {
   flex: 1;
   font-size: 0.95rem;
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 1.5;
+  white-space: pre-line;
+  word-wrap: break-word;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* تحسين شريط التمرير للرسائل الطويلة */
+.toast-message::-webkit-scrollbar {
+  width: 4px;
+}
+
+.toast-message::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.toast-message::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+}
+
+.toast-message::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .toast-close {
@@ -72,6 +96,7 @@
   font-size: 1.2rem;
   transition: all 0.2s;
   flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .toast-close:hover {

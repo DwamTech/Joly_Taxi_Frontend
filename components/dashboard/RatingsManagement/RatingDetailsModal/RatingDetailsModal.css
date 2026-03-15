@@ -215,3 +215,222 @@
     margin: 10px;
   }
 }
+/* Loading and Error States */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #f3f4f6;
+  border-top: 3px solid #f39c12;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 12px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-state p {
+  color: #6b7280;
+  font-size: 14px;
+  margin: 0;
+}
+
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.error-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.error-state p {
+  color: #dc2626;
+  font-size: 14px;
+  margin: 0;
+  max-width: 300px;
+}
+
+/* Status Badges */
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-badge.ended {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-badge.cancelled {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.status-badge.active {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.status-badge.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+/* Price Display */
+.detail-value.price {
+  font-weight: 600;
+  color: #27ae60;
+  font-family: 'Courier New', monospace;
+}
+
+/* Rating Average */
+.detail-value.rating-avg {
+  font-weight: 600;
+  color: #f39c12;
+}
+
+/* Reliability Percentage */
+.detail-value.reliability {
+  font-weight: 600;
+  color: #3498db;
+}
+
+/* Verification Badge */
+.verification-badge {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.verification-badge.approved {
+  background: #d4edda;
+  color: #155724;
+}
+
+.verification-badge.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.verification-badge.rejected {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* Online Status */
+.online-status {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.online-status.online {
+  background: #d4edda;
+  color: #155724;
+}
+
+.online-status.offline {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* Driver Profile Section */
+.driver-profile-section {
+  margin-top: 16px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+}
+
+.subsection-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #495057;
+  margin: 0 0 12px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+/* Enhanced Tag Display */
+.tag-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.tag-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tag-details small {
+  font-size: 11px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .rating-details-modal .modal-header {
+    padding: 20px;
+  }
+
+  .rating-details-modal .modal-title {
+    font-size: 20px;
+  }
+
+  .rating-details-modal .modal-body {
+    padding: 20px;
+  }
+
+  .detail-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .detail-label {
+    font-size: 13px;
+  }
+
+  .detail-value {
+    font-size: 13px;
+  }
+
+  .driver-profile-section {
+    padding: 12px;
+  }
+
+  .tags-display {
+    flex-direction: column;
+  }
+
+  .tag-item {
+    width: 100%;
+  }
+}
