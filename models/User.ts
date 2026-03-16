@@ -8,6 +8,7 @@ export interface DriverProfile {
   driver_license_expiry: string;
   expire_profile_at: string;
   verification_status: VerificationStatus;
+  profile_status?: VerificationStatus;
   online_status: boolean;
   rating_avg: number;
   rating_count: number;

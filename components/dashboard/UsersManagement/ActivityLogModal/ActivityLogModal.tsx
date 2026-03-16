@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { usersService, ActivityLog } from "@/services/usersService";
+import { getUserActivityLog } from "@/services/usersService";
+import { Trip } from "@/models/Trip";
 import "./ActivityLogModal.css";
 
 interface ActivityLogModalProps {
@@ -15,7 +16,7 @@ export default function ActivityLogModal({
   userName,
   onClose,
 }: ActivityLogModalProps) {
-  const [activities, setActivities] = useState<ActivityLog[]>([]);
+  const [activities, setActivities] = useState<Trip[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,7 +24,7 @@ export default function ActivityLogModal({
     const fetchActivityLog = async () => {
       try {
         setIsLoading(true);
-        const data = await usersService.getUserActivityLog(userId);
+        const data = await getUserActivityLog(userId);
         setActivities(data);
       } catch (err: any) {
         setError(err.message || "فشل في تحميل سجل النشاط");
@@ -59,8 +60,10 @@ export default function ActivityLogModal({
     const labels: Record<string, string> = {
       ended: "مكتملة",
       cancelled: "ملغاة",
-      ongoing: "جارية",
+      started: "جارية",
+      accepted: "مقبولة",
       open: "يتم البحث",
+      expired: "منتهية الصلاحية",
     };
     return labels[status] || status;
   };
@@ -69,8 +72,10 @@ export default function ActivityLogModal({
     const classes: Record<string, string> = {
       ended: "status-completed",
       cancelled: "status-cancelled",
-      ongoing: "status-ongoing",
+      started: "status-ongoing",
+      accepted: "status-accepted",
       open: "status-searching",
+      expired: "status-expired",
     };
     return classes[status] || "";
   };
@@ -130,7 +135,7 @@ export default function ActivityLogModal({
                   {activities.map((activity) => (
                     <tr key={activity.id}>
                       <td className="trip-id">#{activity.id}</td>
-                      <td className="trip-date">{formatDate(activity.date)}</td>
+                      <td className="trip-date">{formatDate(activity.created_at)}</td>
                       <td className="trip-address">
                         {activity.from_address || (
                           <span className="no-data">غير محدد</span>
@@ -142,7 +147,7 @@ export default function ActivityLogModal({
                         )}
                       </td>
                       <td className="trip-distance">
-                        {parseFloat(activity.distance_km).toFixed(2)} كم
+                        {activity.distance_km.toFixed(2)} كم
                       </td>
                       <td className="trip-eta">
                         {formatDuration(activity.eta_seconds)}
@@ -155,7 +160,7 @@ export default function ActivityLogModal({
                         )}
                       </td>
                       <td className="trip-amount">
-                        {parseFloat(activity.amount).toFixed(2)} ج.م
+                        {(activity.final_price || activity.suggested_price).toFixed(2)} ج.م
                       </td>
                       <td>
                         <span className={`status-badge ${getStatusClass(activity.status)}`}>
@@ -192,7 +197,7 @@ export default function ActivityLogModal({
               <span className="stat-label">إجمالي المبلغ:</span>
               <span className="stat-value total">
                 {activities
-                  .reduce((sum, a) => sum + parseFloat(a.amount), 0)
+                  .reduce((sum, a) => sum + (a.final_price || a.suggested_price), 0)
                   .toFixed(2)}{" "}
                 ج.م
               </span>

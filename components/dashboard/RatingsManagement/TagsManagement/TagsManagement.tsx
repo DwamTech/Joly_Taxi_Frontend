@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { RatingTagManagement } from "@/models/Rating";
-import { getAllRatingTags, toggleRatingTagStatus, forceDeleteRatingTag } from "@/services/ratingTagsService";
+import { getAllRatingTags, toggleRatingTagStatus, forceDeleteRatingTag, createRatingTag, CreateRatingTagRequest, updateRatingTag, UpdateRatingTagRequest } from "@/services/ratingTagsService";
 import ConfirmDialog from "@/components/ConfirmDialog/ConfirmDialog";
 import Toast from "@/components/Toast/Toast";
+import Pagination from "@/components/Pagination/Pagination";
 import TagDetailsModal from "../TagDetailsModal/TagDetailsModal";
+import TagsFilters, { TagFilterValues } from "../TagsFilters/TagsFilters";
 import "./TagsManagement.css";
 
 interface ExtendedRatingTag extends RatingTagManagement {
@@ -27,6 +29,7 @@ interface TagFormData {
 
 export default function TagsManagement() {
   const [tags, setTags] = useState<ExtendedRatingTag[]>([]);
+  const [filteredTags, setFilteredTags] = useState<ExtendedRatingTag[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [editingTag, setEditingTag] = useState<TagFormData | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<{ show: boolean; id: number; label: string }>({
@@ -39,6 +42,10 @@ export default function TagsManagement() {
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [selectedTagId, setSelectedTagId] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const itemsPerPage = 20;
   const [formData, setFormData] = useState<TagFormData>({
     label_ar: "",
     label_en: "",
@@ -56,12 +63,122 @@ export default function TagsManagement() {
       setError(null);
       const tagsData = await getAllRatingTags();
       setTags(tagsData);
+      setFilteredTags(tagsData);
+      
+      // حساب معلومات الصفحات
+      setTotalItems(tagsData.length);
+      setTotalPages(Math.ceil(tagsData.length / itemsPerPage));
+      
     } catch (err: any) {
       console.error('Error fetching tags:', err);
       setError(err.message || 'فشل في جلب وسوم التقييمات');
     } finally {
       setInitialLoading(false);
     }
+  };
+
+  // تطبيق الفلاتر
+  const applyFilters = (filters: TagFilterValues) => {
+    let filtered = [...tags];
+
+    // فلتر البحث
+    if (filters.search.trim()) {
+      const searchTerm = filters.search.toLowerCase().trim();
+      filtered = filtered.filter(tag => 
+        tag.label_ar.toLowerCase().includes(searchTerm) ||
+        tag.label_en.toLowerCase().includes(searchTerm)
+      );
+    }
+
+    // فلتر ينطبق على
+    if (filters.appliesTo !== "all") {
+      filtered = filtered.filter(tag => {
+        if (filters.appliesTo === "both") {
+          return tag.applies_to === "both";
+        }
+        return tag.applies_to === filters.appliesTo;
+      });
+    }
+
+    // فلتر النوع
+    if (filters.type !== "all") {
+      filtered = filtered.filter(tag => {
+        if (filters.type === "positive") {
+          return tag.is_positive === true;
+        } else if (filters.type === "negative") {
+          return tag.is_positive === false;
+        }
+        return true;
+      });
+    }
+
+    // فلتر الحالة
+    if (filters.status !== "all") {
+      filtered = filtered.filter(tag => {
+        if (filters.status === "active") {
+          return tag.is_active === true;
+        } else if (filters.status === "inactive") {
+          return tag.is_active === false;
+        }
+        return true;
+      });
+    }
+
+    // فلتر نطاق النجوم
+    if (filters.starsRange !== "all") {
+      filtered = filtered.filter(tag => {
+        const range = filters.starsRange;
+        if (range === "1") return tag.min_stars <= 1 && tag.max_stars >= 1;
+        if (range === "2") return tag.min_stars <= 2 && tag.max_stars >= 2;
+        if (range === "3") return tag.min_stars <= 3 && tag.max_stars >= 3;
+        if (range === "4") return tag.min_stars <= 4 && tag.max_stars >= 4;
+        if (range === "5") return tag.min_stars <= 5 && tag.max_stars >= 5;
+        if (range === "1-2") return tag.min_stars <= 2 && tag.max_stars >= 1;
+        if (range === "3-4") return tag.min_stars <= 4 && tag.max_stars >= 3;
+        if (range === "4-5") return tag.min_stars <= 5 && tag.max_stars >= 4;
+        return true;
+      });
+    }
+
+    // الترتيب
+    filtered.sort((a, b) => {
+      switch (filters.sortBy) {
+        case "oldest":
+          return new Date(a.created_at || '').getTime() - new Date(b.created_at || '').getTime();
+        case "name_ar":
+          return a.label_ar.localeCompare(b.label_ar, 'ar');
+        case "name_en":
+          return a.label_en.localeCompare(b.label_en, 'en');
+        case "stars_asc":
+          return a.min_stars - b.min_stars;
+        case "stars_desc":
+          return b.max_stars - a.max_stars;
+        case "newest":
+        default:
+          return new Date(b.created_at || '').getTime() - new Date(a.created_at || '').getTime();
+      }
+    });
+
+    setFilteredTags(filtered);
+    setTotalItems(filtered.length);
+    setTotalPages(Math.ceil(filtered.length / itemsPerPage));
+    setCurrentPage(1); // إعادة تعيين الصفحة للأولى عند تطبيق فلاتر جديدة
+  };
+
+  // معالج تغيير الفلاتر
+  const handleFilterChange = (filters: TagFilterValues) => {
+    applyFilters(filters);
+  };
+
+  // الحصول على البيانات للصفحة الحالية
+  const getCurrentPageTags = () => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filteredTags.slice(startIndex, endIndex);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
   };
 
   useEffect(() => {
@@ -176,27 +293,89 @@ export default function TagsManagement() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (editingTag) {
-      // تعديل وسم موجود
-      setTags(tags.map(tag => 
-        tag.id === editingTag.id 
-          ? { ...tag, ...formData, usage_count: tag.usage_count }
-          : tag
-      ));
-    } else {
-      // إضافة وسم جديد
-      const newTag: RatingTagManagement = {
-        ...formData,
-        id: Math.max(...tags.map(t => t.id)) + 1,
-        usage_count: 0,
-      };
-      setTags([...tags, newTag]);
+    try {
+      setLoading(true);
+      
+      if (editingTag) {
+        // تعديل وسم موجود عبر API
+        const updateData: UpdateRatingTagRequest = {
+          label_ar: formData.label_ar,
+          label_en: formData.label_en,
+          applicable_to: formData.applies_to,
+          min_stars: formData.min_stars,
+          max_stars: formData.max_stars,
+          is_positive: formData.is_positive,
+          active: formData.is_active,
+        };
+        
+        const updatedTag = await updateRatingTag(editingTag.id!, updateData);
+        
+        // إعادة تحميل البيانات للحصول على أحدث حالة
+        await fetchTags();
+        
+        // إعادة تطبيق الفلاتر الحالية
+        const savedFiltersAfterUpdate = localStorage.getItem("tagsFilters");
+        if (savedFiltersAfterUpdate) {
+          try {
+            const parsed = JSON.parse(savedFiltersAfterUpdate);
+            applyFilters(parsed);
+          } catch (error) {
+            console.error("Error applying filters after update:", error);
+          }
+        }
+        
+        setToast({
+          message: '✅ تم تحديث الوسم بنجاح',
+          type: 'success'
+        });
+      } else {
+        // إضافة وسم جديد عبر API
+        const newTagData: CreateRatingTagRequest = {
+          label_ar: formData.label_ar,
+          label_en: formData.label_en,
+          applicable_to: formData.applies_to,
+          min_stars: formData.min_stars,
+          max_stars: formData.max_stars,
+          is_positive: formData.is_positive,
+          active: formData.is_active,
+        };
+        
+        const createdTag = await createRatingTag(newTagData);
+        
+        // إعادة تحميل البيانات للحصول على أحدث حالة
+        await fetchTags();
+        
+        // إعادة تطبيق الفلاتر الحالية
+        const savedFiltersAfterCreate = localStorage.getItem("tagsFilters");
+        if (savedFiltersAfterCreate) {
+          try {
+            const parsed = JSON.parse(savedFiltersAfterCreate);
+            applyFilters(parsed);
+          } catch (error) {
+            console.error("Error applying filters after create:", error);
+          }
+        }
+        
+        setToast({
+          message: '✅ تم إنشاء الوسم بنجاح',
+          type: 'success'
+        });
+      }
+      
+      setShowModal(false);
+      
+    } catch (error: any) {
+      console.error('Error saving tag:', error);
+      setToast({
+        message: `❌ ${error.message || 'فشل في حفظ الوسم'}`,
+        type: 'error'
+      });
+    } finally {
+      setLoading(false);
     }
-    
-    setShowModal(false);
   };
 
   return (
@@ -227,94 +406,201 @@ export default function TagsManagement() {
         )}
 
         {!initialLoading && !error && (
-          <div className="tags-table-container">
-            <table className="tags-table">
-              <thead>
-                <tr>
-                  <th>ID</th>
-                  <th>النص بالعربية</th>
-                  <th>النص بالإنجليزية</th>
-                  <th>ينطبق على</th>
-                  <th>النجوم</th>
-                  <th>النوع</th>
-                  <th>الحالة</th>
-                  <th>الإجراءات</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tags.map((tag) => (
-                  <tr key={tag.id}>
-                    <td className="tag-id">#{tag.id}</td>
-                    <td className="tag-label">{tag.label_ar}</td>
-                    <td className="tag-label-en">{tag.label_en}</td>
-                    <td>
-                      <span className={`applies-badge ${tag.applies_to}`}>
-                        {getAppliesTo(tag.applies_to)}
-                      </span>
-                    </td>
-                    <td className="stars-range">
-                      {tag.min_stars} - {tag.max_stars} ⭐
-                    </td>
-                    <td>
-                      <span className={`type-badge ${tag.is_positive ? "positive" : "negative"}`}>
-                        {tag.is_positive ? "إيجابي" : "سلبي"}
-                      </span>
-                    </td>
-                    <td>
+          <>
+            {/* إضافة مكون الفلاتر */}
+            <TagsFilters
+              onFilterChange={handleFilterChange}
+              resultsCount={filteredTags.length}
+            />
+
+            <div className="tags-table-container">
+              <table className="tags-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>النص بالعربية</th>
+                    <th>النص بالإنجليزية</th>
+                    <th>ينطبق على</th>
+                    <th>النجوم</th>
+                    <th>النوع</th>
+                    <th>الحالة</th>
+                    <th>الإجراءات</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {getCurrentPageTags().map((tag) => (
+                    <tr key={tag.id}>
+                      <td className="tag-id">#{tag.id}</td>
+                      <td className="tag-label">{tag.label_ar}</td>
+                      <td className="tag-label-en">{tag.label_en}</td>
+                      <td>
+                        <span className={`applies-badge ${tag.applies_to}`}>
+                          {getAppliesTo(tag.applies_to)}
+                        </span>
+                      </td>
+                      <td className="stars-range">
+                        {tag.min_stars} - {tag.max_stars} ⭐
+                      </td>
+                      <td>
+                        <span className={`type-badge ${tag.is_positive ? "positive" : "negative"}`}>
+                          {tag.is_positive ? "إيجابي" : "سلبي"}
+                        </span>
+                      </td>
+                      <td>
+                        <span className={`status-badge ${tag.is_active ? "active" : "inactive"}`}>
+                          {tag.is_active ? "نشط" : "غير نشط"}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="tag-actions">
+                          <button 
+                            className="tag-action-btn view" 
+                            title="عرض التفاصيل"
+                            onClick={() => handleViewDetails(tag.id)}
+                          >
+                            📄
+                          </button>
+                          <button 
+                            className="tag-action-btn edit" 
+                            title="تعديل"
+                            onClick={() => handleEditTag(tag)}
+                          >
+                            ✏️
+                          </button>
+                          <button 
+                            className={`tag-action-btn toggle ${tag.is_active ? 'active' : 'inactive'}`}
+                            title={loading ? "جاري التحديث..." : (tag.is_active ? "تعطيل الوسم" : "تفعيل الوسم")}
+                            onClick={() => handleToggleActive(tag.id)}
+                            disabled={loading}
+                          >
+                            {loading ? "⏳" : (tag.is_active ? "⏸️" : "▶️")}
+                          </button>
+                          <button 
+                            className="tag-action-btn delete" 
+                            title={loading ? "جاري الحذف..." : "حذف نهائي"}
+                            onClick={() => handleDeleteClick(tag.id, tag.label_ar)}
+                            disabled={loading}
+                          >
+                            {loading ? (
+                              <span style={{ color: '#fff', fontSize: '14px' }}>⏳</span>
+                            ) : (
+                              <span style={{ color: '#fff', fontSize: '16px', fontWeight: 'bold' }}>✕</span>
+                            )}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {filteredTags.length === 0 && (
+                <div className="empty-state">
+                  <span className="empty-icon">📭</span>
+                  <p>لا توجد وسوم</p>
+                </div>
+              )}
+            </div>
+
+            {/* Card View for Mobile */}
+            <div className="tags-cards-container">
+              {getCurrentPageTags().map((tag) => (
+                <div key={tag.id} className="tag-card">
+                  <div className="tag-card-header">
+                    <div className="tag-card-id">#{tag.id}</div>
+                    <div className="tag-card-status">
                       <span className={`status-badge ${tag.is_active ? "active" : "inactive"}`}>
                         {tag.is_active ? "نشط" : "غير نشط"}
                       </span>
-                    </td>
-                    <td>
-                      <div className="tag-actions">
-                        <button 
-                          className="tag-action-btn view" 
-                          title="عرض التفاصيل"
-                          onClick={() => handleViewDetails(tag.id)}
-                        >
-                          📄
-                        </button>
-                        <button 
-                          className="tag-action-btn edit" 
-                          title="تعديل"
-                          onClick={() => handleEditTag(tag)}
-                        >
-                          ✏️
-                        </button>
-                        <button 
-                          className={`tag-action-btn toggle ${tag.is_active ? 'active' : 'inactive'}`}
-                          title={loading ? "جاري التحديث..." : (tag.is_active ? "تعطيل الوسم" : "تفعيل الوسم")}
-                          onClick={() => handleToggleActive(tag.id)}
-                          disabled={loading}
-                        >
-                          {loading ? "⏳" : (tag.is_active ? "⏸️" : "▶️")}
-                        </button>
-                        <button 
-                          className="tag-action-btn delete" 
-                          title={loading ? "جاري الحذف..." : "حذف نهائي"}
-                          onClick={() => handleDeleteClick(tag.id, tag.label_ar)}
-                          disabled={loading}
-                        >
-                          {loading ? (
-                            <span style={{ color: '#fff', fontSize: '14px' }}>⏳</span>
-                          ) : (
-                            <span style={{ color: '#fff', fontSize: '16px', fontWeight: 'bold' }}>✕</span>
-                          )}
-                        </button>
+                    </div>
+                  </div>
+                  
+                  <div className="tag-card-content">
+                    <div className="tag-card-labels">
+                      <div className="tag-label-ar">{tag.label_ar}</div>
+                      <div className="tag-label-en">{tag.label_en}</div>
+                    </div>
+                    
+                    <div className="tag-card-details">
+                      <div className="tag-detail-item">
+                        <span className="detail-label">ينطبق على:</span>
+                        <span className={`applies-badge ${tag.applies_to}`}>
+                          {getAppliesTo(tag.applies_to)}
+                        </span>
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      
+                      <div className="tag-detail-item">
+                        <span className="detail-label">النجوم:</span>
+                        <span className="stars-range">{tag.min_stars} - {tag.max_stars} ⭐</span>
+                      </div>
+                      
+                      <div className="tag-detail-item">
+                        <span className="detail-label">النوع:</span>
+                        <span className={`type-badge ${tag.is_positive ? "positive" : "negative"}`}>
+                          {tag.is_positive ? "إيجابي" : "سلبي"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="tag-card-actions">
+                    <button 
+                      className="tag-action-btn view" 
+                      title="عرض التفاصيل"
+                      onClick={() => handleViewDetails(tag.id)}
+                    >
+                      📄
+                    </button>
+                    <button 
+                      className="tag-action-btn edit" 
+                      title="تعديل"
+                      onClick={() => handleEditTag(tag)}
+                    >
+                      ✏️
+                    </button>
+                    <button 
+                      className={`tag-action-btn toggle ${tag.is_active ? 'active' : 'inactive'}`}
+                      title={loading ? "جاري التحديث..." : (tag.is_active ? "تعطيل الوسم" : "تفعيل الوسم")}
+                      onClick={() => handleToggleActive(tag.id)}
+                      disabled={loading}
+                    >
+                      {loading ? "⏳" : (tag.is_active ? "⏸️" : "▶️")}
+                    </button>
+                    <button 
+                      className="tag-action-btn delete" 
+                      title={loading ? "جاري الحذف..." : "حذف نهائي"}
+                      onClick={() => handleDeleteClick(tag.id, tag.label_ar)}
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <span style={{ color: '#fff', fontSize: '14px' }}>⏳</span>
+                      ) : (
+                        <span style={{ color: '#fff', fontSize: '16px', fontWeight: 'bold' }}>✕</span>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              ))}
 
-            {tags.length === 0 && (
-              <div className="empty-state">
-                <span className="empty-icon">📭</span>
-                <p>لا توجد وسوم</p>
-              </div>
+              {filteredTags.length === 0 && (
+                <div className="empty-state">
+                  <span className="empty-icon">📭</span>
+                  <p>لا توجد وسوم</p>
+                </div>
+              )}
+            </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+                totalItems={totalItems}
+                itemsPerPage={itemsPerPage}
+              />
             )}
-          </div>
+          </>
         )}
       </div>
 
@@ -337,6 +623,7 @@ export default function TagsManagement() {
                     value={formData.label_ar}
                     onChange={(e) => setFormData({ ...formData, label_ar: e.target.value })}
                     placeholder="مثال: خدمة ممتازة"
+                    disabled={loading}
                   />
                 </div>
                 
@@ -348,6 +635,7 @@ export default function TagsManagement() {
                     value={formData.label_en}
                     onChange={(e) => setFormData({ ...formData, label_en: e.target.value })}
                     placeholder="Example: Excellent Service"
+                    disabled={loading}
                   />
                 </div>
               </div>
@@ -358,6 +646,7 @@ export default function TagsManagement() {
                   <select
                     value={formData.applies_to}
                     onChange={(e) => setFormData({ ...formData, applies_to: e.target.value as "driver" | "both" | "rider" })}
+                    disabled={loading}
                   >
                     <option value="both">كلاهما</option>
                     <option value="driver">سائق</option>
@@ -370,6 +659,7 @@ export default function TagsManagement() {
                   <select
                     value={formData.is_positive ? "positive" : "negative"}
                     onChange={(e) => setFormData({ ...formData, is_positive: e.target.value === "positive" })}
+                    disabled={loading}
                   >
                     <option value="positive">إيجابي</option>
                     <option value="negative">سلبي</option>
@@ -387,6 +677,7 @@ export default function TagsManagement() {
                     required
                     value={formData.min_stars}
                     onChange={(e) => setFormData({ ...formData, min_stars: parseInt(e.target.value) })}
+                    disabled={loading}
                   />
                 </div>
 
@@ -399,6 +690,7 @@ export default function TagsManagement() {
                     required
                     value={formData.max_stars}
                     onChange={(e) => setFormData({ ...formData, max_stars: parseInt(e.target.value) })}
+                    disabled={loading}
                   />
                 </div>
               </div>
@@ -409,17 +701,25 @@ export default function TagsManagement() {
                     type="checkbox"
                     checked={formData.is_active}
                     onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                    disabled={loading}
                   />
                   <span>نشط</span>
                 </label>
               </div>
 
               <div className="tag-modal-actions">
-                <button type="button" className="btn-cancel" onClick={() => setShowModal(false)}>
+                <button type="button" className="btn-cancel" onClick={() => setShowModal(false)} disabled={loading}>
                   إلغاء
                 </button>
-                <button type="submit" className="btn-submit">
-                  {editingTag ? "حفظ التعديلات" : "إضافة الوسم"}
+                <button type="submit" className="btn-submit" disabled={loading}>
+                  {loading ? (
+                    <>
+                      <span>⏳</span>
+                      {editingTag ? "جاري الحفظ..." : "جاري الإنشاء..."}
+                    </>
+                  ) : (
+                    editingTag ? "حفظ التعديلات" : "إضافة الوسم"
+                  )}
                 </button>
               </div>
             </form>

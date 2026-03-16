@@ -6,19 +6,19 @@
   margin-bottom: 24px;
 }
 
-.filters-grid {
+.subscriptions-filters .filters-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
 }
 
-.filter-group {
+.subscriptions-filters .filter-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.filter-label {
+.subscriptions-filters .filter-label {
   font-size: 14px;
   font-weight: 600;
   color: #333;
@@ -27,7 +27,7 @@
   gap: 6px;
 }
 
-.filter-input {
+.subscriptions-filters .filter-input {
   padding: 12px 16px;
   border: 2px solid #e0e0e0;
   border-radius: 8px;
@@ -39,23 +39,23 @@
   width: 100%;
 }
 
-.filter-input:hover {
+.subscriptions-filters .filter-input:hover {
   border-color: #FDB913;
   background-color: #fffbf0;
 }
 
-.filter-input:focus {
+.subscriptions-filters .filter-input:focus {
   outline: none;
   border-color: #FDB913;
   box-shadow: 0 0 0 3px rgba(253, 185, 19, 0.1);
   background-color: white;
 }
 
-.filter-input::placeholder {
+.subscriptions-filters .filter-input::placeholder {
   color: #999;
 }
 
-.filters-actions {
+.subscriptions-filters .filters-actions {
   display: flex;
   gap: 12px;
   justify-content: space-between;
@@ -66,14 +66,14 @@
   flex-wrap: wrap;
 }
 
-.action-buttons {
+.subscriptions-filters .action-buttons {
   display: flex;
   gap: 12px;
   align-items: center;
   flex-wrap: wrap;
 }
 
-.results-count {
+.subscriptions-filters .results-count {
   padding: 10px 24px;
   background: linear-gradient(135deg, #FDB913 0%, #F59E0B 100%);
   border-radius: 8px;
@@ -87,18 +87,18 @@
   white-space: nowrap;
 }
 
-.results-count:hover {
+.subscriptions-filters .results-count:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(253, 185, 19, 0.4);
 }
 
-.results-number {
+.subscriptions-filters .results-number {
   font-weight: 700;
   color: white;
   font-size: 18px;
 }
 
-.send-notification-btn {
+.subscriptions-filters .send-notification-btn {
   padding: 10px 24px;
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   color: white;
@@ -115,28 +115,51 @@
   white-space: nowrap;
 }
 
-.send-notification-btn:hover:not(:disabled) {
+.subscriptions-filters .create-subscription-btn {
+  padding: 10px 24px;
+  background: linear-gradient(135deg, #FDB913 0%, #F59E0B 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(253, 185, 19, 0.3);
+  white-space: nowrap;
+}
+
+.subscriptions-filters .create-subscription-btn:hover {
+  background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(253, 185, 19, 0.4);
+}
+
+.subscriptions-filters .send-notification-btn:hover:not(:disabled) {
   background: linear-gradient(135deg, #059669 0%, #047857 100%);
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
 }
 
-.send-notification-btn:disabled {
+.subscriptions-filters .send-notification-btn:disabled {
   opacity: 0.7;
   cursor: not-allowed;
   transform: none;
 }
 
-.send-notification-btn.loading {
+.subscriptions-filters .send-notification-btn.loading {
   background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
   box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
 }
 
-.send-notification-btn.loading .btn-icon {
-  animation: spin 1s linear infinite;
+.subscriptions-filters .send-notification-btn.loading .btn-icon {
+  animation: subscriptionsFiltersSpin 1s linear infinite;
 }
 
-@keyframes spin {
+@keyframes subscriptionsFiltersSpin {
   from {
     transform: rotate(0deg);
   }
@@ -145,7 +168,7 @@
   }
 }
 
-.clear-filters-btn {
+.subscriptions-filters .clear-filters-btn {
   padding: 10px 24px;
   border: 2px solid #e0e0e0;
   border-radius: 8px;
@@ -161,52 +184,53 @@
   white-space: nowrap;
 }
 
-.clear-filters-btn:hover {
+.subscriptions-filters .clear-filters-btn:hover {
   background: #f5f5f5;
   border-color: #ccc;
 }
 
-.btn-icon {
+.subscriptions-filters .btn-icon {
   font-size: 16px;
 }
 
-.btn-text {
+.subscriptions-filters .btn-text {
   font-size: 14px;
 }
 
 @media (max-width: 768px) {
-  .filters-grid {
+  .subscriptions-filters .filters-grid {
     grid-template-columns: 1fr;
   }
 
-  .filters-actions {
+  .subscriptions-filters .filters-actions {
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
   }
 
-  .action-buttons {
+  .subscriptions-filters .action-buttons {
     width: 100%;
     justify-content: center;
   }
 
-  .send-notification-btn,
-  .clear-filters-btn {
+  .subscriptions-filters .send-notification-btn,
+  .subscriptions-filters .create-subscription-btn,
+  .subscriptions-filters .clear-filters-btn {
     flex: 1;
     justify-content: center;
   }
 
-  .results-count {
+  .subscriptions-filters .results-count {
     align-self: center;
   }
 
-  .btn-text {
+  .subscriptions-filters .btn-text {
     font-size: 13px;
   }
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
-  .filters-grid {
+  .subscriptions-filters .filters-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -218,31 +242,32 @@
     margin-bottom: 16px;
   }
 
-  .filter-input {
+  .subscriptions-filters .filter-input {
     padding: 10px 12px;
     font-size: 13px;
   }
 
-  .send-notification-btn,
-  .clear-filters-btn {
+  .subscriptions-filters .send-notification-btn,
+  .subscriptions-filters .create-subscription-btn,
+  .subscriptions-filters .clear-filters-btn {
     padding: 8px 16px;
     font-size: 13px;
   }
 
-  .btn-text {
+  .subscriptions-filters .btn-text {
     display: none;
   }
 
-  .btn-icon {
+  .subscriptions-filters .btn-icon {
     font-size: 18px;
   }
 
-  .results-count {
+  .subscriptions-filters .results-count {
     padding: 8px 16px;
     font-size: 13px;
   }
 
-  .results-number {
+  .subscriptions-filters .results-number {
     font-size: 16px;
   }
 }

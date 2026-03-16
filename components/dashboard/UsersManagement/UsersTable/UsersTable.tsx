@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { User } from "@/models/User";
 import "./UsersTable.css";
 
@@ -22,13 +21,16 @@ export default function UsersTable({
   onSendNotification,
 }: UsersTableProps) {
   const getRoleLabel = (role: string) => {
+    console.log('Getting role label for:', role);
     const labels: Record<string, string> = {
       user: "راكب",
       driver: "سائق",
       both: "كلاهما",
       admin: "إداري",
     };
-    return labels[role] || role;
+    const label = labels[role] || role;
+    console.log('Role label result:', label);
+    return label;
   };
 
   const getStatusLabel = (status: string) => {
@@ -38,6 +40,26 @@ export default function UsersTable({
       blocked: "محظور",
     };
     return labels[status] || status;
+  };
+
+  const getProfileStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      pending: "قيد المراجعة",
+      approved: "موافق عليه",
+      rejected: "مرفوض",
+    };
+    return labels[status] || status;
+  };
+
+  const getUserProfileStatus = (user: User) => {
+    if (user.role !== "driver" && user.role !== "both") {
+      return null;
+    }
+    return (
+      user.driver_profile?.profile_status ||
+      user.driver_profile?.verification_status ||
+      "pending"
+    );
   };
 
   const formatDate = (dateString: string) => {
@@ -75,19 +97,22 @@ export default function UsersTable({
               <th>رقم الهاتف</th>
               <th>النوع</th>
               <th>الحالة</th>
+              <th>حالة البروفايل</th>
               <th>تاريخ التسجيل</th>
               <th>آخر نشاط</th>
               <th>الإجراءات</th>
             </tr>
           </thead>
           <tbody>
-            {users.map((user) => (
+            {users.map((user) => {
+              // إضافة console.log لتتبع البيانات في الجدول
+              console.log('Rendering user in table:', { name: user.name, role: user.role });
+              const profileStatus = getUserProfileStatus(user);
+              
+              return (
               <tr key={user.id}>
                 <td data-label="">
                   <div className="user-name-cell">
-                    <div className="user-avatar">
-                      {user.name.charAt(0)}
-                    </div>
                     <div className="user-info">
                       <span className="user-name">{user.name}</span>
                       {user.email && (
@@ -106,6 +131,15 @@ export default function UsersTable({
                   <span className={`status-badge status-${user.status}`}>
                     {getStatusLabel(user.status)}
                   </span>
+                </td>
+                <td data-label="حالة البروفايل">
+                  {profileStatus ? (
+                    <span className={`status-badge profile-status-${profileStatus}`}>
+                      {getProfileStatusLabel(profileStatus)}
+                    </span>
+                  ) : (
+                    <span className="status-badge profile-status-na">غير متاح</span>
+                  )}
                 </td>
                 <td className="date-cell" data-label="تاريخ التسجيل">{formatDate(user.created_at)}</td>
                 <td className="activity-cell" data-label="آخر نشاط">
@@ -157,7 +191,8 @@ export default function UsersTable({
                   </div>
                 </td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
       </div>

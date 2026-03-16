@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { usersService, ReportAgainst, ReportFrom } from "@/services/usersService";
+import { getUserReports, ReportAgainst, ReportFrom } from "@/services/usersService";
 import "./ReportsModal.css";
 
 interface ReportsModalProps {
@@ -25,7 +25,7 @@ export default function ReportsModal({
     const fetchReports = async () => {
       try {
         setIsLoading(true);
-        const data = await usersService.getUserReports(userId);
+        const data = await getUserReports(userId);
         setReportsAgainst(data.reports_against);
         setReportsFrom(data.reports_from);
       } catch (err: any) {

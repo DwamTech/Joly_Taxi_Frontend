@@ -20,7 +20,8 @@
     "mandatoryRatings": true
   },
   "cancellationSettings": {
-    "maxCancellationsBeforeWarning": 3
+    "maxCancellationsBeforeWarning": 3,
+    "maxCancellationsBeforeBan": 5
   },
   "subscriptionSettings": {
     "prices": {

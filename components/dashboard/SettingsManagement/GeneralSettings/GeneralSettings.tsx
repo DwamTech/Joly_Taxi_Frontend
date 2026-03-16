@@ -168,9 +168,29 @@ export default function GeneralSettings({ data, onSave }: GeneralSettingsProps) 
             <input
               type="number"
               className="setting-input"
+              min="1"
+              max="10"
               value={formData.cancellationSettings.maxCancellationsBeforeWarning}
               onChange={(e) => handleChange("cancellationSettings", "maxCancellationsBeforeWarning", parseInt(e.target.value))}
             />
+            <p className="setting-hint">
+              عدد المرات المسموح بها لإلغاء الرحلات قبل إرسال تحذير للمستخدم
+            </p>
+          </div>
+          <div className="setting-item">
+            <label className="setting-label">عدد مرات إلغاء الرحلة قبل الحظر</label>
+            <input
+              type="number"
+              className="setting-input"
+              min="1"
+              max="20"
+              value={formData.cancellationSettings.maxCancellationsBeforeBan || 5}
+              onChange={(e) => handleChange("cancellationSettings", "maxCancellationsBeforeBan", parseInt(e.target.value))}
+              placeholder="5"
+            />
+            <p className="setting-hint">
+              عدد المرات المسموح بها لإلغاء الرحلات قبل حظر المستخدم مؤقتاً
+            </p>
           </div>
         </div>
       </div>

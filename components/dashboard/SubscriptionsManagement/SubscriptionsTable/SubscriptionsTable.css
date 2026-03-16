@@ -7,42 +7,43 @@
   margin-bottom: 2rem;
 }
 
-.table-wrapper {
+.subscriptions-table-container .table-wrapper {
   overflow-x: hidden;
 }
 
-.subscriptions-table {
+.subscriptions-table-container .subscriptions-table {
   width: 100%;
   border-collapse: collapse;
   direction: rtl;
   table-layout: fixed;
 }
 
-.subscriptions-table thead {
+.subscriptions-table-container .subscriptions-table thead {
   background: linear-gradient(135deg, #8a8a8a 0%, #F59E0B 100%);
   color: white;
 }
 
-.subscriptions-table th {
+.subscriptions-table-container .subscriptions-table th {
   padding: 16px;
   text-align: right;
   font-weight: 600;
-  color: white;
+  color: #ffffff;
+  background: transparent;
   font-size: 14px;
   white-space: normal;
   overflow-wrap: anywhere;
 }
 
-.subscriptions-table tbody tr {
+.subscriptions-table-container .subscriptions-table tbody tr {
   border-bottom: 1px solid #f0f0f0;
   transition: all 0.2s ease;
 }
 
-.subscriptions-table tbody tr:hover {
+.subscriptions-table-container .subscriptions-table tbody tr:hover {
   background: #f8f9fa;
 }
 
-.subscriptions-table td {
+.subscriptions-table-container .subscriptions-table td {
   padding: 16px;
   text-align: right;
   color: #333;
@@ -50,19 +51,19 @@
   overflow-wrap: anywhere;
 }
 
-.subscription-number-cell {
+.subscriptions-table-container .subscription-number-cell {
   font-weight: 600;
   color: #f59e0b;
 }
 
-.driver-cell {
+.subscriptions-table-container .driver-cell {
   display: flex;
   align-items: center;
   gap: 12px;
   min-width: 0;
 }
 
-.driver-avatar {
+.subscriptions-table-container .driver-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -76,14 +77,14 @@
   flex-shrink: 0;
 }
 
-.driver-info {
+.subscriptions-table-container .driver-info {
   display: flex;
   flex-direction: column;
   gap: 4px;
   min-width: 0;
 }
 
-.driver-name {
+.subscriptions-table-container .driver-name {
   font-weight: 500;
   color: #1f2937;
   overflow: visible;
@@ -91,12 +92,12 @@
   white-space: normal;
 }
 
-.driver-rating {
+.subscriptions-table-container .driver-rating {
   font-size: 0.85rem;
   color: #f59e0b;
 }
 
-.vehicle-badge {
+.subscriptions-table-container .vehicle-badge {
   display: inline-block;
   padding: 6px 14px;
   background: #eff6ff;
@@ -106,26 +107,26 @@
   font-weight: 500;
 }
 
-.months-cell,
-.price-cell,
-.days-cell {
+.subscriptions-table-container .months-cell,
+.subscriptions-table-container .price-cell,
+.subscriptions-table-container .days-cell {
   font-weight: 500;
 }
 
-.price-cell {
+.subscriptions-table-container .price-cell {
   color: #059669;
 }
 
-.days-cell {
+.subscriptions-table-container .days-cell {
   color: #6b7280;
 }
 
-.date-cell {
+.subscriptions-table-container .date-cell {
   color: #6b7280;
   font-size: 0.875rem;
 }
 
-.status-badge {
+.subscriptions-table-container .status-badge {
   display: inline-block;
   padding: 6px 14px;
   border-radius: 8px;
@@ -133,32 +134,32 @@
   font-weight: 500;
 }
 
-.status-pending {
+.subscriptions-table-container .status-pending {
   background: #fef3c7;
   color: #92400e;
 }
 
-.status-active {
+.subscriptions-table-container .status-active {
   background: #d1fae5;
   color: #065f46;
 }
 
-.status-expired {
+.subscriptions-table-container .status-expired {
   background: #f3f4f6;
   color: #6b7280;
 }
 
-.status-rejected {
+.subscriptions-table-container .status-rejected {
   background: #fee2e2;
   color: #991b1b;
 }
 
-.status-cancelled {
+.subscriptions-table-container .status-cancelled {
   background: #fecaca;
   color: #7f1d1d;
 }
 
-.status-select {
+.subscriptions-table-container .status-select {
   width: 100%;
   padding: 8px 12px;
   border-radius: 8px;
@@ -172,46 +173,46 @@
   cursor: pointer;
 }
 
-.status-select:hover {
+.subscriptions-table-container .status-select:hover {
   box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
 }
 
-.status-select:focus {
+.subscriptions-table-container .status-select:focus {
   box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25);
 }
 
-.status-select.status-pending {
+.subscriptions-table-container .status-select.status-pending {
   background: #fef3c7;
   color: #92400e;
   border-color: #fde68a;
 }
 
-.status-select.status-active {
+.subscriptions-table-container .status-select.status-active {
   background: #d1fae5;
   color: #065f46;
   border-color: #a7f3d0;
 }
 
-.status-select.status-expired {
+.subscriptions-table-container .status-select.status-expired {
   background: #f3f4f6;
   color: #6b7280;
   border-color: #e5e7eb;
 }
 
-.status-select.status-rejected {
+.subscriptions-table-container .status-select.status-rejected {
   background: #fee2e2;
   color: #991b1b;
   border-color: #fecaca;
 }
 
-.actions-cell {
+.subscriptions-table-container .actions-cell {
   display: flex;
   gap: 8px;
   justify-content: center;
   flex-wrap: wrap;
 }
 
-.action-btn {
+.subscriptions-table-container .action-btn {
   width: 36px;
   height: 36px;
   min-width: 36px;
@@ -230,58 +231,58 @@
   justify-content: center;
 }
 
-.view-btn {
+.subscriptions-table-container .view-btn {
   background: #eff6ff;
 }
 
-.view-btn:hover {
+.subscriptions-table-container .view-btn:hover {
   background: #dbeafe;
   transform: scale(1.1);
 }
 
-.activate-btn {
+.subscriptions-table-container .activate-btn {
   background: #d1fae5;
 }
 
-.activate-btn:hover {
+.subscriptions-table-container .activate-btn:hover {
   background: #a7f3d0;
   transform: scale(1.1);
 }
 
-.reject-btn {
+.subscriptions-table-container .reject-btn {
   background: #fee2e2;
 }
 
-.reject-btn:hover {
+.subscriptions-table-container .reject-btn:hover {
   background: #fecaca;
   transform: scale(1.1);
 }
 
-.extend-btn {
+.subscriptions-table-container .extend-btn {
   background: #dbeafe;
 }
 
-.extend-btn:hover {
+.subscriptions-table-container .extend-btn:hover {
   background: #bfdbfe;
   transform: scale(1.1);
 }
 
-.cancel-btn {
+.subscriptions-table-container .cancel-btn {
   background: #fecaca;
 }
 
-.cancel-btn:hover {
+.subscriptions-table-container .cancel-btn:hover {
   background: #fca5a5;
   transform: scale(1.1);
 }
 
 
 
-.delete-btn {
+.subscriptions-table-container .delete-btn {
   background: #fee2e2;
 }
 
-.delete-btn:hover {
+.subscriptions-table-container .delete-btn:hover {
   background: #fecaca;
   transform: scale(1.1);
 }
@@ -291,16 +292,16 @@
     border-radius: 0 0 8px 8px;
   }
 
-  .subscriptions-table {
+  .subscriptions-table-container .subscriptions-table {
     font-size: 13px;
   }
 
-  .subscriptions-table th,
-  .subscriptions-table td {
+  .subscriptions-table-container .subscriptions-table th,
+  .subscriptions-table-container .subscriptions-table td {
     padding: 12px 8px;
   }
 
-  .driver-avatar {
+  .subscriptions-table-container .driver-avatar {
     width: 32px;
     height: 32px;
     font-size: 0.875rem;
@@ -309,21 +310,21 @@
 
 /* Mobile Card View */
 @media (max-width: 768px) {
-  .table-wrapper {
+  .subscriptions-table-container .table-wrapper {
     overflow-x: visible;
   }
 
-  .subscriptions-table thead {
+  .subscriptions-table-container .subscriptions-table thead {
     display: none;
   }
 
-  .subscriptions-table,
-  .subscriptions-table tbody,
-  .subscriptions-table tr {
+  .subscriptions-table-container .subscriptions-table,
+  .subscriptions-table-container .subscriptions-table tbody,
+  .subscriptions-table-container .subscriptions-table tr {
     display: block;
   }
 
-  .subscriptions-table tbody tr {
+  .subscriptions-table-container .subscriptions-table tbody tr {
     margin-bottom: 16px;
     border: 1px solid #e0e0e0;
     border-radius: 12px;
@@ -332,12 +333,12 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   }
 
-  .subscriptions-table tbody tr:hover {
+  .subscriptions-table-container .subscriptions-table tbody tr:hover {
     background: white;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   }
 
-  .subscriptions-table td {
+  .subscriptions-table-container .subscriptions-table td {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -345,11 +346,11 @@
     border-bottom: 1px solid #f0f0f0;
   }
 
-  .subscriptions-table td:last-child {
+  .subscriptions-table-container .subscriptions-table td:last-child {
     border-bottom: none;
   }
 
-  .subscriptions-table td::before {
+  .subscriptions-table-container .subscriptions-table td::before {
     content: attr(data-label);
     font-weight: 600;
     color: #666;
@@ -358,13 +359,13 @@
     width: 130px;
   }
 
-  .driver-cell {
+  .subscriptions-table-container .driver-cell {
     flex-direction: row;
     justify-content: flex-start;
     width: 100%;
   }
 
-  .actions-cell {
+  .subscriptions-table-container .actions-cell {
     flex-wrap: wrap;
     justify-content: flex-end;
     padding-top: 12px;
@@ -373,12 +374,12 @@
     gap: 8px;
   }
 
-  .actions-cell::before {
+  .subscriptions-table-container .actions-cell::before {
     width: 100%;
     margin-bottom: 8px;
   }
 
-  .actions-cell .action-btn {
+  .subscriptions-table-container .actions-cell .action-btn {
     width: 44px !important;
     height: 44px !important;
     min-width: 44px !important;
@@ -391,7 +392,7 @@
     flex-shrink: 0 !important;
   }
 
-  .action-btn {
+  .subscriptions-table-container .action-btn {
     width: 44px;
     height: 44px;
     min-width: 44px;

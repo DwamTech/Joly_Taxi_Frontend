@@ -9,6 +9,7 @@ export interface FilterValues {
   phone: string;
   role: string;
   status: string;
+  profileStatus: string;
   sortBy: string;
 }
 
@@ -26,6 +27,7 @@ export default function UsersFilters({
     phone: "",
     role: "all",
     status: "all",
+    profileStatus: "all",
     sortBy: "newest",
   });
 
@@ -39,6 +41,13 @@ export default function UsersFilters({
     { value: "newest", label: "الأحدث", icon: "🆕" },
     { value: "oldest", label: "الأقدم", icon: "📅" },
     { value: "most_active", label: "الأكثر نشاطاً", icon: "⚡" },
+  ];
+
+  const profileStatusOptions = [
+    { value: "all", label: "الكل", icon: "📋" },
+    { value: "pending", label: "قيد المراجعة", icon: "⏳" },
+    { value: "approved", label: "موافق عليه", icon: "✅" },
+    { value: "rejected", label: "مرفوض", icon: "❌" },
   ];
 
   const handleInputChange = (
@@ -56,6 +65,7 @@ export default function UsersFilters({
       phone: "",
       role: "all",
       status: "all",
+      profileStatus: "all",
       sortBy: "newest",
     };
     setFilters(defaultFilters);
@@ -102,6 +112,18 @@ export default function UsersFilters({
             options={statusOptions}
             value={filters.status}
             onChange={(value) => handleInputChange("status", value)}
+          />
+        </div>
+
+        <div className="filter-group">
+          <label className="filter-label">
+            <span>🛡️</span>
+            حالة البروفايل
+          </label>
+          <CustomSelect
+            options={profileStatusOptions}
+            value={filters.profileStatus}
+            onChange={(value) => handleInputChange("profileStatus", value)}
           />
         </div>
 

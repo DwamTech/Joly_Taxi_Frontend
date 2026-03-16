@@ -128,9 +128,9 @@ export default function NotificationTemplates({
     <div className="notification-templates">
       <div className="templates-header">
         <h2>قوالب الإشعارات</h2>
-        <button className="add-template-btn" onClick={() => setShowAddModal(true)}>
+        {/*<button className="add-template-btn" onClick={() => setShowAddModal(true)}>
           ➕ إضافة قالب جديد
-        </button>
+        </button>*/}
       </div>
 
       <div className="templates-grid">
@@ -159,12 +159,12 @@ export default function NotificationTemplates({
               >
                 تعديل
               </button>
-              <button
+              {/*<button
                 className="template-action-btn delete-btn"
                 onClick={() => handleDelete(template)}
               >
                 حذف
-              </button>
+              </button>*/}
             </div>
           </div>
         ))}

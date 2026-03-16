@@ -9,6 +9,8 @@ export interface ApiUser {
   phone: string;
   type: "user" | "rider" | "driver" | "both";
   status: "active" | "inactive" | "blocked";
+  profile_status?: "pending" | "approved" | "rejected";
+  verification_status?: "pending" | "approved" | "rejected";
   registration_date: string;
   last_activity: string;
 }
@@ -33,6 +35,8 @@ export interface DriverInfo {
   license_expiry: string;
   profile_expiry: string;
   verification_status: "pending" | "approved" | "rejected";
+  profile_status?: "pending" | "approved" | "rejected";
+  status?: "pending" | "approved" | "rejected";
   online_status: "online" | "offline";
   average_rating: number;
   total_ratings: number;
@@ -394,6 +398,10 @@ export const usersService = {
         }
         if (userData.driver_profile.verification_status) {
           formData.append('verification_status', userData.driver_profile.verification_status);
+          formData.append('profile_status', userData.driver_profile.verification_status);
+        }
+        if (userData.driver_profile.profile_status) {
+          formData.append('profile_status', userData.driver_profile.profile_status);
         }
       }
 
@@ -506,6 +514,10 @@ export const usersService = {
 
   // Convert API user to UI user format
   convertToUIUser(apiUser: ApiUser): User {
+    const profileStatus = apiUser.profile_status || apiUser.verification_status;
+    const isDriver = apiUser.type === "driver" || apiUser.type === "both";
+    const now = new Date().toISOString();
+
     return {
       id: apiUser.id,
       name: apiUser.name,
@@ -518,6 +530,98 @@ export const usersService = {
       created_at: apiUser.registration_date,
       last_active_at: apiUser.last_activity,
       last_login_at: apiUser.last_activity,
+      driver_profile: isDriver
+        ? {
+            national_id_number: "",
+            driver_license_expiry: now,
+            expire_profile_at: now,
+            verification_status: profileStatus || "pending",
+            profile_status: profileStatus || "pending",
+            online_status: false,
+            rating_avg: 0,
+            rating_count: 0,
+            completed_trips_count: 0,
+            cancelled_trips_count: 0,
+          }
+        : undefined,
     };
   },
 };
+
+// Named exports for direct imports
+export const getAllUsers = (page?: number) => usersService.getUsers(page);
+export const getUsers = (page?: number) => usersService.getUsers(page);
+export const getUsersStats = () => usersService.getUsersStats();
+export const getUserDetails = (userId: number) => usersService.getUserDetails(userId);
+export const updateUser = (userId: number, userData: Partial<User>) => usersService.updateUser(userId, userData);
+export const toggleBlockUser = (userId: number) => usersService.toggleBlockUser(userId);
+export const deleteUser = (userId: number) => usersService.deleteUser(userId);
+export const convertToUIUser = (apiUser: ApiUser): User => usersService.convertToUIUser(apiUser);
+
+export async function getUserReports(userId: number): Promise<UserReportsData> {
+  const token = AuthService.getToken();
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+  };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}/reports`, {
+    method: "GET",
+    headers,
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || `فشل في جلب الشكاوى: ${response.status}`);
+  }
+
+  const result: UserReportsResponse = await response.json();
+  return result.data ?? { reports_against: [], reports_from: [] };
+}
+
+export async function getUserActivityLog(userId: number): Promise<import("@/models/Trip").Trip[]> {
+  const token = AuthService.getToken();
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+  };
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+
+  const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}/trips`, {
+    method: "GET",
+    headers,
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.message || `فشل في جلب سجل النشاط: ${response.status}`);
+  }
+
+  const result = await response.json();
+  // الـ API قد يرجع { data: [...] } أو مصفوفة مباشرة
+  const raw: ActivityLog[] = Array.isArray(result) ? result : (result.data ?? []);
+
+  return raw.map((a) => ({
+    id: a.id,
+    rider_user_id: userId,
+    vehicle_type_id: 0,
+    from_lat: 0,
+    from_lng: 0,
+    to_lat: 0,
+    to_lng: 0,
+    from_address: a.from_address ?? "",
+    to_address: a.to_address ?? "",
+    distance_km: parseFloat(String(a.distance_km)) || 0,
+    eta_seconds: a.eta_seconds,
+    price_per_km_snapshot: 0,
+    suggested_price: parseFloat(String(a.amount)) || 0,
+    final_price: parseFloat(String(a.amount)) || 0,
+    requires_ac: a.requires_ac,
+    status: a.status as import("@/models/Trip").TripStatus,
+    created_at: a.date,
+    updated_at: a.date,
+  }));
+}

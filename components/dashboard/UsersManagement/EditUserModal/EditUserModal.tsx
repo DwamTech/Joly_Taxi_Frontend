@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { User } from "@/models/User";
+import { useState } from "react";
+import { User, UserRole, UserStatus, VerificationStatus } from "@/models/User";
 import { useToast } from "@/components/Toast/ToastContainer";
 import CustomSelect from "../CustomSelect/CustomSelect";
 import "./EditUserModal.css";
@@ -14,6 +14,19 @@ interface EditUserModalProps {
 
 export default function EditUserModal({ user, onClose, onUpdateUser }: EditUserModalProps) {
   const { showToast } = useToast();
+  const formatDateForInput = (value?: string | null) => {
+    if (!value) return "";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+    return date.toISOString().split("T")[0];
+  };
+  const parsePreferredVehicleTypes = (value: string) => {
+    return value
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean);
+  };
+
   const [formData, setFormData] = useState({
     name: user.name,
     phone: user.phone,
@@ -24,22 +37,16 @@ export default function EditUserModal({ user, onClose, onUpdateUser }: EditUserM
     delegate_number: user.delegate_number || "",
     // Driver fields
     national_id_number: user.driver_profile?.national_id_number || "",
-    driver_license_expiry: user.driver_profile?.driver_license_expiry 
-      ? new Date(user.driver_profile.driver_license_expiry).toISOString().split('T')[0]
-      : "",
-    expire_profile_at: user.driver_profile?.expire_profile_at
-      ? new Date(user.driver_profile.expire_profile_at).toISOString().split('T')[0]
-      : "",
-    verification_status: user.driver_profile?.verification_status || "pending",
+    driver_license_expiry: formatDateForInput(user.driver_profile?.driver_license_expiry),
+    expire_profile_at: formatDateForInput(user.driver_profile?.expire_profile_at),
+    verification_status: user.driver_profile?.profile_status || user.driver_profile?.verification_status || "pending",
     // Vehicle fields
     vehicle_type: user.vehicle?.type || "",
     vehicle_brand: user.vehicle?.brand || "",
     vehicle_model: user.vehicle?.model || "",
     vehicle_year: user.vehicle?.year?.toString() || "",
     vehicle_license_number: user.vehicle?.vehicle_license_number || "",
-    vehicle_license_expiry: user.vehicle?.vehicle_license_expiry
-      ? new Date(user.vehicle.vehicle_license_expiry).toISOString().split('T')[0]
-      : "",
+    vehicle_license_expiry: formatDateForInput(user.vehicle?.vehicle_license_expiry),
     has_ac: user.vehicle?.has_ac ?? true,
     // Rider fields
     reliability_percent: user.rider_profile?.reliability_percent?.toString() || "100",
@@ -92,6 +99,7 @@ export default function EditUserModal({ user, onClose, onUpdateUser }: EditUserM
         driver_license_expiry: formData.driver_license_expiry || now,
         expire_profile_at: formData.expire_profile_at || now,
         verification_status: formData.verification_status as any,
+        profile_status: formData.verification_status as any,
         online_status: user.driver_profile?.online_status ?? false,
         rating_avg: user.driver_profile?.rating_avg ?? 0,
         rating_count: user.driver_profile?.rating_count ?? 0,
@@ -139,8 +147,8 @@ export default function EditUserModal({ user, onClose, onUpdateUser }: EditUserM
         completed_trips_count: user.rider_profile?.completed_trips_count ?? 0,
         cancelled_trips_count: user.rider_profile?.cancelled_trips_count ?? 0,
         preferences: {
-          preferred_vehicle_types: formData.preferred_vehicle_types 
-            ? formData.preferred_vehicle_types.split(',').map(t => t.trim())
+          preferred_vehicle_types: formData.preferred_vehicle_types
+            ? parsePreferredVehicleTypes(formData.preferred_vehicle_types)
             : [],
           requires_ac: formData.requires_ac,
           language: formData.language,
@@ -306,7 +314,9 @@ export default function EditUserModal({ user, onClose, onUpdateUser }: EditUserM
                     { value: "admin", label: "إداري", icon: "👔" },
                   ]}
                   value={formData.role}
-                  onChange={(value) => setFormData(prev => ({ ...prev, role: value }))}
+                  onChange={(value) =>
+                    setFormData((prev) => ({ ...prev, role: value as UserRole }))
+                  }
                 />
               </div>
 
@@ -322,7 +332,9 @@ export default function EditUserModal({ user, onClose, onUpdateUser }: EditUserM
                     { value: "blocked", label: "محظور", icon: "🚫" },
                   ]}
                   value={formData.status}
-                  onChange={(value) => setFormData(prev => ({ ...prev, status: value }))}
+                  onChange={(value) =>
+                    setFormData((prev) => ({ ...prev, status: value as UserStatus }))
+                  }
                 />
               </div>
 
@@ -412,7 +424,7 @@ export default function EditUserModal({ user, onClose, onUpdateUser }: EditUserM
                 <div className="form-group">
                   <label className="form-label">
                     <span>✓</span>
-                    حالة التحقق
+                    حالة البروفايل
                   </label>
                   <CustomSelect
                     options={[
@@ -421,7 +433,12 @@ export default function EditUserModal({ user, onClose, onUpdateUser }: EditUserM
                       { value: "rejected", label: "مرفوض", icon: "❌" },
                     ]}
                     value={formData.verification_status}
-                    onChange={(value) => setFormData(prev => ({ ...prev, verification_status: value }))}
+                    onChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        verification_status: value as VerificationStatus,
+                      }))
+                    }
                   />
                 </div>
               </div>

@@ -6,19 +6,19 @@
   margin-bottom: 24px;
 }
 
-.filters-grid {
+.users-filters .filters-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
 }
 
-.filter-group {
+.users-filters .filter-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.filter-label {
+.users-filters .filter-label {
   font-size: 14px;
   font-weight: 600;
   color: #333;
@@ -27,7 +27,7 @@
   gap: 6px;
 }
 
-.filter-input {
+.users-filters .filter-input {
   padding: 12px 16px;
   border: 2px solid #e0e0e0;
   border-radius: 8px;
@@ -39,23 +39,23 @@
   width: 100%;
 }
 
-.filter-input:hover {
+.users-filters .filter-input:hover {
   border-color: #FDB913;
   background-color: #fffbf0;
 }
 
-.filter-input:focus {
+.users-filters .filter-input:focus {
   outline: none;
   border-color: #FDB913;
   box-shadow: 0 0 0 3px rgba(253, 185, 19, 0.1);
   background-color: white;
 }
 
-.filter-input::placeholder {
+.users-filters .filter-input::placeholder {
   color: #999;
 }
 
-.filter-select {
+.users-filters .filter-select {
   padding: 12px 16px;
   border: 2px solid #e0e0e0;
   border-radius: 8px;
@@ -72,12 +72,12 @@
   padding-left: 36px;
 }
 
-.filter-select:hover {
+.users-filters .filter-select:hover {
   border-color: #FDB913;
   background-color: #fffbf0;
 }
 
-.filter-select:focus {
+.users-filters .filter-select:focus {
   outline: none;
   border-color: #FDB913;
   box-shadow: 0 0 0 3px rgba(253, 185, 19, 0.1);
@@ -85,7 +85,7 @@
 }
 
 /* تصميم الـ options */
-.filter-select option {
+.users-filters .filter-select option {
   padding: 12px;
   background: white;
   color: #333;
@@ -95,25 +95,25 @@
   margin: 2px 0;
 }
 
-.filter-select option:hover {
+.users-filters .filter-select option:hover {
   background: #fff3e0;
   color: #F59E0B;
 }
 
-.filter-select option:checked {
+.users-filters .filter-select option:checked {
   background: linear-gradient(135deg, #FDB913 0%, #F59E0B 100%);
   color: white;
   font-weight: 600;
 }
 
-.filter-select option:disabled {
+.users-filters .filter-select option:disabled {
   color: #999;
   background: #f5f5f5;
 }
 
 
 
-.filters-actions {
+.users-filters .filters-actions {
   display: flex;
   gap: 12px;
   justify-content: flex-end;
@@ -122,7 +122,7 @@
   border-top: 1px solid #f0f0f0;
 }
 
-.clear-filters-btn {
+.users-filters .clear-filters-btn {
   padding: 10px 24px;
   border: 2px solid #e0e0e0;
   border-radius: 8px;
@@ -134,12 +134,12 @@
   transition: all 0.2s;
 }
 
-.clear-filters-btn:hover {
+.users-filters .clear-filters-btn:hover {
   background: #f5f5f5;
   border-color: #ccc;
 }
 
-.results-count {
+.users-filters .results-count {
   padding: 10px 24px;
   background: linear-gradient(135deg, #FDB913 0%, #F59E0B 100%);
   border-radius: 8px;
@@ -152,43 +152,43 @@
   transition: all 0.3s ease;
 }
 
-.results-count:hover {
+.users-filters .results-count:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(253, 185, 19, 0.4);
 }
 
-.results-number {
+.users-filters .results-number {
   font-weight: 700;
   color: white;
   font-size: 18px;
 }
 
 @media (max-width: 768px) {
-  .filters-grid {
+  .users-filters .filters-grid {
     grid-template-columns: 1fr;
   }
 
-  .role-filters {
+  .users-filters .role-filters {
     flex-direction: column;
   }
 
-  .role-filter-btn {
+  .users-filters .role-filter-btn {
     width: 100%;
   }
 
-  .filters-actions {
+  .users-filters .filters-actions {
     flex-direction: column;
   }
 
-  .clear-filters-btn,
-  .results-count {
+  .users-filters .clear-filters-btn,
+  .users-filters .results-count {
     width: 100%;
     justify-content: center;
   }
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
-  .filters-grid {
+  .users-filters .filters-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }

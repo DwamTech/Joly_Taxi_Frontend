@@ -79,6 +79,10 @@ export default function UserDetailsModal({
 
   const isDriver = user.role === "driver" || user.role === "both";
   const isRider = user.role === "user" || user.role === "both";
+  const profileStatus =
+    user.driver_profile?.profile_status ||
+    user.driver_profile?.verification_status ||
+    "pending";
 
   return (
     <div className="user-details-overlay" onClick={onClose}>
@@ -194,11 +198,11 @@ export default function UserDetailsModal({
                     </span>
                   </div>
                   <div className="info-item">
-                    <span className="info-label">حالة التحقق</span>
+                    <span className="info-label">حالة البروفايل</span>
                     {onVerificationChange ? (
                       <select
-                        className={`verification-select ${user.driver_profile.verification_status}`}
-                        value={user.driver_profile.verification_status}
+                        className={`verification-select ${profileStatus}`}
+                        value={profileStatus}
                         onChange={(e) =>
                           onVerificationChange(
                             user.id,
@@ -212,9 +216,7 @@ export default function UserDetailsModal({
                       </select>
                     ) : (
                       <span className="info-value">
-                        {getVerificationLabel(
-                          user.driver_profile.verification_status
-                        )}
+                        {getVerificationLabel(profileStatus)}
                       </span>
                     )}
                   </div>

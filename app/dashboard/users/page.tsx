@@ -15,7 +15,7 @@ import UserDetailsModal from "@/components/dashboard/UsersManagement/UserDetails
 import AddUserModal from "@/components/dashboard/UsersManagement/AddUserModal/AddUserModal";
 import EditUserModal from "@/components/dashboard/UsersManagement/EditUserModal/EditUserModal";
 import SendNotificationModal from "@/components/dashboard/UsersManagement/SendNotificationModal/SendNotificationModal";
-import { usersService } from "@/services/usersService";
+import { getAllUsers, getUsers, getUsersStats, getUserDetails, updateUser, toggleBlockUser, deleteUser, convertToUIUser } from "@/services/usersService";
 import { exportUsersToExcel } from "@/utils/exportToExcel";
 import "./users.css";
 
@@ -46,6 +46,7 @@ function UsersManagementContent() {
     phone: "",
     role: "all",
     status: "all",
+    profileStatus: "all",
     sortBy: "newest",
   });
 
@@ -71,7 +72,7 @@ function UsersManagementContent() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const stats = await usersService.getUsersStats();
+        const stats = await getUsersStats();
         console.log('Received stats:', stats);
         
         // Map API response to our format
@@ -98,10 +99,12 @@ function UsersManagementContent() {
       setIsLoading(true);
       try {
         console.log('Loading page:', currentPage);
-        const response = await usersService.getUsers(currentPage);
+        const response = await getUsers(currentPage);
         console.log('Response received:', response);
         
-        const convertedUsers = response.data.map(usersService.convertToUIUser);
+        const convertedUsers = response.data.map(convertToUIUser);
+        console.log('Converted users:', convertedUsers);
+        console.log('Sample user roles:', convertedUsers.slice(0, 3).map(u => ({ name: u.name, role: u.role })));
         setUsers(convertedUsers);
         setTotalPages(response.pagination.last_page);
         setTotalItems(response.pagination.total);
@@ -172,6 +175,20 @@ function UsersManagementContent() {
       result = result.filter((user) => user.status === filters.status);
     }
 
+    // Filter by profile status
+    if (filters.profileStatus !== "all") {
+      result = result.filter((user) => {
+        if (user.role !== "driver" && user.role !== "both") {
+          return false;
+        }
+        const userProfileStatus =
+          user.driver_profile?.profile_status ||
+          user.driver_profile?.verification_status ||
+          "pending";
+        return userProfileStatus === filters.profileStatus;
+      });
+    }
+
     // Sort
     switch (filters.sortBy) {
       case "newest":
@@ -217,7 +234,7 @@ function UsersManagementContent() {
   const handleViewUser = async (user: User) => {
     try {
       // Fetch full user details from API
-      const userDetails = await usersService.getUserDetails(user.id);
+      const userDetails = await getUserDetails(user.id);
       
       // Convert API response to User model
       const fullUser: User = {
@@ -225,13 +242,13 @@ function UsersManagementContent() {
         name: userDetails.name,
         phone: userDetails.phone,
         email: userDetails.email,
-        role: userDetails.type === "rider" ? "user" : userDetails.type,
+        role: userDetails.role || userDetails.type || 'user', // استخدام role أو type أو افتراضي user
         status: userDetails.status,
         agent_code: null,
         delegate_number: null,
-        created_at: userDetails.registration_date,
-        last_active_at: userDetails.last_login,
-        last_login_at: userDetails.last_login,
+        created_at: userDetails.registration_date || userDetails.created_at,
+        last_active_at: userDetails.last_login || userDetails.last_active_at,
+        last_login_at: userDetails.last_login || userDetails.last_login_at,
         // Add rider profile if exists
         rider_profile: userDetails.rider_info ? {
           id: userDetails.id,
@@ -250,7 +267,8 @@ function UsersManagementContent() {
           national_id_number: userDetails.driver_info.national_id,
           driver_license_expiry: userDetails.driver_info.license_expiry,
           expire_profile_at: userDetails.driver_info.profile_expiry,
-          verification_status: userDetails.driver_info.verification_status,
+          verification_status: userDetails.driver_info.profile_status || userDetails.driver_info.status || userDetails.driver_info.verification_status,
+          profile_status: userDetails.driver_info.profile_status || userDetails.driver_info.status || userDetails.driver_info.verification_status,
           online_status: userDetails.driver_info.online_status === "online",
           rating_avg: userDetails.driver_info.average_rating,
           rating_count: userDetails.driver_info.total_ratings,
@@ -301,7 +319,7 @@ function UsersManagementContent() {
   const handleUpdateUser = async (updatedUser: User) => {
     try {
       // Call API to update user
-      await usersService.updateUser(updatedUser.id, updatedUser);
+      await updateUser(updatedUser.id, updatedUser);
       
       // Update local state
       setUsers((prevUsers) =>
@@ -312,7 +330,7 @@ function UsersManagementContent() {
       
       // Reload stats after update
       try {
-        const stats = await usersService.getUsersStats();
+        const stats = await getUsersStats();
         setApiStats({
           totalUsers: stats.active_users,
           totalDrivers: stats.verified_drivers,
@@ -333,7 +351,7 @@ function UsersManagementContent() {
   const handleBlockUser = async (userId: number) => {
     try {
       // Call API to toggle block status
-      const result = await usersService.toggleBlockUser(userId);
+      const result = await toggleBlockUser(userId);
       
       // Update local state with new status
       setUsers((prevUsers) =>
@@ -369,7 +387,7 @@ function UsersManagementContent() {
   const confirmDelete = async () => {
     try {
       // Call API to delete user
-      await usersService.deleteUser(deleteConfirm.userId);
+      await deleteUser(deleteConfirm.userId);
       
       // Remove from local state
       setUsers((prevUsers) => prevUsers.filter((user) => user.id !== deleteConfirm.userId));
@@ -379,7 +397,7 @@ function UsersManagementContent() {
       
       // Reload stats after deletion
       try {
-        const stats = await usersService.getUsersStats();
+        const stats = await getUsersStats();
         setApiStats({
           totalUsers: stats.active_users,
           totalDrivers: stats.verified_drivers,
@@ -424,6 +442,7 @@ function UsersManagementContent() {
               driver_profile: {
                 ...user.driver_profile,
                 verification_status: status,
+                profile_status: status,
               },
             }
           : user

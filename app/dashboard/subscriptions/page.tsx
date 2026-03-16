@@ -12,12 +12,15 @@ import SubscriptionsFilters, {
 import SubscriptionsTable from "@/components/dashboard/SubscriptionsManagement/SubscriptionsTable/SubscriptionsTable";
 import SubscriptionDetailsModal from "@/components/dashboard/SubscriptionsManagement/SubscriptionDetailsModal/SubscriptionDetailsModal";
 import ExtendSubscriptionModal from "@/components/dashboard/SubscriptionsManagement/ExtendSubscriptionModal/ExtendSubscriptionModal";
+import CreateSubscriptionModal from "@/components/dashboard/SubscriptionsManagement/CreateSubscriptionModal/CreateSubscriptionModal";
 import { exportSubscriptionsToExcel } from "@/utils/exportSubscriptionsToExcel";
 import { getAdminSubscriptionById, getAdminSubscriptions } from "@/services/subscriptionsService";
 import { deleteAdminSubscription } from "@/services/subscriptionsDeleteService";
 import { extendAdminSubscription } from "@/services/subscriptionsExtendService";
 import { updateAdminSubscriptionStatus } from "@/services/subscriptionsStatusService";
 import { sendSubscriptionRenewalReminder } from "@/services/subscriptionNotificationsService";
+import { getUsers, convertToUIUser } from "@/services/usersService";
+import { User } from "@/models/User";
 import "./subscriptions.css";
 
 function SubscriptionsManagementContent() {
@@ -25,6 +28,9 @@ function SubscriptionsManagementContent() {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [filteredSubscriptions, setFilteredSubscriptions] = useState<Subscription[]>([]);
   const [paginatedSubscriptions, setPaginatedSubscriptions] = useState<Subscription[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [showCreateSubscriptionModal, setShowCreateSubscriptionModal] = useState(false);
+  const [isCreatingSubscription, setIsCreatingSubscription] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(20);
   const [selectedSubscription, setSelectedSubscription] = useState<Subscription | null>(null);
@@ -73,6 +79,26 @@ function SubscriptionsManagementContent() {
       isActive = false;
     };
   }, [showToast]);
+
+  // Load users for subscription creation
+  useEffect(() => {
+    let isActive = true;
+    const loadUsers = async () => {
+      try {
+        const response = await getUsers(1);
+        if (!isActive) return;
+        const apiUsers = Array.isArray(response?.data) ? response.data : [];
+        setUsers(apiUsers.map(convertToUIUser));
+      } catch {
+        if (!isActive) return;
+        setUsers([]);
+      }
+    };
+    loadUsers();
+    return () => {
+      isActive = false;
+    };
+  }, []);
 
   // Calculate stats for hero
   const subscriptionStats = useMemo(() => {
@@ -340,6 +366,59 @@ function SubscriptionsManagementContent() {
     }
   };
 
+  const handleOpenCreateSubscription = () => {
+    setShowCreateSubscriptionModal(true);
+  };
+
+  const handleCreateSubscription = async (userId: number, subscriptionData: any) => {
+    setIsCreatingSubscription(true);
+    try {
+      // هنا يمكن استخدام API لإنشاء الاشتراك
+      // مؤقتاً سنقوم بمحاكاة العملية
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      const user = users.find(u => u.id === userId);
+      const newSubscription: Subscription = {
+        id: Date.now(),
+        subscription_number: `SUB-${new Date().getFullYear()}-${String(Date.now()).slice(-6)}`,
+        driver: {
+          id: userId,
+          name: user?.name || "مستخدم غير معروف",
+          phone: user?.phone || "",
+          rating: 0,
+          completed_trips: 0,
+          previous_subscriptions: 0,
+        },
+        vehicle_type: "سيدان",
+        months_count: subscriptionData.type === "monthly" ? 1 : subscriptionData.type === "quarterly" ? 3 : 12,
+        total_price: subscriptionData.type === "monthly" ? 299 : subscriptionData.type === "quarterly" ? 799 : 2999,
+        status: "active",
+        start_date: subscriptionData.startDate,
+        end_date: new Date(new Date(subscriptionData.startDate).getTime() + 
+          (subscriptionData.type === "monthly" ? 30 : subscriptionData.type === "quarterly" ? 90 : 365) * 24 * 60 * 60 * 1000
+        ).toISOString(),
+        created_at: new Date().toISOString(),
+        activated_at: new Date().toISOString(),
+        days_remaining: subscriptionData.type === "monthly" ? 30 : subscriptionData.type === "quarterly" ? 90 : 365,
+        payment_info: {
+          amount_paid: 0,
+          reference_number: "",
+          payment_method: "cash",
+          payment_date: new Date().toISOString(),
+        },
+      };
+
+      setSubscriptions(prev => [newSubscription, ...prev]);
+      setShowCreateSubscriptionModal(false);
+      showToast("تم إنشاء الاشتراك بنجاح! 🎉", "success");
+      
+    } catch (error: any) {
+      showToast(error?.message || "فشل في إنشاء الاشتراك", "error");
+    } finally {
+      setIsCreatingSubscription(false);
+    }
+  };
+
   const handleChangeSubscriptionStatus = async (subscriptionId: number, status: SubscriptionStatus) => {
     try {
       const updated = await updateAdminSubscriptionStatus(subscriptionId, status);
@@ -450,6 +529,7 @@ function SubscriptionsManagementContent() {
         resultsCount={filteredSubscriptions.length}
         onSendNotification={handleSendNotification}
         isSendingNotification={isSendingNotification}
+        onOpenCreateSubscription={handleOpenCreateSubscription}
       />
 
       <SubscriptionsTable
@@ -487,6 +567,16 @@ function SubscriptionsManagementContent() {
           subscription={extendingSubscription}
           onClose={() => setExtendingSubscription(null)}
           onConfirm={confirmExtendSubscription}
+        />
+      )}
+
+      {showCreateSubscriptionModal && (
+        <CreateSubscriptionModal
+          isOpen={showCreateSubscriptionModal}
+          onClose={() => setShowCreateSubscriptionModal(false)}
+          onCreateSubscription={handleCreateSubscription}
+          users={users}
+          isLoading={isCreatingSubscription}
         />
       )}
 

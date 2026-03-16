@@ -2,42 +2,38 @@
 
 import { useState, useEffect } from "react";
 import CustomSelect from "../../UsersManagement/CustomSelect/CustomSelect";
-import "./SubscriptionsFilters.css";
+import "./TagsFilters.css";
 
-export interface SubscriptionFilterValues {
+export interface TagFilterValues {
   search: string;
-  driverName: string;
+  appliesTo: string;
+  type: string;
   status: string;
-  vehicleType: string;
+  starsRange: string;
   sortBy: string;
 }
 
-interface SubscriptionsFiltersProps {
-  onFilterChange: (filters: SubscriptionFilterValues) => void;
+interface TagsFiltersProps {
+  onFilterChange: (filters: TagFilterValues) => void;
   resultsCount: number;
-  onSendNotification: () => void;
-  isSendingNotification?: boolean;
-  onOpenCreateSubscription: () => void;
 }
 
-export default function SubscriptionsFilters({
+export default function TagsFilters({
   onFilterChange,
   resultsCount,
-  onSendNotification,
-  isSendingNotification = false,
-  onOpenCreateSubscription,
-}: SubscriptionsFiltersProps) {
-  const [filters, setFilters] = useState<SubscriptionFilterValues>({
+}: TagsFiltersProps) {
+  const [filters, setFilters] = useState<TagFilterValues>({
     search: "",
-    driverName: "",
+    appliesTo: "all",
+    type: "all",
     status: "all",
-    vehicleType: "all",
+    starsRange: "all",
     sortBy: "newest",
   });
 
   // تحميل الفلاتر المحفوظة عند فتح الصفحة
   useEffect(() => {
-    const savedFilters = localStorage.getItem("subscriptionsFilters");
+    const savedFilters = localStorage.getItem("tagsFilters");
     if (savedFilters) {
       try {
         const parsed = JSON.parse(savedFilters);
@@ -50,30 +46,48 @@ export default function SubscriptionsFilters({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // تشغيل مرة واحدة فقط عند التحميل
 
-  const statusOptions = [
-    { value: "all", label: "الكل", icon: "📋" },
-    { value: "pending", label: "قيد المراجعة", icon: "⏳" },
-    { value: "active", label: "نشط", icon: "✅" },
-    { value: "expired", label: "منتهي", icon: "⏰" },
-    { value: "rejected", label: "مرفوض", icon: "❌" },
-    { value: "cancelled", label: "ملغي", icon: "🚫" },
+  const appliesToOptions = [
+    { value: "all", label: "الكل", icon: "👥" },
+    { value: "driver", label: "سائق", icon: "🚗" },
+    { value: "rider", label: "راكب", icon: "👤" },
+    { value: "both", label: "كلاهما", icon: "🤝" },
   ];
 
-  const vehicleOptions = [
-    { value: "all", label: "الكل", icon: "🚕" },
-    { value: "سيدان", label: "سيدان", icon: "🚗" },
-    { value: "SUV", label: "SUV", icon: "🚙" },
-    { value: "فان", label: "فان", icon: "🚐" },
+  const typeOptions = [
+    { value: "all", label: "الكل", icon: "🏷️" },
+    { value: "positive", label: "إيجابي", icon: "👍" },
+    { value: "negative", label: "سلبي", icon: "👎" },
+  ];
+
+  const statusOptions = [
+    { value: "all", label: "الكل", icon: "📋" },
+    { value: "active", label: "نشط", icon: "✅" },
+    { value: "inactive", label: "غير نشط", icon: "❌" },
+  ];
+
+  const starsRangeOptions = [
+    { value: "all", label: "الكل", icon: "⭐" },
+    { value: "1", label: "1 نجمة", icon: "⭐" },
+    { value: "2", label: "2 نجمة", icon: "⭐" },
+    { value: "3", label: "3 نجوم", icon: "⭐" },
+    { value: "4", label: "4 نجوم", icon: "⭐" },
+    { value: "5", label: "5 نجوم", icon: "⭐" },
+    { value: "1-2", label: "1-2 نجوم", icon: "⭐" },
+    { value: "3-4", label: "3-4 نجوم", icon: "⭐" },
+    { value: "4-5", label: "4-5 نجوم", icon: "⭐" },
   ];
 
   const sortOptions = [
     { value: "newest", label: "الأحدث", icon: "🆕" },
     { value: "oldest", label: "الأقدم", icon: "📅" },
-    { value: "expiring_soon", label: "الأقرب للانتهاء", icon: "⏰" },
+    { value: "name_ar", label: "الاسم (عربي)", icon: "🔤" },
+    { value: "name_en", label: "الاسم (إنجليزي)", icon: "🔤" },
+    { value: "stars_asc", label: "النجوم (تصاعدي)", icon: "⭐" },
+    { value: "stars_desc", label: "النجوم (تنازلي)", icon: "⭐" },
   ];
 
   const handleInputChange = (
-    field: keyof SubscriptionFilterValues,
+    field: keyof TagFilterValues,
     value: string
   ) => {
     const newFilters = { ...filters, [field]: value };
@@ -81,42 +95,43 @@ export default function SubscriptionsFilters({
     onFilterChange(newFilters);
     // حفظ الفلاتر فوراً في localStorage
     try {
-      localStorage.setItem("subscriptionsFilters", JSON.stringify(newFilters));
+      localStorage.setItem("tagsFilters", JSON.stringify(newFilters));
     } catch (error) {
       console.error("Error saving filters:", error);
     }
   };
 
   const clearFilters = () => {
-    const defaultFilters: SubscriptionFilterValues = {
+    const defaultFilters: TagFilterValues = {
       search: "",
-      driverName: "",
+      appliesTo: "all",
+      type: "all",
       status: "all",
-      vehicleType: "all",
+      starsRange: "all",
       sortBy: "newest",
     };
     setFilters(defaultFilters);
     onFilterChange(defaultFilters);
     // إزالة الفلاتر المحفوظة
     try {
-      localStorage.removeItem("subscriptionsFilters");
+      localStorage.removeItem("tagsFilters");
     } catch (error) {
       console.error("Error clearing filters:", error);
     }
   };
 
   return (
-    <div className="subscriptions-filters">
+    <div className="tags-filters">
       <div className="filters-grid">
         <div className="filter-group">
           <label className="filter-label">
             <span>🔍</span>
-            البحث برقم الاشتراك
+            البحث في الوسوم
           </label>
           <input
             type="text"
             className="filter-input"
-            placeholder="SUB-2024-001"
+            placeholder="ابحث في النص العربي أو الإنجليزي..."
             value={filters.search}
             onChange={(e) => handleInputChange("search", e.target.value)}
           />
@@ -124,15 +139,25 @@ export default function SubscriptionsFilters({
 
         <div className="filter-group">
           <label className="filter-label">
-            <span>👤</span>
-            اسم السائق
+            <span>👥</span>
+            ينطبق على
           </label>
-          <input
-            type="text"
-            className="filter-input"
-            placeholder="ابحث عن سائق..."
-            value={filters.driverName}
-            onChange={(e) => handleInputChange("driverName", e.target.value)}
+          <CustomSelect
+            options={appliesToOptions}
+            value={filters.appliesTo}
+            onChange={(value) => handleInputChange("appliesTo", value)}
+          />
+        </div>
+
+        <div className="filter-group">
+          <label className="filter-label">
+            <span>🏷️</span>
+            نوع التقييم
+          </label>
+          <CustomSelect
+            options={typeOptions}
+            value={filters.type}
+            onChange={(value) => handleInputChange("type", value)}
           />
         </div>
 
@@ -150,13 +175,13 @@ export default function SubscriptionsFilters({
 
         <div className="filter-group">
           <label className="filter-label">
-            <span>🚕</span>
-            نوع المركبة
+            <span>⭐</span>
+            نطاق النجوم
           </label>
           <CustomSelect
-            options={vehicleOptions}
-            value={filters.vehicleType}
-            onChange={(value) => handleInputChange("vehicleType", value)}
+            options={starsRangeOptions}
+            value={filters.starsRange}
+            onChange={(value) => handleInputChange("starsRange", value)}
           />
         </div>
 
@@ -177,28 +202,9 @@ export default function SubscriptionsFilters({
         <div className="results-count">
           <span>النتائج:</span>
           <span className="results-number">{resultsCount}</span>
-          <span>اشتراك</span>
+          <span>وسم</span>
         </div>
         <div className="action-buttons">
-          <button 
-            className="create-subscription-btn"
-            onClick={onOpenCreateSubscription}
-          >
-            <span className="btn-icon">💳</span>
-            <span className="btn-text">إنشاء اشتراك</span>
-          </button>
-          <button 
-            className={`send-notification-btn ${isSendingNotification ? 'loading' : ''}`}
-            onClick={onSendNotification}
-            disabled={isSendingNotification}
-          >
-            <span className="btn-icon">
-              {isSendingNotification ? '⏳' : '🔔'}
-            </span>
-            <span className="btn-text">
-              {isSendingNotification ? 'جاري الإرسال...' : 'إرسال إشعار'}
-            </span>
-          </button>
           <button className="clear-filters-btn" onClick={clearFilters}>
             <span className="btn-icon">🗑️</span>
             <span className="btn-text">مسح الفلاتر</span>
