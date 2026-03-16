@@ -103,12 +103,12 @@ export default function NotificationsManagementContent() {
           >
             📋 سجل الإشعارات
           </button>
-          <button
+          {/*<button
             className={`tab-button ${activeTab === "templates" ? "active" : ""}`}
             onClick={() => setActiveTab("templates")}
           >
             📝 قوالب الإشعارات
-          </button>
+          </button>*/}
         </div>
 
         <div className="tab-content">
