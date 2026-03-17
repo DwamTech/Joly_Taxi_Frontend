@@ -23,7 +23,7 @@ export default function TripsTable({ trips, onViewTrip }: TripsTableProps) {
 
   return (
     <div className="trips-table-container">
-      <div className="table-wrapper">
+      <div className="trips-table-wrapper">
         <table className="trips-table">
           <thead>
             <tr>
@@ -39,46 +39,46 @@ export default function TripsTable({ trips, onViewTrip }: TripsTableProps) {
           <tbody>
             {trips.map((trip) => (
               <tr key={trip.id}>
-                <td className="trip-number-cell" data-label="رقم الرحلة">TRIP-{trip.id}</td>
+                <td className="trips-table-trip-number-cell" data-label="رقم الرحلة">TRIP-{trip.id}</td>
                 <td data-label="الراكب">
-                  <div className="user-info-cell">
-                    <span className="user-name">{trip.rider_name}</span>
+                  <div className="trips-table-user-info-cell">
+                    <span className="trips-table-user-name">{trip.rider_name}</span>
                   </div>
                 </td>
                 <td data-label="السائق">
                   {trip.driver_name ? (
-                    <div className="driver-cell">
-                      <div className="driver-avatar">
+                    <div className="trips-table-driver-cell">
+                      <div className="trips-table-driver-avatar">
                         {trip.driver_name.charAt(0)}
                       </div>
-                      <div className="driver-info">
-                        <span className="driver-name">{trip.driver_name}</span>
+                      <div className="trips-table-driver-info">
+                        <span className="trips-table-driver-name">{trip.driver_name}</span>
                         {trip.driver_rating && (
-                          <span className="driver-rating">
+                          <span className="trips-table-driver-rating">
                             ⭐ {trip.driver_rating}
                           </span>
                         )}
                       </div>
                     </div>
                   ) : (
-                    <span className="no-driver">لا يوجد سائق</span>
+                    <span className="trips-table-no-driver">لا يوجد سائق</span>
                   )}
                 </td>
                 <td data-label="نوع المركبة">
-                  <span className="vehicle-badge">{trip.vehicle_type}</span>
+                  <span className="trips-table-vehicle-badge">{trip.vehicle_type}</span>
                 </td>
                 <td data-label="الحالة">
-                  <span className={`status-badge status-${trip.status}`}>
+                  <span className={`trips-table-status-badge trips-table-status-${trip.status}`}>
                     {getStatusLabel(trip.status)}
                   </span>
                 </td>
-                <td className="price-cell" data-label="السعر">
+                <td className="trips-table-price-cell" data-label="السعر">
                   {trip.final_price || trip.suggested_price} جنيه
                 </td>
                 <td data-label="الإجراءات">
-                  <div className="actions-cell">
+                  <div className="trips-table-actions-cell">
                     <button
-                      className="action-btn view-btn"
+                      className="trips-table-action-btn trips-table-view-btn"
                       onClick={() => onViewTrip(trip)}
                       title="عرض التفاصيل"
                     >

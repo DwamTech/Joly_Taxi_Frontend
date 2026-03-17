@@ -202,51 +202,51 @@ export default function TripsFilters({
 
   return (
     <div className="trips-filters">
-      <div className="filters-grid">
-        <div className="filter-group">
-          <label className="filter-label">
+      <div className="trips-filters-grid">
+        <div className="trips-filter-group">
+          <label className="trips-filter-label">
             <span>🔍</span>
             البحث برقم الرحلة
           </label>
           <input
             type="text"
-            className="filter-input"
+            className="trips-filter-input"
             placeholder="TRIP-2024-001"
             value={filters.search}
             onChange={(e) => handleInputChange("search", e.target.value)}
           />
         </div>
 
-        <div className="filter-group">
-          <label className="filter-label">
+        <div className="trips-filter-group">
+          <label className="trips-filter-label">
             <span>👤</span>
             اسم الراكب
           </label>
           <input
             type="text"
-            className="filter-input"
+            className="trips-filter-input"
             placeholder="ابحث عن راكب..."
             value={filters.riderName}
             onChange={(e) => handleInputChange("riderName", e.target.value)}
           />
         </div>
 
-        <div className="filter-group">
-          <label className="filter-label">
+        <div className="trips-filter-group">
+          <label className="trips-filter-label">
             <span>🚗</span>
             اسم السائق
           </label>
           <input
             type="text"
-            className="filter-input"
+            className="trips-filter-input"
             placeholder="ابحث عن سائق..."
             value={filters.driverName}
             onChange={(e) => handleInputChange("driverName", e.target.value)}
           />
         </div>
 
-        <div className="filter-group">
-          <label className="filter-label">
+        <div className="trips-filter-group">
+          <label className="trips-filter-label">
             <span>📊</span>
             الحالة
           </label>
@@ -257,8 +257,8 @@ export default function TripsFilters({
           />
         </div>
 
-        <div className="filter-group">
-          <label className="filter-label">
+        <div className="trips-filter-group">
+          <label className="trips-filter-label">
             <span>🚕</span>
             نوع المركبة
           </label>
@@ -269,36 +269,36 @@ export default function TripsFilters({
           />
         </div>
 
-        <div className="filter-group">
-          <label className="filter-label">
+        <div className="trips-filter-group">
+          <label className="trips-filter-label">
             <span>💰</span>
             نطاق السعر (من)
           </label>
           <input
             type="number"
-            className="filter-input"
+            className="trips-filter-input"
             placeholder="0"
             value={filters.priceMin}
             onChange={(e) => handleInputChange("priceMin", e.target.value)}
           />
         </div>
 
-        <div className="filter-group">
-          <label className="filter-label">
+        <div className="trips-filter-group">
+          <label className="trips-filter-label">
             <span>💰</span>
             نطاق السعر (إلى)
           </label>
           <input
             type="number"
-            className="filter-input"
+            className="trips-filter-input"
             placeholder="1000"
             value={filters.priceMax}
             onChange={(e) => handleInputChange("priceMax", e.target.value)}
           />
         </div>
 
-        <div className="filter-group">
-          <label className="filter-label">
+        <div className="trips-filter-group">
+          <label className="trips-filter-label">
             <span>❄️</span>
             يتطلب تكييف
           </label>
@@ -309,8 +309,8 @@ export default function TripsFilters({
           />
         </div>
 
-        <div className="filter-group">
-          <label className="filter-label">
+        <div className="trips-filter-group">
+          <label className="trips-filter-label">
             <span>🔄</span>
             الترتيب
           </label>
@@ -322,28 +322,28 @@ export default function TripsFilters({
         </div>
       </div>
 
-      <div className="filters-actions">
-        <div className="results-count">
+      <div className="trips-filters-actions">
+        <div className="trips-results-count">
           <span>النتائج:</span>
-          <span className="results-number">
+          <span className="trips-results-number">
             {displayResultsCount}
             {resultsCount === 0 && savedResultsCount > 0 && (
-              <span className="loading-indicator"> ⟳</span>
+              <span className="trips-loading-indicator"> ⟳</span>
             )}
           </span>
           <span>رحلة</span>
         </div>
-        <div className="filters-status">
+        <div className="trips-filters-status">
           {(filters.search || filters.riderName || filters.driverName || 
             filters.status !== "all" || filters.vehicleType !== "all" || 
             filters.priceMin || filters.priceMax || filters.requiresAc !== "all" || 
             filters.sortBy !== "newest") && (
-            <span className="filters-active-indicator">
+            <span className="trips-filters-active-indicator">
               🔍 الفلاتر محفوظة
             </span>
           )}
         </div>
-        <button className="clear-filters-btn" onClick={clearFilters}>
+        <button className="trips-clear-filters-btn" onClick={clearFilters}>
           مسح الفلاتر
         </button>
       </div>

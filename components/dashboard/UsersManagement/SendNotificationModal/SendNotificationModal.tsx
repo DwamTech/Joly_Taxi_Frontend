@@ -18,6 +18,7 @@ export default function SendNotificationModal({
   const { showToast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
+    notification_type: "",
     title_ar: "",
     title_en: "",
     body_ar: "",
@@ -25,7 +26,7 @@ export default function SendNotificationModal({
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -38,6 +39,11 @@ export default function SendNotificationModal({
     e.preventDefault();
 
     // Validation
+    if (!formData.notification_type) {
+      showToast("يرجى اختيار نوع الإشعار", "error");
+      return;
+    }
+
     if (!formData.title_ar.trim() || !formData.body_ar.trim()) {
       showToast("يرجى ملء العنوان والمحتوى بالعربية على الأقل", "error");
       return;
@@ -58,6 +64,7 @@ export default function SendNotificationModal({
 
       const requestBody = {
         user_id: userId,
+        notification_type: formData.notification_type,
         title_ar: formData.title_ar,
         title_en: formData.title_en || formData.title_ar,
         body_ar: formData.body_ar,
@@ -125,6 +132,28 @@ export default function SendNotificationModal({
         </div>
 
         <form onSubmit={handleSubmit} className="notification-form">
+          <div className="form-section">
+            <h3 className="section-title">نوع الإشعار</h3>
+            <div className="form-group">
+              <label htmlFor="notification_type" className="form-label">
+                النوع <span className="required">*</span>
+              </label>
+              <select
+                id="notification_type"
+                name="notification_type"
+                value={formData.notification_type}
+                onChange={handleChange}
+                className="form-input"
+                required
+              >
+                <option value="">اختار نوع الإشعار</option>
+                <option value="info">معلومة</option>
+                <option value="warning">تحذير</option>
+                <option value="urgent">عاجل</option>
+              </select>
+            </div>
+          </div>
+
           <div className="form-section">
             <h3 className="section-title">النسخة العربية</h3>
             <div className="form-group">

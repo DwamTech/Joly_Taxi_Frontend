@@ -3,27 +3,46 @@
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/Toast/ToastContainer";
 import CustomSelect from "@/components/shared/CustomSelect/CustomSelect";
+import {
+  CreateAdminNotificationRequest,
+  NotificationPriority,
+  RecipientType,
+} from "@/models/Notification";
+import { getUsers } from "@/services/usersService";
 import "./SendNotificationForm.css";
 
 interface SendNotificationFormProps {
-  onSubmit: (data: any) => void;
+  onSubmit: (data: CreateAdminNotificationRequest) => void | Promise<void>;
   templateData?: {
     title_ar: string;
     title_en: string;
     body_ar: string;
     body_en: string;
-    type: string;
+    type: NotificationPriority;
   } | null;
+}
+
+interface SearchedUser {
+  id: number;
+  name: string;
+  phone: string;
+  type: string;
+  status?: string;
 }
 
 export default function SendNotificationForm({ onSubmit, templateData }: SendNotificationFormProps) {
   const { showToast } = useToast();
-  const [recipientType, setRecipientType] = useState("all");
-  const [priority, setPriority] = useState("info");
+  const [recipientType, setRecipientType] = useState<RecipientType>("all");
+  const [priority, setPriority] = useState<NotificationPriority>("info");
   const [sendType, setSendType] = useState("immediate");
-  const [channels, setChannels] = useState<string[]>(["database", "push"]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedUsers, setSelectedUsers] = useState<any[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<SearchedUser[]>([]);
+  const [isUserPickerOpen, setIsUserPickerOpen] = useState(false);
+  const [usersPage, setUsersPage] = useState(1);
+  const [usersTotalPages, setUsersTotalPages] = useState(1);
+  const [usersList, setUsersList] = useState<SearchedUser[]>([]);
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+  const [usersSearchTerm, setUsersSearchTerm] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
     title_ar: "",
@@ -50,6 +69,43 @@ export default function SendNotificationForm({ onSubmit, templateData }: SendNot
     }
   }, [templateData, showToast]);
 
+  useEffect(() => {
+    if (recipientType !== "specific" && recipientType !== "custom") {
+      setSelectedUsers([]);
+      setIsUserPickerOpen(false);
+      setUsersSearchTerm("");
+      setUsersList([]);
+      setUsersPage(1);
+    }
+  }, [recipientType]);
+
+  const fetchUsersPage = async (page: number) => {
+    setIsLoadingUsers(true);
+    try {
+      const response = await getUsers(page);
+      const normalizedUsers: SearchedUser[] = response.data.map((user) => ({
+        id: user.id,
+        name: user.name,
+        phone: user.phone,
+        type: user.type,
+        status: user.status,
+      }));
+      setUsersList(normalizedUsers);
+      setUsersPage(response.pagination.current_page || page);
+      setUsersTotalPages(response.pagination.last_page || 1);
+    } catch (error: any) {
+      showToast(error?.message || "فشل في تحميل المستخدمين", "error");
+    } finally {
+      setIsLoadingUsers(false);
+    }
+  };
+
+  const openUserPicker = async () => {
+    setIsUserPickerOpen(true);
+    setUsersSearchTerm("");
+    await fetchUsersPage(1);
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
@@ -57,24 +113,35 @@ export default function SendNotificationForm({ onSubmit, templateData }: SendNot
     });
   };
 
-  const handleChannelToggle = (channel: string) => {
-    setChannels(prev =>
-      prev.includes(channel)
-        ? prev.filter(c => c !== channel)
-        : [...prev, channel]
-    );
+  const handleAddUser = (user: SearchedUser) => {
+    setSelectedUsers((prev) => {
+      if (recipientType === "specific") {
+        return [user];
+      }
+      if (prev.some((item) => item.id === user.id)) {
+        return prev;
+      }
+      return [...prev, user];
+    });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleRemoveUser = (userId: number) => {
+    setSelectedUsers((prev) => prev.filter((user) => user.id !== userId));
+  };
+
+  const isUserSelected = (userId: number) => selectedUsers.some((selectedUser) => selectedUser.id === userId);
+
+  const filteredUsers = usersList.filter((user) => {
+    if (!usersSearchTerm.trim()) return true;
+    const query = usersSearchTerm.toLowerCase();
+    return user.name.toLowerCase().includes(query) || user.phone.includes(usersSearchTerm);
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.title_ar || !formData.title_en || !formData.body_ar || !formData.body_en) {
+    if (!formData.title_ar || !formData.body_ar) {
       showToast("يرجى ملء جميع الحقول المطلوبة", "error");
-      return;
-    }
-
-    if (channels.length === 0) {
-      showToast("يرجى اختيار قناة إرسال واحدة على الأقل", "error");
       return;
     }
 
@@ -83,16 +150,31 @@ export default function SendNotificationForm({ onSubmit, templateData }: SendNot
       return;
     }
 
-    const notificationData = {
-      ...formData,
+    if ((recipientType === "specific" || recipientType === "custom") && selectedUsers.length === 0) {
+      showToast("يرجى اختيار مستخدم واحد على الأقل", "error");
+      return;
+    }
+
+    const notificationData: CreateAdminNotificationRequest = {
+      title_ar: formData.title_ar.trim(),
+      title_en: (formData.title_en || formData.title_ar).trim(),
+      body_ar: formData.body_ar.trim(),
+      body_en: (formData.body_en || formData.body_ar).trim(),
+      notification_type: priority,
       recipient_type: recipientType,
-      priority,
-      send_type: sendType,
-      channels,
-      selected_users: selectedUsers,
+      send_immediately: sendType === "immediate",
+      recipient_ids:
+        recipientType === "specific" || recipientType === "custom"
+          ? selectedUsers.map((user) => user.id)
+          : undefined,
     };
 
-    onSubmit(notificationData);
+    setIsSubmitting(true);
+    try {
+      await onSubmit(notificationData);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -115,7 +197,7 @@ export default function SendNotificationForm({ onSubmit, templateData }: SendNot
                   name="recipient_type"
                   value={option.value}
                   checked={recipientType === option.value}
-                  onChange={(e) => setRecipientType(e.target.value)}
+                  onChange={(e) => setRecipientType(e.target.value as RecipientType)}
                 />
                 <span>{option.label}</span>
               </label>
@@ -125,13 +207,9 @@ export default function SendNotificationForm({ onSubmit, templateData }: SendNot
 
         {(recipientType === "specific" || recipientType === "custom") && (
           <div className="user-search">
-            <input
-              type="text"
-              className="form-input"
-              placeholder="ابحث بالاسم أو رقم الهاتف..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+            <button type="button" className="btn-open-user-picker" onClick={openUserPicker}>
+              {recipientType === "specific" ? "اختيار مستخدم" : "اختيار مجموعة مستخدمين"}
+            </button>
             {selectedUsers.length > 0 && (
               <div className="selected-users">
                 {selectedUsers.map((user) => (
@@ -139,7 +217,7 @@ export default function SendNotificationForm({ onSubmit, templateData }: SendNot
                     <span>{user.name}</span>
                     <button
                       type="button"
-                      onClick={() => setSelectedUsers(prev => prev.filter(u => u.id !== user.id))}
+                      onClick={() => handleRemoveUser(user.id)}
                     >
                       ×
                     </button>
@@ -210,7 +288,7 @@ export default function SendNotificationForm({ onSubmit, templateData }: SendNot
               { value: "urgent", label: "عاجل", icon: "🚨" },
             ]}
             value={priority}
-            onChange={(value) => setPriority(value)}
+            onChange={(value) => setPriority(value as NotificationPriority)}
           />
         </div>
       </div>
@@ -241,7 +319,7 @@ export default function SendNotificationForm({ onSubmit, templateData }: SendNot
 
       {/* خيارات الإرسال */}
       <div className="form-section">
-        <h3 className="section-title">⏰ خيارات الإرسال</h3>
+       {/* <h3 className="section-title">⏰ خيارات الإرسال</h3>
         <div className="schedule-options">
           <button
             type="button"
@@ -257,7 +335,7 @@ export default function SendNotificationForm({ onSubmit, templateData }: SendNot
           >
             📅 جدولة الإرسال
           </button>
-        </div>
+        </div>*/}
 
         {sendType === "scheduled" && (
           <div className="datetime-input">
@@ -287,13 +365,88 @@ export default function SendNotificationForm({ onSubmit, templateData }: SendNot
 
       {/* أزرار الإجراءات */}
       <div className="form-actions">
-        <button type="submit" className="btn-submit">
+        <button type="submit" className="btn-submit" disabled={isSubmitting}>
           {sendType === "immediate" ? "إرسال الآن" : "جدولة الإرسال"}
         </button>
-        <button type="button" className="btn-cancel" onClick={() => window.location.reload()}>
+        <button type="button" className="btn-cancel" onClick={() => window.location.reload()} disabled={isSubmitting}>
           إلغاء
         </button>
       </div>
+
+      {isUserPickerOpen && (
+        <div className="user-picker-overlay" onClick={() => setIsUserPickerOpen(false)}>
+          <div className="user-picker-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="user-picker-header">
+              <h3>{recipientType === "specific" ? "اختيار مستخدم محدد" : "اختيار مجموعة مخصصة"}</h3>
+              <button type="button" className="user-picker-close" onClick={() => setIsUserPickerOpen(false)}>
+                ×
+              </button>
+            </div>
+
+            <div className="user-picker-search">
+              <input
+                type="text"
+                className="form-input"
+                placeholder="ابحث بالاسم أو رقم الهاتف..."
+                value={usersSearchTerm}
+                onChange={(e) => setUsersSearchTerm(e.target.value)}
+              />
+            </div>
+
+            <div className="user-picker-list">
+              {isLoadingUsers ? (
+                <div className="user-picker-empty">جاري تحميل المستخدمين...</div>
+              ) : filteredUsers.length === 0 ? (
+                <div className="user-picker-empty">لا يوجد مستخدمون في هذه الصفحة</div>
+              ) : (
+                filteredUsers.map((user) => (
+                  <label key={user.id} className="user-picker-item">
+                    <input
+                      type="checkbox"
+                      checked={isUserSelected(user.id)}
+                      onChange={() =>
+                        isUserSelected(user.id) ? handleRemoveUser(user.id) : handleAddUser(user)
+                      }
+                    />
+                    <div className="user-picker-item-content">
+                      <span className="user-picker-name">{user.name}</span>
+                      <span className="user-picker-phone">{user.phone}</span>
+                    </div>
+                  </label>
+                ))
+              )}
+            </div>
+
+            <div className="user-picker-pagination">
+              <button
+                type="button"
+                className="pagination-btn"
+                disabled={usersPage <= 1 || isLoadingUsers}
+                onClick={() => fetchUsersPage(usersPage - 1)}
+              >
+                السابق
+              </button>
+              <span>
+                صفحة {usersPage} من {usersTotalPages}
+              </span>
+              <button
+                type="button"
+                className="pagination-btn"
+                disabled={usersPage >= usersTotalPages || isLoadingUsers}
+                onClick={() => fetchUsersPage(usersPage + 1)}
+              >
+                التالي
+              </button>
+            </div>
+
+            <div className="user-picker-actions">
+              <button type="button" className="btn-cancel" onClick={() => setIsUserPickerOpen(false)}>
+                تم
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </form>
   );
 }

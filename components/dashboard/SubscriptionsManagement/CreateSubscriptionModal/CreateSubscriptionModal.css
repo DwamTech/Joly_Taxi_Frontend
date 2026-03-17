@@ -469,6 +469,38 @@
   box-shadow: 0 0 0 3px rgba(253, 185, 19, 0.1);
 }
 
+.create-subscription-modal .subscription-preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  padding: 14px;
+  border: 2px solid #f0f0f0;
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+.create-subscription-modal .preview-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid #ececec;
+}
+
+.create-subscription-modal .preview-label {
+  color: #6c757d;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.create-subscription-modal .preview-value {
+  color: #2c3e50;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
 .create-subscription-modal .form-textarea {
   resize: vertical;
   min-height: 80px;

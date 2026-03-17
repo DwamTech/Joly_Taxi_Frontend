@@ -384,6 +384,16 @@ export const usersService = {
       if (userData.status) formData.append('status', userData.status);
       if (userData.agent_code) formData.append('agent_code', userData.agent_code);
       if (userData.delegate_number) formData.append('delegate_number', userData.delegate_number);
+      const updatePayload = userData as Partial<User> & {
+        block_reason?: string;
+        rejection_reason?: string;
+      };
+      if (updatePayload.block_reason) {
+        formData.append('reason', updatePayload.block_reason);
+      }
+      if (updatePayload.rejection_reason) {
+        formData.append('rejection_reason', updatePayload.rejection_reason);
+      }
 
       // Add driver data if exists
       if (userData.driver_profile) {
@@ -470,7 +480,7 @@ export const usersService = {
     }
   },
 
-  async toggleBlockUser(userId: number): Promise<{ status: string; message: string }> {
+  async toggleBlockUser(userId: number, reason?: string): Promise<{ status: string; message: string }> {
     try {
       const token = AuthService.getToken();
       
@@ -489,6 +499,7 @@ export const usersService = {
         method: "POST",
         headers,
         credentials: 'include',
+        body: reason ? JSON.stringify({ reason }) : undefined,
       });
 
       console.log('Toggle block response status:', response.status);
@@ -554,7 +565,7 @@ export const getUsers = (page?: number) => usersService.getUsers(page);
 export const getUsersStats = () => usersService.getUsersStats();
 export const getUserDetails = (userId: number) => usersService.getUserDetails(userId);
 export const updateUser = (userId: number, userData: Partial<User>) => usersService.updateUser(userId, userData);
-export const toggleBlockUser = (userId: number) => usersService.toggleBlockUser(userId);
+export const toggleBlockUser = (userId: number, reason?: string) => usersService.toggleBlockUser(userId, reason);
 export const deleteUser = (userId: number) => usersService.deleteUser(userId);
 export const convertToUIUser = (apiUser: ApiUser): User => usersService.convertToUIUser(apiUser);
 
@@ -589,39 +600,50 @@ export async function getUserActivityLog(userId: number): Promise<import("@/mode
   };
   if (token) headers["Authorization"] = `Bearer ${token}`;
 
-  const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}/trips`, {
-    method: "GET",
-    headers,
-    credentials: "include",
-  });
+  const endpoints = [
+    `${API_BASE_URL}/api/admin/users/${userId}/activity-log`,
+    `${API_BASE_URL}/api/admin/users/${userId}/trips`,
+  ];
 
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}));
-    throw new Error(err.message || `فشل في جلب سجل النشاط: ${response.status}`);
+  for (const endpoint of endpoints) {
+    const response = await fetch(endpoint, {
+      method: "GET",
+      headers,
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      if (response.status === 404 && endpoint.endsWith("/activity-log")) {
+        continue;
+      }
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.message || `فشل في جلب سجل النشاط: ${response.status}`);
+    }
+
+    const result = await response.json();
+    const raw: ActivityLog[] = Array.isArray(result) ? result : (result.data ?? []);
+
+    return raw.map((a) => ({
+      id: a.id,
+      rider_user_id: userId,
+      vehicle_type_id: 0,
+      from_lat: 0,
+      from_lng: 0,
+      to_lat: 0,
+      to_lng: 0,
+      from_address: a.from_address ?? "",
+      to_address: a.to_address ?? "",
+      distance_km: parseFloat(String(a.distance_km)) || 0,
+      eta_seconds: a.eta_seconds,
+      price_per_km_snapshot: 0,
+      suggested_price: parseFloat(String(a.amount)) || 0,
+      final_price: parseFloat(String(a.amount)) || 0,
+      requires_ac: a.requires_ac,
+      status: a.status as import("@/models/Trip").TripStatus,
+      created_at: a.date,
+      updated_at: a.date,
+    }));
   }
 
-  const result = await response.json();
-  // الـ API قد يرجع { data: [...] } أو مصفوفة مباشرة
-  const raw: ActivityLog[] = Array.isArray(result) ? result : (result.data ?? []);
-
-  return raw.map((a) => ({
-    id: a.id,
-    rider_user_id: userId,
-    vehicle_type_id: 0,
-    from_lat: 0,
-    from_lng: 0,
-    to_lat: 0,
-    to_lng: 0,
-    from_address: a.from_address ?? "",
-    to_address: a.to_address ?? "",
-    distance_km: parseFloat(String(a.distance_km)) || 0,
-    eta_seconds: a.eta_seconds,
-    price_per_km_snapshot: 0,
-    suggested_price: parseFloat(String(a.amount)) || 0,
-    final_price: parseFloat(String(a.amount)) || 0,
-    requires_ac: a.requires_ac,
-    status: a.status as import("@/models/Trip").TripStatus,
-    created_at: a.date,
-    updated_at: a.date,
-  }));
+  throw new Error("فشل في جلب سجل النشاط");
 }

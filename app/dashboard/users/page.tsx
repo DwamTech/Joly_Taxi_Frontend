@@ -235,6 +235,12 @@ function UsersManagementContent() {
     try {
       // Fetch full user details from API
       const userDetails = await getUserDetails(user.id);
+      const normalizedRole: User["role"] =
+        userDetails.type === "driver" || userDetails.type === "both"
+          ? userDetails.type
+          : "user";
+      const createdAt = userDetails.registration_date || new Date().toISOString();
+      const lastLogin = userDetails.last_login || createdAt;
       
       // Convert API response to User model
       const fullUser: User = {
@@ -242,13 +248,13 @@ function UsersManagementContent() {
         name: userDetails.name,
         phone: userDetails.phone,
         email: userDetails.email,
-        role: userDetails.role || userDetails.type || 'user', // استخدام role أو type أو افتراضي user
+        role: normalizedRole,
         status: userDetails.status,
         agent_code: null,
         delegate_number: null,
-        created_at: userDetails.registration_date || userDetails.created_at,
-        last_active_at: userDetails.last_login || userDetails.last_active_at,
-        last_login_at: userDetails.last_login || userDetails.last_login_at,
+        created_at: createdAt,
+        last_active_at: lastLogin,
+        last_login_at: lastLogin,
         // Add rider profile if exists
         rider_profile: userDetails.rider_info ? {
           id: userDetails.id,
@@ -259,8 +265,8 @@ function UsersManagementContent() {
           completed_trips_count: userDetails.rider_info.completed_trips,
           cancelled_trips_count: userDetails.rider_info.cancelled_trips,
           preferences: null,
-          created_at: userDetails.registration_date,
-          updated_at: userDetails.last_login,
+          created_at: createdAt,
+          updated_at: lastLogin,
         } : undefined,
         // Add driver profile if exists
         driver_profile: userDetails.driver_info ? {
@@ -288,8 +294,8 @@ function UsersManagementContent() {
           file_url: doc.url,
           expires_at: doc.expires_at,
           status: doc.status || "approved",
-          created_at: userDetails.registration_date,
-          updated_at: userDetails.last_login,
+          created_at: createdAt,
+          updated_at: lastLogin,
         })) || undefined,
       };
       
@@ -348,10 +354,10 @@ function UsersManagementContent() {
     }
   };
 
-  const handleBlockUser = async (userId: number) => {
+  const handleBlockUser = async (userId: number, reason?: string) => {
     try {
       // Call API to toggle block status
-      const result = await toggleBlockUser(userId);
+      const result = await toggleBlockUser(userId, reason);
       
       // Update local state with new status
       setUsers((prevUsers) =>

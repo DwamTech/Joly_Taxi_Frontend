@@ -102,7 +102,7 @@ export default function VehicleTypesTable({
               <th>الاسم بالعربية</th>
               <th>الاسم بالإنجليزية</th>
               <th>التكييف</th>
-              <th>الأجرة الأساسية</th>
+              <th>سعر المركبة</th>
               <th>السعر/كم</th>
               <th>وقت الانتظار</th>
               <th>نطاق البحث</th>

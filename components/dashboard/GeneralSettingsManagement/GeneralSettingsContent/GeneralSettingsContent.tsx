@@ -44,12 +44,12 @@ export default function GeneralSettingsContent() {
           >
             🔒 الأمان والخصوصية
           </button>
-          <button
+          {/*<button
             className={`tab-button ${activeTab === "system" ? "active" : ""}`}
             onClick={() => setActiveTab("system")}
           >
             🛠️ النظام والنسخ الاحتياطي
-          </button>
+          </button>*/}
         </div>
 
         <div className="tab-content">

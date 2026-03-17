@@ -7,7 +7,7 @@
   margin-bottom: 2rem;
 }
 
-.table-wrapper {
+.trips-table-wrapper {
   overflow-x: auto;
 }
 
@@ -55,29 +55,29 @@
   font-size: 14px;
 }
 
-.trip-number-cell {
+.trips-table-trip-number-cell {
   font-weight: 600;
   color: #f59e0b;
 }
 
-.user-info-cell {
+.trips-table-user-info-cell {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
 }
 
-.user-name {
+.trips-table-user-name {
   font-weight: 500;
   color: #1f2937;
 }
 
-.driver-cell {
+.trips-table-driver-cell {
   display: flex;
   align-items: center;
   gap: 0.75rem;
 }
 
-.driver-avatar {
+.trips-table-driver-avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -91,28 +91,28 @@
   flex-shrink: 0;
 }
 
-.driver-info {
+.trips-table-driver-info {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
 }
 
-.driver-name {
+.trips-table-driver-name {
   font-weight: 500;
   color: #1f2937;
 }
 
-.driver-rating {
+.trips-table-driver-rating {
   font-size: 0.85rem;
   color: #f59e0b;
 }
 
-.no-driver {
+.trips-table-no-driver {
   color: #9ca3af;
   font-style: italic;
 }
 
-.vehicle-badge {
+.trips-table-vehicle-badge {
   display: inline-block;
   padding: 0.375rem 0.875rem;
   background: #eff6ff;
@@ -122,7 +122,7 @@
   font-weight: 500;
 }
 
-.status-badge {
+.trips-table-status-badge {
   display: inline-block;
   padding: 0.375rem 0.875rem;
   border-radius: 8px;
@@ -130,48 +130,48 @@
   font-weight: 500;
 }
 
-.status-open {
+.trips-table-status-open {
   background: #dbeafe;
   color: #1e40af;
 }
 
-.status-accepted {
+.trips-table-status-accepted {
   background: #fef3c7;
   color: #92400e;
 }
 
-.status-started {
+.trips-table-status-started {
   background: #ddd6fe;
   color: #5b21b6;
 }
 
-.status-ended {
+.trips-table-status-ended {
   background: #d1fae5;
   color: #065f46;
 }
 
-.status-cancelled {
+.trips-table-status-cancelled {
   background: #fee2e2;
   color: #991b1b;
 }
 
-.status-expired {
+.trips-table-status-expired {
   background: #f3f4f6;
   color: #6b7280;
 }
 
-.price-cell {
+.trips-table-price-cell {
   font-weight: 600;
   color: #059669;
 }
 
-.actions-cell {
+.trips-table-actions-cell {
   display: flex;
   gap: 0.5rem;
   justify-content: center;
 }
 
-.action-btn {
+.trips-table-action-btn {
   width: 36px;
   height: 36px;
   border: none;
@@ -184,11 +184,11 @@
   justify-content: center;
 }
 
-.view-btn {
+.trips-table-view-btn {
   background: #eff6ff;
 }
 
-.view-btn:hover {
+.trips-table-view-btn:hover {
   background: #dbeafe;
   transform: scale(1.1);
 }
@@ -207,7 +207,7 @@
     padding: 12px 8px;
   }
 
-  .driver-avatar {
+  .trips-table-driver-avatar {
     width: 32px;
     height: 32px;
     font-size: 0.875rem;
@@ -216,7 +216,7 @@
 
 /* Mobile Card View */
 @media (max-width: 768px) {
-  .table-wrapper {
+  .trips-table-wrapper {
     overflow-x: visible;
   }
 
@@ -265,11 +265,11 @@
     width: 110px;
   }
 
-  .trip-number-cell {
+  .trips-table-trip-number-cell {
     justify-content: flex-start;
   }
 
-  .actions-cell {
+  .trips-table-actions-cell {
     flex-wrap: wrap;
     justify-content: flex-end;
     padding-top: 12px;
@@ -277,12 +277,12 @@
     border-top: 1px solid #f0f0f0;
   }
 
-  .actions-cell::before {
+  .trips-table-actions-cell::before {
     width: 100%;
     margin-bottom: 8px;
   }
 
-  .action-btn {
+  .trips-table-action-btn {
     width: 40px;
     height: 40px;
     min-width: 40px;

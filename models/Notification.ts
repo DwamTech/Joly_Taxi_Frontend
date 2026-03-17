@@ -58,6 +58,29 @@ export interface SendNotificationRequest {
   scheduled_time?: string;
 }
 
+export interface CreateAdminNotificationRequest {
+  title_ar: string;
+  title_en: string;
+  body_ar: string;
+  body_en: string;
+  notification_type: NotificationPriority;
+  recipient_type: RecipientType;
+  recipient_ids?: number[];
+  send_immediately: boolean;
+}
+
+export interface CreateAdminNotificationResponseData {
+  notification_id: number;
+  total_recipients: number;
+  status: NotificationStatus;
+}
+
+export interface CreateAdminNotificationResponse {
+  ok: boolean;
+  message: string;
+  data: CreateAdminNotificationResponseData;
+}
+
 export interface NotificationHistoryItem {
   id: number;
   type: NotificationPriority;

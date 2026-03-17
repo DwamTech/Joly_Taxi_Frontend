@@ -53,12 +53,14 @@ export default function EditUserModal({ user, onClose, onUpdateUser }: EditUserM
     preferred_vehicle_types: user.rider_profile?.preferences?.preferred_vehicle_types?.join(', ') || "",
     requires_ac: user.rider_profile?.preferences?.requires_ac ?? true,
     language: user.rider_profile?.preferences?.language || "ar",
+    block_reason: "",
+    rejection_reason: "",
   });
 
   const [documents, setDocuments] = useState(user.documents || []);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
     
     if (type === "checkbox") {
@@ -80,7 +82,7 @@ export default function EditUserModal({ user, onClose, onUpdateUser }: EditUserM
     const now = new Date().toISOString();
     
     // Create updated user object
-    const updatedUser: User = {
+    const updatedUser: User & { block_reason?: string; rejection_reason?: string } = {
       ...user,
       name: formData.name,
       phone: formData.phone,
@@ -90,6 +92,10 @@ export default function EditUserModal({ user, onClose, onUpdateUser }: EditUserM
       agent_code: formData.agent_code || null,
       delegate_number: formData.delegate_number || null,
     };
+
+    if (formData.status === "blocked" && formData.block_reason.trim()) {
+      updatedUser.block_reason = formData.block_reason.trim();
+    }
 
     // Update driver profile if driver or both
     if (formData.role === "driver" || formData.role === "both") {
@@ -106,6 +112,9 @@ export default function EditUserModal({ user, onClose, onUpdateUser }: EditUserM
         completed_trips_count: user.driver_profile?.completed_trips_count ?? 0,
         cancelled_trips_count: user.driver_profile?.cancelled_trips_count ?? 0,
       };
+      if (formData.verification_status === "rejected" && formData.rejection_reason.trim()) {
+        updatedUser.rejection_reason = formData.rejection_reason.trim();
+      }
 
       if (formData.vehicle_type) {
         updatedUser.vehicle = {
@@ -332,10 +341,35 @@ export default function EditUserModal({ user, onClose, onUpdateUser }: EditUserM
                     { value: "blocked", label: "محظور", icon: "🚫" },
                   ]}
                   value={formData.status}
-                  onChange={(value) =>
-                    setFormData((prev) => ({ ...prev, status: value as UserStatus }))
-                  }
+                  onChange={(value) => {
+                    if (value === "blocked") {
+                      setFormData((prev) => ({
+                        ...prev,
+                        status: value as UserStatus,
+                        block_reason: prev.block_reason || "",
+                      }));
+                      showToast("اكتبي سبب الحظر في الحقل الظاهر أسفل الحالة", "warning");
+                      return;
+                    }
+
+                    setFormData((prev) => ({
+                      ...prev,
+                      status: value as UserStatus,
+                      block_reason: "",
+                    }));
+                  }}
                 />
+                {formData.status === "blocked" && (
+                  <textarea
+                    name="block_reason"
+                    value={formData.block_reason}
+                    onChange={handleChange}
+                    className="form-input"
+                    placeholder="سبب الحظر"
+                    rows={3}
+                    style={{ marginTop: "10px" }}
+                  />
+                )}
               </div>
 
               <div className="form-group">
@@ -433,13 +467,35 @@ export default function EditUserModal({ user, onClose, onUpdateUser }: EditUserM
                       { value: "rejected", label: "مرفوض", icon: "❌" },
                     ]}
                     value={formData.verification_status}
-                    onChange={(value) =>
+                    onChange={(value) => {
+                      if (value === "rejected") {
+                        setFormData((prev) => ({
+                          ...prev,
+                          verification_status: value as VerificationStatus,
+                          rejection_reason: prev.rejection_reason || "",
+                        }));
+                        showToast("اكتبي سبب الرفض في الحقل الظاهر أسفل حالة البروفايل", "warning");
+                        return;
+                      }
+
                       setFormData((prev) => ({
                         ...prev,
                         verification_status: value as VerificationStatus,
-                      }))
-                    }
+                        rejection_reason: "",
+                      }));
+                    }}
                   />
+                  {formData.verification_status === "rejected" && (
+                    <textarea
+                      name="rejection_reason"
+                      value={formData.rejection_reason}
+                      onChange={handleChange}
+                      className="form-input"
+                      placeholder="سبب رفض حالة البروفايل"
+                      rows={3}
+                      style={{ marginTop: "10px" }}
+                    />
+                  )}
                 </div>
               </div>
 

@@ -196,7 +196,7 @@ export default function SubscriptionsFilters({
               {isSendingNotification ? '⏳' : '🔔'}
             </span>
             <span className="btn-text">
-              {isSendingNotification ? 'جاري الإرسال...' : 'إرسال إشعار'}
+              {isSendingNotification ? 'جاري الإرسال...' : 'إرسال إشعار للتنبية بتجديد الاشتراك'}
             </span>
           </button>
           <button className="clear-filters-btn" onClick={clearFilters}>

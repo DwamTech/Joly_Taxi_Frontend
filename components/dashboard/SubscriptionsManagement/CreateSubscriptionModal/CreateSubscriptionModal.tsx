@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { User } from "@/models/User";
+import { VehicleType } from "@/models/VehicleType";
 import "./CreateSubscriptionModal.css";
 
 interface CreateSubscriptionModalProps {
@@ -9,13 +10,13 @@ interface CreateSubscriptionModalProps {
   onClose: () => void;
   onCreateSubscription: (userId: number, subscriptionData: SubscriptionData) => void;
   users: User[];
+  vehicleTypes: VehicleType[];
   isLoading?: boolean;
 }
 
 interface SubscriptionData {
-  type: "monthly" | "quarterly" | "yearly";
-  startDate: string;
-  notes?: string;
+  months: number;
+  vehicleTypeId: number;
 }
 
 export default function CreateSubscriptionModal({
@@ -23,13 +24,13 @@ export default function CreateSubscriptionModal({
   onClose,
   onCreateSubscription,
   users,
+  vehicleTypes,
   isLoading = false,
 }: CreateSubscriptionModalProps) {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [subscriptionData, setSubscriptionData] = useState<SubscriptionData>({
-    type: "monthly",
-    startDate: new Date().toISOString().split('T')[0],
-    notes: "",
+    months: 1,
+    vehicleTypeId: 0,
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
@@ -62,16 +63,20 @@ export default function CreateSubscriptionModal({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedUser) return;
+    if (!subscriptionData.vehicleTypeId) return;
+    if (!Number.isFinite(subscriptionData.months) || subscriptionData.months < 1) return;
     
-    onCreateSubscription(selectedUser.id, subscriptionData);
+    onCreateSubscription(selectedUser.id, {
+      ...subscriptionData,
+      months: Math.floor(subscriptionData.months),
+    });
   };
 
   const handleClose = () => {
     setSelectedUser(null);
     setSubscriptionData({
-      type: "monthly",
-      startDate: new Date().toISOString().split('T')[0],
-      notes: "",
+      months: 1,
+      vehicleTypeId: 0,
     });
     setSearchTerm("");
     setCurrentPage(1);
@@ -81,6 +86,16 @@ export default function CreateSubscriptionModal({
   const totalPages = Math.max(1, Math.ceil(filteredUsers.length / usersPerPage));
   const startIndex = (currentPage - 1) * usersPerPage;
   const paginatedUsers = filteredUsers.slice(startIndex, startIndex + usersPerPage);
+  const selectedVehicleType =
+    vehicleTypes.find((vehicleType) => vehicleType.id === subscriptionData.vehicleTypeId) || null;
+  const normalizedMonths = Number.isFinite(subscriptionData.months)
+    ? Math.max(1, Math.floor(subscriptionData.months))
+    : 1;
+  const estimatedTotalPrice = selectedVehicleType
+    ? Number(selectedVehicleType.base_fare) * normalizedMonths
+    : 0;
+  const estimatedDaysRemaining = normalizedMonths * 30;
+  const estimatedCreatedAt = new Date().toLocaleDateString("ar-EG");
 
   const getRoleLabel = (role: string) => {
     const labels: Record<string, string> = {
@@ -99,24 +114,6 @@ export default function CreateSubscriptionModal({
       blocked: "محظور",
     };
     return labels[status] || status;
-  };
-
-  const getSubscriptionTypeLabel = (type: string) => {
-    const labels: Record<string, string> = {
-      monthly: "شهري",
-      quarterly: "ربع سنوي",
-      yearly: "سنوي",
-    };
-    return labels[type] || type;
-  };
-
-  const getSubscriptionPrice = (type: string) => {
-    const prices: Record<string, number> = {
-      monthly: 299,
-      quarterly: 799,
-      yearly: 2999,
-    };
-    return prices[type] || 0;
   };
 
   if (!isOpen) return null;
@@ -164,7 +161,13 @@ export default function CreateSubscriptionModal({
                     <div
                       key={user.id}
                       className="user-item"
-                      onClick={() => setSelectedUser(user)}
+                      onClick={() => {
+                        setSelectedUser(user);
+                        setSubscriptionData((prev) => ({
+                          ...prev,
+                          vehicleTypeId: user.vehicle?.vehicle_type_id || 0,
+                        }));
+                      }}
                     >
                       <div className="user-avatar">
                         {user.name.charAt(0)}
@@ -229,7 +232,13 @@ export default function CreateSubscriptionModal({
               <div className="selected-user-info">
                 <button 
                   className="back-btn"
-                  onClick={() => setSelectedUser(null)}
+                      onClick={() => {
+                        setSelectedUser(null);
+                        setSubscriptionData((prev) => ({
+                          ...prev,
+                          vehicleTypeId: 0,
+                        }));
+                      }}
                 >
                   ← العودة لاختيار مستخدم آخر
                 </button>
@@ -255,59 +264,81 @@ export default function CreateSubscriptionModal({
 
               <form onSubmit={handleSubmit} className="subscription-form">
                 <div className="form-group">
-                  <label className="form-label">نوع الاشتراك</label>
-                  <div className="subscription-types">
-                    {["monthly", "quarterly", "yearly"].map((type) => (
-                      <label key={type} className="subscription-type-option">
-                        <input
-                          type="radio"
-                          name="subscriptionType"
-                          value={type}
-                          checked={subscriptionData.type === type}
-                          onChange={(e) => setSubscriptionData({
-                            ...subscriptionData,
-                            type: e.target.value as "monthly" | "quarterly" | "yearly"
-                          })}
-                        />
-                        <div className="option-content">
-                          <span className="option-title">
-                            {getSubscriptionTypeLabel(type)}
-                          </span>
-                          <span className="option-price">
-                            {getSubscriptionPrice(type)} جنيه
-                          </span>
-                        </div>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">تاريخ البداية</label>
+                  <label className="form-label">عدد الشهور</label>
                   <input
-                    type="date"
+                    type="number"
                     className="form-input"
-                    value={subscriptionData.startDate}
-                    onChange={(e) => setSubscriptionData({
-                      ...subscriptionData,
-                      startDate: e.target.value
-                    })}
+                    min={1}
+                    step={1}
+                    placeholder="مثال: 2"
+                    value={subscriptionData.months}
+                    onChange={(e) =>
+                      setSubscriptionData({
+                        ...subscriptionData,
+                        months: Number(e.target.value),
+                      })
+                    }
                     required
                   />
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label">ملاحظات (اختياري)</label>
-                  <textarea
-                    className="form-textarea"
-                    rows={3}
-                    placeholder="أضف أي ملاحظات..."
-                    value={subscriptionData.notes}
-                    onChange={(e) => setSubscriptionData({
-                      ...subscriptionData,
-                      notes: e.target.value
-                    })}
-                  />
+                  <label className="form-label">نوع المركبة</label>
+                  <select
+                    className="form-input"
+                    value={subscriptionData.vehicleTypeId || ""}
+                    onChange={(e) =>
+                      setSubscriptionData({
+                        ...subscriptionData,
+                        vehicleTypeId: Number(e.target.value),
+                      })
+                    }
+                    required
+                  >
+                    <option value="">اختر نوع المركبة</option>
+                    {vehicleTypes.map((vehicleType) => (
+                      <option key={vehicleType.id} value={vehicleType.id}>
+                        {vehicleType.name_ar || vehicleType.name_en}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="subscription-preview-grid">
+                  <div className="preview-item">
+                    <span className="preview-label">رقم الاشتراك</span>
+                    <span className="preview-value">يتولد تلقائياً بعد الحفظ</span>
+                  </div>
+                  <div className="preview-item">
+                    <span className="preview-label">السائق</span>
+                    <span className="preview-value">{selectedUser.name}</span>
+                  </div>
+                  <div className="preview-item">
+                    <span className="preview-label">نوع المركبة</span>
+                    <span className="preview-value">
+                      {selectedVehicleType ? selectedVehicleType.name_ar || selectedVehicleType.name_en : "-"}
+                    </span>
+                  </div>
+                  <div className="preview-item">
+                    <span className="preview-label">عدد الأشهر</span>
+                    <span className="preview-value">{normalizedMonths} شهر</span>
+                  </div>
+                  <div className="preview-item">
+                    <span className="preview-label">السعر الإجمالي</span>
+                    <span className="preview-value">{estimatedTotalPrice} جنيه</span>
+                  </div>
+                  <div className="preview-item">
+                    <span className="preview-label">الأيام المتبقية</span>
+                    <span className="preview-value">{estimatedDaysRemaining} يوم</span>
+                  </div>
+                  <div className="preview-item">
+                    <span className="preview-label">تاريخ الإنشاء</span>
+                    <span className="preview-value">{estimatedCreatedAt}</span>
+                  </div>
+                  <div className="preview-item">
+                    <span className="preview-label">الحالة</span>
+                    <span className="preview-value">نشط</span>
+                  </div>
                 </div>
 
                 <div className="form-actions">

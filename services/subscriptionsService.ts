@@ -5,6 +5,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL as string;
 
 interface ApiDriver {
   id?: number;
+  role?: string;
   name?: string;
   phone?: string | null;
   avatar?: string | null;
@@ -32,19 +33,30 @@ interface ApiPaymentInfo {
 interface ApiSubscription {
   id: number;
   subscription_number?: string | null;
+  driver_id?: number | string | null;
+  vehicle_type_id?: number | string | null;
   driver?: ApiDriver | null;
   user?: ApiDriver | null;
   driver_user?: ApiDriver | null;
-  vehicle_type?: string | { name?: string | null } | null;
+  vehicle_type?:
+    | string
+    | { name?: string | null; name_ar?: string | null; name_en?: string | null }
+    | null;
   months_count?: number | string | null;
   months?: number | string | null;
   total_price?: number | string | null;
+  reference?: string | null;
+  paid_amount?: number | string | null;
+  payment_method?: string | null;
   status?: string | null;
   created_at?: string | null;
+  updated_at?: string | null;
   activated_at?: string | null;
   start_date?: string | null;
   end_date?: string | null;
   days_remaining?: number | string | null;
+  days_used?: number | string | null;
+  total_days?: number | string | null;
   payment_info?: ApiPaymentInfo | null;
   rejected_reason?: string | null;
   cancelled_reason?: string | null;
@@ -70,6 +82,12 @@ interface AdminSubscriptionDetailsResponse {
   data?: ApiSubscription;
 }
 
+interface CreateOrRenewApiResponse {
+  ok?: boolean;
+  message?: string;
+  data?: ApiSubscription;
+}
+
 export interface AdminSubscriptionsResult {
   subscriptions: Subscription[];
   pagination: {
@@ -78,6 +96,17 @@ export interface AdminSubscriptionsResult {
     perPage: number;
     total: number;
   };
+}
+
+export interface CreateOrRenewSubscriptionPayload {
+  driver_id: number;
+  vehicle_type_id: number;
+  months: number;
+}
+
+export interface CreateOrRenewSubscriptionResult {
+  message: string;
+  subscription: Subscription;
 }
 
 function toNumber(value: unknown, fallback: number): number {
@@ -112,7 +141,7 @@ function mapApiSubscriptionToModel(api: ApiSubscription): Subscription {
     typeof api.vehicle_type === "string"
       ? api.vehicle_type
       : api.vehicle_type && typeof api.vehicle_type === "object"
-        ? api.vehicle_type.name || "-"
+        ? api.vehicle_type.name || api.vehicle_type.name_ar || api.vehicle_type.name_en || "-"
         : "-";
 
   const createdAt = api.created_at || new Date().toISOString();
@@ -125,20 +154,18 @@ function mapApiSubscriptionToModel(api: ApiSubscription): Subscription {
     d.setMonth(d.getMonth() + monthsCount);
     endDate = d.toISOString();
   }
-  let daysRemaining: number | undefined;
-  if (endDate) {
+  let daysRemaining: number | undefined =
+    api.days_remaining === null || api.days_remaining === undefined
+      ? undefined
+      : toNumber(api.days_remaining, 0);
+  if (daysRemaining === undefined && endDate) {
     const msDiff = new Date(endDate).getTime() - Date.now();
     daysRemaining = Math.ceil(msDiff / (1000 * 60 * 60 * 24));
-  } else {
-    daysRemaining =
-      api.days_remaining === null || api.days_remaining === undefined
-        ? undefined
-        : toNumber(api.days_remaining, 0);
   }
 
   return {
     id: api.id,
-    subscription_number: api.subscription_number || `SUB-${api.id}`,
+    subscription_number: api.subscription_number || api.reference || `SUB-${api.id}`,
     driver: {
       id: toNumber(driver.id, 0),
       name: driver.name || "-",
@@ -158,16 +185,70 @@ function mapApiSubscriptionToModel(api: ApiSubscription): Subscription {
     end_date: endDate,
     days_remaining: daysRemaining,
     payment_info: {
-      amount_paid: toNumber(paymentInfo.amount_paid ?? paymentInfo.paid_amount, totalPrice),
-      reference_number: paymentInfo.reference_number || paymentInfo.reference || "",
+      amount_paid: toNumber(paymentInfo.amount_paid ?? paymentInfo.paid_amount ?? api.paid_amount, totalPrice),
+      reference_number: paymentInfo.reference_number || paymentInfo.reference || api.reference || "",
       receipt_image: paymentInfo.receipt_image || undefined,
-      payment_method: mapPaymentMethod(paymentInfo.payment_method),
-      payment_date: paymentInfo.payment_date || createdAt,
+      payment_method: mapPaymentMethod(paymentInfo.payment_method || api.payment_method),
+      payment_date: paymentInfo.payment_date || api.updated_at || createdAt,
       additional_notes: paymentInfo.additional_notes || undefined,
     },
     rejected_reason: api.rejected_reason || undefined,
     cancelled_reason: api.cancelled_reason || undefined,
     cancelled_at: api.cancelled_at || undefined,
+  };
+}
+
+export async function createOrRenewAdminSubscription(
+  payload: CreateOrRenewSubscriptionPayload
+): Promise<CreateOrRenewSubscriptionResult> {
+  const token = AuthService.getToken();
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+    "x-lang": "ar",
+    "Accept": "application/json",
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  const url = `${API_BASE_URL}/api/admin/subscriptions/create-or-renew`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers,
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    let message = "فشل في إنشاء/تجديد الاشتراك";
+    try {
+      const errJson = await response.json();
+      if (errJson?.message) {
+        message = errJson.message;
+      }
+      if (errJson?.errors) {
+        const details = Object.values(errJson.errors)
+          .flat()
+          .join(" | ");
+        if (details) {
+          message = `${message}: ${details}`;
+        }
+      }
+      throw new Error(message);
+    } catch {
+      const text = await response.text();
+      throw new Error(text || message);
+    }
+  }
+
+  const result: CreateOrRenewApiResponse = await response.json();
+  if (!result?.data) {
+    throw new Error(result?.message || "استجابة إنشاء الاشتراك غير صالحة");
+  }
+
+  return {
+    message: result.message || "تم إنشاء/تجديد الاشتراك بنجاح",
+    subscription: mapApiSubscriptionToModel(result.data),
   };
 }
 

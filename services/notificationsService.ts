@@ -1,38 +1,86 @@
 import {
-  Notification,
   NotificationTemplate,
-  SendNotificationRequest,
+  CreateAdminNotificationRequest,
+  CreateAdminNotificationResponse,
   NotificationHistoryItem,
 } from "@/models/Notification";
+import { AuthService } from "./authService";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+
+interface SearchUserItem {
+  id: number;
+  name: string;
+  phone: string;
+  type: string;
+}
+
+interface SearchUsersApiResponse {
+  data?: SearchUserItem[];
+}
 
 class NotificationsService {
   private async fetchAPI(endpoint: string, options?: RequestInit) {
-    const token = localStorage.getItem("auth_token");
-    
+    const token = AuthService.getToken();
+    const headers = new Headers({
+      "Content-Type": "application/json",
+      "x-lang": "ar",
+      Accept: "application/json",
+    });
+    if (options?.headers) {
+      const incomingHeaders = new Headers(options.headers);
+      incomingHeaders.forEach((value, key) => {
+        headers.set(key, value);
+      });
+    }
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: token ? `Bearer ${token}` : "",
-        ...options?.headers,
-      },
+      headers,
+      credentials: "include",
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ message: "حدث خطأ غير متوقع" }));
-      throw new Error(error.message || `HTTP error! status: ${response.status}`);
+      let message = "حدث خطأ غير متوقع";
+      const contentType = response.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) {
+        const error = await response.json().catch(() => null);
+        if (error?.message) {
+          message = error.message;
+        }
+        if (error?.errors) {
+          const details = Object.values(error.errors).flat().join(" | ");
+          if (details) {
+            message = `${message}: ${details}`;
+          }
+        }
+      } else {
+        const text = await response.text().catch(() => "");
+        if (text) {
+          message = text;
+        }
+      }
+      throw new Error(message);
     }
 
     return response.json();
   }
 
-  async sendNotification(data: SendNotificationRequest): Promise<{ success: boolean; message: string }> {
-    return this.fetchAPI("/admin/notifications/send", {
+  async createNotification(
+    data: CreateAdminNotificationRequest
+  ): Promise<CreateAdminNotificationResponse> {
+    return this.fetchAPI("/api/admin/notifications/create", {
       method: "POST",
       body: JSON.stringify(data),
     });
+  }
+
+  async sendNotification(
+    data: CreateAdminNotificationRequest
+  ): Promise<CreateAdminNotificationResponse> {
+    return this.createNotification(data);
   }
 
   async getNotificationsHistory(page: number = 1): Promise<{
@@ -44,45 +92,45 @@ class NotificationsService {
       per_page: number;
     };
   }> {
-    return this.fetchAPI(`/admin/notifications/history?page=${page}`);
+    return this.fetchAPI(`/api/admin/notifications/history?page=${page}`);
   }
 
   async getNotificationDetails(id: number): Promise<NotificationHistoryItem> {
-    return this.fetchAPI(`/admin/notifications/${id}`);
+    return this.fetchAPI(`/api/admin/notifications/${id}`);
   }
 
   async resendNotification(id: number): Promise<{ success: boolean; message: string }> {
-    return this.fetchAPI(`/admin/notifications/${id}/resend`, {
+    return this.fetchAPI(`/api/admin/notifications/${id}/resend`, {
       method: "POST",
     });
   }
 
   async deleteNotification(id: number): Promise<{ success: boolean; message: string }> {
-    return this.fetchAPI(`/admin/notifications/${id}`, {
+    return this.fetchAPI(`/api/admin/notifications/${id}`, {
       method: "DELETE",
     });
   }
 
   async getTemplates(): Promise<NotificationTemplate[]> {
-    return this.fetchAPI("/admin/notifications/templates");
+    return this.fetchAPI("/api/admin/notifications/templates");
   }
 
   async createTemplate(template: Omit<NotificationTemplate, "id">): Promise<NotificationTemplate> {
-    return this.fetchAPI("/admin/notifications/templates", {
+    return this.fetchAPI("/api/admin/notifications/templates", {
       method: "POST",
       body: JSON.stringify(template),
     });
   }
 
   async updateTemplate(id: number, template: Partial<NotificationTemplate>): Promise<NotificationTemplate> {
-    return this.fetchAPI(`/admin/notifications/templates/${id}`, {
+    return this.fetchAPI(`/api/admin/notifications/templates/${id}`, {
       method: "PUT",
       body: JSON.stringify(template),
     });
   }
 
   async deleteTemplate(id: number): Promise<{ success: boolean; message: string }> {
-    return this.fetchAPI(`/admin/notifications/templates/${id}`, {
+    return this.fetchAPI(`/api/admin/notifications/templates/${id}`, {
       method: "DELETE",
     });
   }
@@ -93,11 +141,18 @@ class NotificationsService {
     failed: number;
     pending: number;
   }> {
-    return this.fetchAPI("/admin/notifications/stats");
+    return this.fetchAPI("/api/admin/notifications/stats");
   }
 
-  async searchUsers(query: string): Promise<Array<{ id: number; name: string; phone: string; type: string }>> {
-    return this.fetchAPI(`/admin/users/search?q=${encodeURIComponent(query)}`);
+  async searchUsers(query: string): Promise<SearchUserItem[]> {
+    const result = await this.fetchAPI(`/api/admin/users/search?q=${encodeURIComponent(query)}`);
+    if (Array.isArray(result)) {
+      return result as SearchUserItem[];
+    }
+    if (Array.isArray((result as SearchUsersApiResponse)?.data)) {
+      return (result as SearchUsersApiResponse).data as SearchUserItem[];
+    }
+    return [];
   }
 }
 

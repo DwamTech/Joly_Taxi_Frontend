@@ -93,7 +93,7 @@ export default function VehicleTypeModal({
             </div>
 
             <div className="form-group">
-              <label>الأجرة الأساسية (ج.م) *</label>
+              <label>سعر المركبة (ج.م) *</label>
               <input
                 type="number"
                 step="0.01"

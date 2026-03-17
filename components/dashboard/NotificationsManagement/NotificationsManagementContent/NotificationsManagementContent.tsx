@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useToast } from "@/components/Toast/ToastContainer";
+import { CreateAdminNotificationRequest } from "@/models/Notification";
+import { notificationsService } from "@/services/notificationsService";
 import NotificationsHero from "../NotificationsHero/NotificationsHero";
 import SendNotificationForm from "../SendNotificationForm/SendNotificationForm";
 import NotificationsHistory from "../NotificationsHistory/NotificationsHistory";
@@ -24,31 +26,29 @@ export default function NotificationsManagementContent() {
     failed: sentNotifications.filter((n) => n.status === "failed").length,
   };
 
-  const handleSendNotification = (data: any) => {
-    const newNotification = {
-      id: Date.now(),
-      type: data.priority,
-      title_ar: data.title_ar,
-      title_en: data.title_en,
-      body_ar: data.body_ar,
-      body_en: data.body_en,
-      recipient_type: data.recipient_type,
-      recipient_count: data.recipient_type === "all" ? 1250 : 100,
-      sent_at: data.send_type === "immediate" 
-        ? new Date().toISOString() 
-        : `${data.scheduled_date}T${data.scheduled_time}:00`,
-      status: data.send_type === "immediate" ? "sent" : "pending",
-      sent_via: data.channels,
-    };
+  const handleSendNotification = async (data: CreateAdminNotificationRequest) => {
+    try {
+      const response = await notificationsService.createNotification(data);
+      const newNotification = {
+        id: response.data.notification_id,
+        type: data.notification_type,
+        title_ar: data.title_ar,
+        title_en: data.title_en,
+        body_ar: data.body_ar,
+        body_en: data.body_en,
+        recipient_type: data.recipient_type,
+        recipient_count: response.data.total_recipients,
+        sent_at: new Date().toISOString(),
+        status: response.data.status,
+        sent_via: ["database", "push"],
+      };
 
-    setSentNotifications([newNotification, ...sentNotifications]);
-    showToast(
-      data.send_type === "immediate" 
-        ? "تم إرسال الإشعار بنجاح" 
-        : "تم جدولة الإشعار بنجاح",
-      "success"
-    );
-    setActiveTab("history");
+      setSentNotifications((prev) => [newNotification, ...prev]);
+      showToast(response.message || "تم إرسال الإشعار بنجاح", "success");
+      setActiveTab("history");
+    } catch (error: any) {
+      showToast(error?.message || "فشل في إرسال الإشعار", "error");
+    }
   };
 
   const handleResendNotification = (notificationId: number) => {

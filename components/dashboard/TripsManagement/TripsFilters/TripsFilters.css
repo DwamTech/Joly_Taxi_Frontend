@@ -11,7 +11,7 @@
   transition: none; /* Remove any transitions that might cause layout shifts */
 }
 
-.filters-grid {
+.trips-filters-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
@@ -21,13 +21,13 @@
   box-sizing: border-box;
 }
 
-.filter-group {
+.trips-filter-group {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.filter-label {
+.trips-filter-label {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -36,7 +36,7 @@
   color: #374151;
 }
 
-.filter-input {
+.trips-filter-input {
   padding: 0.75rem 1rem;
   border: 2px solid #e5e7eb;
   border-radius: 10px;
@@ -49,13 +49,13 @@
   background: white;
 }
 
-.filter-input:focus {
+.trips-filter-input:focus {
   outline: none;
   border-color: #f59e0b;
   box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
 }
 
-.filters-actions {
+.trips-filters-actions {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -65,12 +65,12 @@
   gap: 1rem;
 }
 
-.filters-status {
+.trips-filters-status {
   display: flex;
   align-items: center;
 }
 
-.filters-active-indicator {
+.trips-filters-active-indicator {
   font-size: 0.9rem;
   color: #10b981;
   font-weight: 600;
@@ -80,7 +80,7 @@
   border: 1px solid #d1fae5;
 }
 
-.results-count {
+.trips-results-count {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -88,24 +88,24 @@
   color: #6b7280;
 }
 
-.results-number {
+.trips-results-number {
   font-size: 1.25rem;
   font-weight: 700;
   color: #f59e0b;
 }
 
-.loading-indicator {
+.trips-loading-indicator {
   font-size: 0.9rem;
   color: #6b7280;
-  animation: spin 1s linear infinite;
+  animation: trips-filters-spin 1s linear infinite;
 }
 
-@keyframes spin {
+@keyframes trips-filters-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
 
-.clear-filters-btn {
+.trips-clear-filters-btn {
   padding: 0.75rem 1.5rem;
   background: #f3f4f6;
   color: #374151;
@@ -117,7 +117,7 @@
   transition: all 0.3s ease;
 }
 
-.clear-filters-btn:hover {
+.trips-clear-filters-btn:hover {
   background: #e5e7eb;
   transform: translateY(-2px);
 }
@@ -127,28 +127,28 @@
     padding: 1.5rem;
   }
 
-  .filters-grid {
+  .trips-filters-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
 
-  .filters-actions {
+  .trips-filters-actions {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .filters-status {
+  .trips-filters-status {
     order: -1;
     justify-content: center;
   }
 
-  .clear-filters-btn {
+  .trips-clear-filters-btn {
     width: 100%;
   }
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
-  .filters-grid {
+  .trips-filters-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
