@@ -1,7 +1,9 @@
 import { Trip } from "@/models/Trip";
 import { AuthService } from "./authService";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = (
+  process.env.NEXT_PUBLIC_API_BASE_URL || "https://back.mishwar-masr.app"
+).replace(/\/+$/, "");
 
 export interface ApiUserRef {
   id: number;
@@ -318,7 +320,7 @@ export async function getVehicleTypes(): Promise<ApiVehicleType[]> {
   if (token) {
     headers["Authorization"] = `Bearer ${token}`;
   }
-  const url = `${API_BASE_URL}/api/vehicle-types`;
+  const url = `${API_BASE_URL}/api/admin/vehicle-types`;
   const response = await fetch(url, {
     method: "GET",
     headers,

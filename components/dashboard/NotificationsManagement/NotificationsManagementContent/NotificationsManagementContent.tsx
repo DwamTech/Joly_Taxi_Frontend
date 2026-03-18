@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useToast } from "@/components/Toast/ToastContainer";
-import { CreateAdminNotificationRequest } from "@/models/Notification";
+import { AdminNotificationItem, CreateAdminNotificationRequest } from "@/models/Notification";
+import { adminNotificationsService } from "@/services/adminNotificationsService";
 import { notificationsService } from "@/services/notificationsService";
 import NotificationsHero from "../NotificationsHero/NotificationsHero";
 import SendNotificationForm from "../SendNotificationForm/SendNotificationForm";
@@ -12,11 +13,97 @@ import notificationsData from "@/data/notifications/notifications-data.json";
 import "./NotificationsManagementContent.css";
 
 export default function NotificationsManagementContent() {
+  const adminNotificationsPerPage = 20;
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState("send");
   const [sentNotifications, setSentNotifications] = useState(notificationsData.sentNotifications);
   const [templates, setTemplates] = useState(notificationsData.templates);
   const [selectedTemplate, setSelectedTemplate] = useState<any>(null);
+  const [isSendingHighCancellationWarning, setIsSendingHighCancellationWarning] = useState(false);
+  const [adminSentNotifications, setAdminSentNotifications] = useState<AdminNotificationItem[]>([]);
+  const [isLoadingAdminNotifications, setIsLoadingAdminNotifications] = useState(false);
+  const [incomingAdminNotifications, setIncomingAdminNotifications] = useState<any[]>([]);
+  const [isLoadingIncomingAdminNotifications, setIsLoadingIncomingAdminNotifications] = useState(false);
+  const [adminNotificationsPagination, setAdminNotificationsPagination] = useState({
+    currentPage: 1,
+    lastPage: 1,
+    perPage: 0,
+    total: 0,
+  });
+  const [incomingAdminNotificationsPagination, setIncomingAdminNotificationsPagination] = useState({
+    currentPage: 1,
+    lastPage: 1,
+    perPage: 0,
+    total: 0,
+  });
+
+  const loadAdminNotifications = useCallback(
+    async (page: number = 1, showError = true) => {
+      setIsLoadingAdminNotifications(true);
+      try {
+        const response = await adminNotificationsService.getAdminNotifications(page, adminNotificationsPerPage);
+        const pageData = response?.data;
+        const list = Array.isArray(pageData?.data) ? pageData.data : [];
+        setAdminSentNotifications(list);
+        setAdminNotificationsPagination({
+          currentPage: pageData?.current_page ?? page,
+          lastPage: Math.max(1, pageData?.last_page ?? 1),
+          perPage: pageData?.per_page ?? list.length,
+          total: pageData?.total ?? list.length,
+        });
+      } catch (error: any) {
+        if (showError) {
+          showToast(error?.message || "فشل في جلب إشعارات الادمن", "error");
+        }
+      } finally {
+        setIsLoadingAdminNotifications(false);
+      }
+    },
+    [showToast]
+  );
+
+  const loadIncomingAdminNotifications = useCallback(
+    async (page: number = 1, showError = true) => {
+      setIsLoadingIncomingAdminNotifications(true);
+      try {
+        const response = await adminNotificationsService.getMyNotifications(page, adminNotificationsPerPage);
+        const pageData = response?.data;
+        const list = Array.isArray(pageData?.data) ? pageData.data : [];
+        const mappedList = list.map((notification) => ({
+          id: notification.id,
+          type: notification.type || notification.notification_type || "info",
+          notification_type: notification.notification_type || notification.type || "info",
+          title_ar: notification.title_ar || "",
+          title_en: notification.title_en || "",
+          body_ar: notification.body_ar || "",
+          body_en: notification.body_en || "",
+          recipient_type: notification.recipient_type || "admin",
+          recipient_count: 1,
+          sent_at: notification.sent_at || notification.created_at || null,
+          created_at: notification.created_at || null,
+          status: String(notification.status || "sent"),
+          sent_via: Array.isArray(notification.sent_via) ? notification.sent_via : [],
+          user: notification.user || null,
+          recipient_summary: notification.user?.name || "الادمن",
+          recipient_ids: Array.isArray(notification.recipient_ids) ? notification.recipient_ids : null,
+        }));
+        setIncomingAdminNotifications(mappedList);
+        setIncomingAdminNotificationsPagination({
+          currentPage: pageData?.current_page ?? page,
+          lastPage: Math.max(1, pageData?.last_page ?? 1),
+          perPage: pageData?.per_page ?? list.length,
+          total: pageData?.total ?? list.length,
+        });
+      } catch (error: any) {
+        if (showError) {
+          showToast(error?.message || "فشل في جلب الإشعارات المرسلة للادمن", "error");
+        }
+      } finally {
+        setIsLoadingIncomingAdminNotifications(false);
+      }
+    },
+    [showToast]
+  );
 
   const stats = {
     total: sentNotifications.length,
@@ -44,6 +131,7 @@ export default function NotificationsManagementContent() {
       };
 
       setSentNotifications((prev) => [newNotification, ...prev]);
+      await loadAdminNotifications(1, false);
       showToast(response.message || "تم إرسال الإشعار بنجاح", "success");
       setActiveTab("history");
     } catch (error: any) {
@@ -56,8 +144,13 @@ export default function NotificationsManagementContent() {
     console.log("Resending notification:", notificationId);
   };
 
-  const handleDeleteNotification = (notificationId: number) => {
-    setSentNotifications(sentNotifications.filter((n) => n.id !== notificationId));
+  const handleDeleteNotification = async (notificationId: number) => {
+    await adminNotificationsService.deleteAdminNotification(notificationId);
+    showToast("تم حذف الإشعار بنجاح", "success");
+    await Promise.all([
+      loadAdminNotifications(adminNotificationsPagination.currentPage, false),
+      loadIncomingAdminNotifications(incomingAdminNotificationsPagination.currentPage, false),
+    ]);
   };
 
   const handleAddTemplate = (template: any) => {
@@ -81,6 +174,44 @@ export default function NotificationsManagementContent() {
     console.log("Using template:", selectedTemplateData);
   };
 
+  const handleSendHighCancellationWarning = async () => {
+    setIsSendingHighCancellationWarning(true);
+    try {
+      const response = await notificationsService.sendHighCancellationWarning({
+        target_group: "all",
+        include_stats: true,
+      });
+      const sentCount = response?.data?.notifications_sent ?? 0;
+      const failedCount = response?.data?.notifications_failed ?? 0;
+      const threshold = response?.data?.threshold;
+      showToast(
+        `تم إرسال تحذير تعدد الإلغاء بنجاح (الحد: ${threshold ?? "-"} | تم الإرسال: ${sentCount} | فشل: ${failedCount})`,
+        "success"
+      );
+      await loadAdminNotifications(1, false);
+      setActiveTab("history");
+    } catch (error: any) {
+      showToast(error?.message || "فشل في إرسال تحذير تعدد الإلغاء", "error");
+    } finally {
+      setIsSendingHighCancellationWarning(false);
+    }
+  };
+
+  useEffect(() => {
+    loadAdminNotifications(1);
+    loadIncomingAdminNotifications(1);
+  }, [loadAdminNotifications, loadIncomingAdminNotifications]);
+
+  const handleAdminNotificationsPageChange = async (page: number) => {
+    const safePage = Math.max(1, Math.min(page, adminNotificationsPagination.lastPage || 1));
+    await loadAdminNotifications(safePage);
+  };
+
+  const handleIncomingAdminNotificationsPageChange = async (page: number) => {
+    const safePage = Math.max(1, Math.min(page, incomingAdminNotificationsPagination.lastPage || 1));
+    await loadIncomingAdminNotifications(safePage);
+  };
+
   return (
     <div className="notifications-management-page">
       <NotificationsHero
@@ -91,17 +222,29 @@ export default function NotificationsManagementContent() {
 
       <div className="notifications-tabs">
         <div className="tabs-header">
+          <div className="tabs-nav">
+            <button
+              className={`tab-button ${activeTab === "send" ? "active" : ""}`}
+              onClick={() => setActiveTab("send")}
+            >
+              📤 إرسال إشعار جديد
+            </button>
+            <button
+              className={`tab-button ${activeTab === "history" ? "active" : ""}`}
+              onClick={() => setActiveTab("history")}
+            >
+              📋 سجل الإشعارات
+            </button>
+          </div>
           <button
-            className={`tab-button ${activeTab === "send" ? "active" : ""}`}
-            onClick={() => setActiveTab("send")}
+            type="button"
+            className="high-cancellation-btn"
+            onClick={handleSendHighCancellationWarning}
+            disabled={isSendingHighCancellationWarning}
           >
-            📤 إرسال إشعار جديد
-          </button>
-          <button
-            className={`tab-button ${activeTab === "history" ? "active" : ""}`}
-            onClick={() => setActiveTab("history")}
-          >
-            📋 سجل الإشعارات
+            {isSendingHighCancellationWarning
+              ? "⏳ جاري إرسال التحذير..."
+              : "🚨 إرسال إشعار تحذير لتعدد الإلغاء"}
           </button>
           {/*<button
             className={`tab-button ${activeTab === "templates" ? "active" : ""}`}
@@ -120,7 +263,20 @@ export default function NotificationsManagementContent() {
           )}
           {activeTab === "history" && (
             <NotificationsHistory
-              notifications={sentNotifications}
+              notifications={incomingAdminNotifications}
+              adminSentNotifications={adminSentNotifications}
+              isLoadingAdminNotifications={isLoadingAdminNotifications}
+              isLoadingIncomingAdminNotifications={isLoadingIncomingAdminNotifications}
+              adminNotificationsCurrentPage={adminNotificationsPagination.currentPage}
+              adminNotificationsLastPage={adminNotificationsPagination.lastPage}
+              adminNotificationsTotal={adminNotificationsPagination.total}
+              adminNotificationsPerPage={adminNotificationsPagination.perPage}
+              onAdminNotificationsPageChange={handleAdminNotificationsPageChange}
+              incomingAdminNotificationsCurrentPage={incomingAdminNotificationsPagination.currentPage}
+              incomingAdminNotificationsLastPage={incomingAdminNotificationsPagination.lastPage}
+              incomingAdminNotificationsTotal={incomingAdminNotificationsPagination.total}
+              incomingAdminNotificationsPerPage={incomingAdminNotificationsPagination.perPage}
+              onIncomingAdminNotificationsPageChange={handleIncomingAdminNotificationsPageChange}
               onResend={handleResendNotification}
               onDelete={handleDeleteNotification}
             />

@@ -144,7 +144,7 @@ Validates the JWT token from the HTTP-only cookie and returns session data.
 
 **Login:**
 ```bash
-curl -X POST http://localhost:3000/api/auth/login \
+curl -X POST https://back.mishwar-masr.app/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username":"admin","password":"admin123"}' \
   -c cookies.txt
@@ -152,13 +152,13 @@ curl -X POST http://localhost:3000/api/auth/login \
 
 **Validate:**
 ```bash
-curl -X GET http://localhost:3000/api/auth/validate \
+curl -X GET https://back.mishwar-masr.app/api/auth/validate \
   -b cookies.txt
 ```
 
 **Logout:**
 ```bash
-curl -X POST http://localhost:3000/api/auth/logout \
+curl -X POST https://back.mishwar-masr.app/api/auth/logout \
   -b cookies.txt \
   -c cookies.txt
 ```

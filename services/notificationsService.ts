@@ -6,7 +6,10 @@ import {
 } from "@/models/Notification";
 import { AuthService } from "./authService";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+const API_BASE_URL =
+  typeof window === "undefined"
+    ? process.env.NEXT_PUBLIC_API_BASE_URL || "https://back.mishwar-masr.app"
+    : "";
 
 interface SearchUserItem {
   id: number;
@@ -17,6 +20,33 @@ interface SearchUserItem {
 
 interface SearchUsersApiResponse {
   data?: SearchUserItem[];
+}
+
+export interface HighCancellationWarningRequest {
+  target_group: "all";
+  include_stats: boolean;
+}
+
+export interface HighCancellationWarningUser {
+  user_id: number;
+  user_name: string;
+  user_type: string;
+  cancelled_trips: number;
+  completed_trips: number;
+  total_trips: number;
+  cancellation_rate: string;
+}
+
+export interface HighCancellationWarningResponse {
+  ok: boolean;
+  message: string;
+  data: {
+    threshold: number;
+    target_group: string;
+    notifications_sent: number;
+    notifications_failed: number;
+    users: HighCancellationWarningUser[];
+  };
 }
 
 class NotificationsService {
@@ -142,6 +172,15 @@ class NotificationsService {
     pending: number;
   }> {
     return this.fetchAPI("/api/admin/notifications/stats");
+  }
+
+  async sendHighCancellationWarning(
+    payload: HighCancellationWarningRequest = { target_group: "all", include_stats: true }
+  ): Promise<HighCancellationWarningResponse> {
+    return this.fetchAPI("/api/admin/notifications/send-high-cancellation-warning", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
   }
 
   async searchUsers(query: string): Promise<SearchUserItem[]> {

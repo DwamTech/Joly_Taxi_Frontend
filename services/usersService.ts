@@ -1,7 +1,9 @@
 import { User } from "@/models/User";
 import { AuthService } from "./authService";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+const API_BASE_URL = (
+  process.env.NEXT_PUBLIC_API_BASE_URL || "https://back.mishwar-masr.app"
+).replace(/\/+$/, "");
 
 export interface ApiUser {
   id: number;
@@ -193,28 +195,22 @@ export const usersService = {
         headers["Authorization"] = `Bearer ${token}`;
       }
 
-      const url = `${API_BASE_URL}/api/admin/users/status`;
-      console.log('Fetching users stats from:', url);
+      const endpoints = ["/api/admin/users/stats", "/api/admin/users/status"];
+      for (const endpoint of endpoints) {
+        const url = `${API_BASE_URL}${endpoint}`;
+        const response = await fetch(url, {
+          method: "GET",
+          headers,
+          credentials: "include",
+        });
 
-      const response = await fetch(url, {
-        method: "GET",
-        headers,
-        credentials: 'include',
-      });
-
-      console.log('Stats response status:', response.status);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Stats API Error:', errorText);
-        throw new Error(`فشل في جلب إحصائيات المستخدمين: ${response.status}`);
+        if (response.ok) {
+          const result = await response.json();
+          return result.data;
+        }
       }
 
-      const result = await response.json();
-      console.log('Stats data received:', result);
-      
-      // Return data from response
-      return result.data;
+      throw new Error("فشل في جلب إحصائيات المستخدمين");
     } catch (error) {
       console.error("Error fetching users stats:", error);
       throw error;

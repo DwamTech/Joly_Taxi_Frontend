@@ -1,6 +1,9 @@
 import { AuthService } from './authService';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL as string;
+const API_BASE_URL =
+  typeof window === "undefined"
+    ? process.env.NEXT_PUBLIC_API_BASE_URL || "https://back.mishwar-masr.app"
+    : "";
 
 // واجهات البيانات للـ API Response
 interface ApiRatingTag {

@@ -13,9 +13,16 @@
 
 .tabs-header {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 1rem;
   border-bottom: 2px solid #f0f0f0;
   margin-bottom: 2rem;
+}
+
+.tabs-nav {
+  display: flex;
+  gap: 1rem;
 }
 
 .tab-button {
@@ -48,6 +55,29 @@
   background: linear-gradient(90deg, #FDB913, #FFA500);
 }
 
+.high-cancellation-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 0.75rem 1.1rem;
+  background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.high-cancellation-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(231, 76, 60, 0.35);
+}
+
+.high-cancellation-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
 .tab-content {
   animation: fadeIn 0.3s ease;
 }
@@ -65,6 +95,12 @@
 
 @media (max-width: 768px) {
   .tabs-header {
+    flex-direction: column;
+    align-items: stretch;
+    overflow: visible;
+  }
+
+  .tabs-nav {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
@@ -73,5 +109,9 @@
     padding: 0.75rem 1.5rem;
     font-size: 0.9rem;
     white-space: nowrap;
+  }
+
+  .high-cancellation-btn {
+    width: 100%;
   }
 }

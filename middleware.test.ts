@@ -26,7 +26,7 @@ const mockedJwtVerify = jwtVerify as jest.MockedFunction<typeof jwtVerify>;
 
 // Helper to create a mock NextRequest
 function createMockRequest(pathname: string, hasToken: boolean, isValidToken: boolean): NextRequest {
-  const url = `http://localhost:3000${pathname}`;
+  const url = `https://back.mishwar-masr.app${pathname}`;
   const request = new NextRequest(url);
 
   if (hasToken) {
@@ -160,7 +160,7 @@ describe('Middleware Property-Based Tests', () => {
             // Setup: Mock token validation to fail
             mockedJwtVerify.mockRejectedValue(new Error('Malformed token'));
 
-            const url = `http://localhost:3000${protectedPath}`;
+            const url = `https://back.mishwar-masr.app${protectedPath}`;
             const request = new NextRequest(url);
             request.cookies.set('auth_token', malformedToken);
 

@@ -1,6 +1,9 @@
 import { AuthService } from "./authService";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL as string;
+const API_BASE_URL =
+  typeof window === "undefined"
+    ? process.env.NEXT_PUBLIC_API_BASE_URL || "https://back.mishwar-masr.app"
+    : "";
 
 interface AdminActionResponse {
   message?: string;
@@ -55,4 +58,3 @@ export async function deleteAdminSubscription(subscriptionId: number): Promise<s
   const json: AdminActionResponse = await response.json().catch(() => ({}));
   return json?.message || "تم حذف الاشتراك بنجاح";
 }
-

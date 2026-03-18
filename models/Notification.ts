@@ -94,3 +94,60 @@ export interface NotificationHistoryItem {
   status: NotificationStatus;
   sent_via: SentViaChannel[];
 }
+
+export interface AdminNotificationUser {
+  id: number;
+  role: string;
+  name: string;
+  phone: string;
+  email: string;
+  status: string;
+  role_name?: string;
+}
+
+export interface AdminNotificationItem {
+  id: number;
+  user_id: number | null;
+  type: string;
+  notification_type: NotificationPriority | string;
+  title_ar: string;
+  title_en: string;
+  body_ar: string;
+  body_en: string;
+  data?: Record<string, any> | null;
+  sent_via: string[];
+  is_read: boolean;
+  status: NotificationStatus | string;
+  scheduled_at: string | null;
+  sent_at: string | null;
+  recipient_type: RecipientType | string | null;
+  recipient_ids: number[] | null;
+  read_at: string | null;
+  created_at: string;
+  updated_at: string;
+  admin_id: number | null;
+  user?: AdminNotificationUser | null;
+}
+
+export interface AdminNotificationsPaginationData {
+  current_page?: number;
+  data?: AdminNotificationItem[];
+  last_page?: number;
+  per_page?: number;
+  total?: number;
+  next_page_url?: string | null;
+  prev_page_url?: string | null;
+  path?: string;
+}
+
+export interface GetAdminNotificationsResponse {
+  ok: boolean;
+  message: string;
+  data: AdminNotificationsPaginationData;
+}
+
+export interface GetAdminNotificationDetailsResponse {
+  ok: boolean;
+  message: string;
+  data: AdminNotificationItem;
+}

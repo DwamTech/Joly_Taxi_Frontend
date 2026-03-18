@@ -1,32 +1,71 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useToast } from "@/components/Toast/ToastContainer";
 import GeneralSettings from "../GeneralSettings/GeneralSettings";
-import SecuritySettings from "../SecuritySettings/SecuritySettings";
-import SystemSettings from "../SystemSettings/SystemSettings";
-import settingsData from "@/data/settings/settings-data.json";
+import { AdminSettingsData, UpdateAdminSettingsPayload } from "@/models/Settings";
+import { settingsService } from "@/services/settingsService";
 import "./SettingsContent.css";
 
 export default function SettingsContent() {
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState("general");
-  const [data, setData] = useState(settingsData);
+  const [data, setData] = useState<AdminSettingsData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [loadError, setLoadError] = useState("");
 
-  const handleSaveGeneral = (newData: any) => {
-    setData({ ...data, ...newData });
-    console.log("Saving general settings:", newData);
+  const loadSettings = useCallback(async () => {
+    setIsLoading(true);
+    setLoadError("");
+    try {
+      const response = await settingsService.getSettings();
+      setData(response.data);
+    } catch (error: any) {
+      const message = error?.message || "فشل في تحميل إعدادات النظام";
+      setLoadError(message);
+      showToast("تعذر تحميل الإعدادات، برجاء المحاولة مرة أخرى", "error");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [showToast]);
+
+  useEffect(() => {
+    loadSettings();
+  }, [loadSettings]);
+
+  const handleSaveGeneral = async (newData: UpdateAdminSettingsPayload) => {
+    setIsSaving(true);
+    try {
+      const response = await settingsService.updateSettings(newData);
+      if (response.data) {
+        setData(response.data);
+      } else {
+        await loadSettings();
+      }
+      showToast("تم تحديث الإعدادات بنجاح", "success");
+    } catch (error: any) {
+      showToast("تعذر تحديث الإعدادات، برجاء مراجعة البيانات والمحاولة مرة أخرى", "error");
+      throw error;
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleSaveSecurity = (newData: any) => {
-    setData({ ...data, ...newData });
-    console.log("Saving security settings:", newData);
-  };
+  if (isLoading) {
+    return <div className="settings-feedback-state">جاري تحميل الإعدادات من السيرفر...</div>;
+  }
 
-  const handleSaveSystem = (newData: any) => {
-    setData({ ...data, ...newData });
-    console.log("Saving system settings:", newData);
-  };
+  if (!data) {
+    return (
+      <div className="settings-feedback-state error">
+        <span>{loadError || "لا توجد بيانات إعدادات متاحة حالياً"}</span>
+        <button className="retry-btn" onClick={loadSettings}>
+          إعادة المحاولة
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="settings-content">
@@ -38,7 +77,7 @@ export default function SettingsContent() {
           >
             ⚙️ الإعدادات العامة
           </button>
-          <button
+          {/*<button
             className={`tab-button ${activeTab === "security" ? "active" : ""}`}
             onClick={() => setActiveTab("security")}
           >
@@ -49,19 +88,14 @@ export default function SettingsContent() {
             onClick={() => setActiveTab("system")}
           >
             🛠️ النظام والنسخ الاحتياطي
-          </button>
+          </button>*/}
         </div>
 
         <div className="tab-content">
           {activeTab === "general" && (
-            <GeneralSettings data={data} onSave={handleSaveGeneral} />
+            <GeneralSettings data={data} onSave={handleSaveGeneral} isSaving={isSaving} />
           )}
-          {activeTab === "security" && (
-            <SecuritySettings data={data} onSave={handleSaveSecurity} />
-          )}
-          {activeTab === "system" && (
-            <SystemSettings data={data} onSave={handleSaveSystem} />
-          )}
+          {loadError && <div className="settings-inline-warning">{loadError}</div>}
         </div>
       </div>
     </div>

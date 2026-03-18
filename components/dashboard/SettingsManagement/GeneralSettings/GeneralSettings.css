@@ -88,6 +88,17 @@
   min-height: 100px;
 }
 
+.setting-hint {
+  margin: 0;
+  color: #6c757d;
+  font-size: 0.85rem;
+}
+
+.ltr-input {
+  direction: ltr;
+  text-align: left;
+}
+
 .setting-toggle {
   width: 50px;
   height: 26px;
@@ -144,6 +155,13 @@
 .btn-save:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(253, 185, 19, 0.4);
+}
+
+.btn-save:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 @media (max-width: 768px) {

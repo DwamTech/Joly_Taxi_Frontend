@@ -5,7 +5,9 @@ import {
   TokenValidationResult 
 } from "@/lib/auth/types";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "https://172.29.0.1:8000";
+const API_BASE_URL = (
+  process.env.NEXT_PUBLIC_API_BASE_URL || "https://back.mishwar-masr.app"
+).replace(/\/+$/, "");
 
 export class AuthService {
   static async login(credentials: LoginCredentials): Promise<LoginResponse> {

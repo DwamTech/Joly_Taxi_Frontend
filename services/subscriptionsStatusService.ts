@@ -2,7 +2,10 @@ import { AuthService } from "./authService";
 import { Subscription, SubscriptionStatus } from "@/models/Subscription";
 import { getAdminSubscriptionById } from "./subscriptionsService";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL as string;
+const API_BASE_URL =
+  typeof window === "undefined"
+    ? process.env.NEXT_PUBLIC_API_BASE_URL || "https://back.mishwar-masr.app"
+    : "";
 
 interface AdminActionResponse {
   message?: string;

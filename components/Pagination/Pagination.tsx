@@ -8,6 +8,7 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
   totalItems: number;
   itemsPerPage: number;
+  currentPageItemsCount?: number;
 }
 
 export default function Pagination({
@@ -16,9 +17,16 @@ export default function Pagination({
   onPageChange,
   totalItems,
   itemsPerPage,
+  currentPageItemsCount,
 }: PaginationProps) {
-  const startItem = (currentPage - 1) * itemsPerPage + 1;
-  const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+  const calculatedStart = (currentPage - 1) * itemsPerPage + 1;
+  const startItem = totalItems <= 0 || calculatedStart > totalItems ? 0 : calculatedStart;
+  const endItem =
+    totalItems <= 0
+      ? 0
+      : typeof currentPageItemsCount === "number"
+        ? Math.min(startItem + Math.max(0, currentPageItemsCount) - 1, totalItems)
+        : Math.min(currentPage * itemsPerPage, totalItems);
 
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];

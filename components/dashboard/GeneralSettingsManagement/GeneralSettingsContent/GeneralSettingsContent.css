@@ -52,6 +52,39 @@
   animation: fadeIn 0.3s ease;
 }
 
+.settings-feedback-state {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  color: #495057;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.settings-feedback-state.error {
+  border: 1px solid #f5c2c7;
+  color: #842029;
+  display: grid;
+  gap: 1rem;
+  justify-items: center;
+}
+
+.retry-btn {
+  background: linear-gradient(135deg, #FDB913 0%, #FFA500 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.65rem 1.25rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.settings-inline-warning {
+  margin-top: 1rem;
+  color: #842029;
+  font-size: 0.9rem;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

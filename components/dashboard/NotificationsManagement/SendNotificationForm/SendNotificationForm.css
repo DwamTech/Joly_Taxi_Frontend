@@ -368,6 +368,9 @@
 .user-picker-phone {
   color: #666;
   font-size: 0.9rem;
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: left;
 }
 
 .user-picker-empty {
