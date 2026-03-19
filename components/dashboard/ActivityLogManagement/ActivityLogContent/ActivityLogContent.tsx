@@ -11,9 +11,9 @@ import { ActivityLog } from "@/models/ActivityLog";
 import "./ActivityLogContent.css";
 
 export default function ActivityLogContent() {
-  const [activities] = useState<ActivityLog[]>(activityLogData.activities);
+  const [activities] = useState<ActivityLog[]>(activityLogData.activities as ActivityLog[]);
   const [filteredActivities, setFilteredActivities] = useState<ActivityLog[]>(
-    activityLogData.activities
+    activityLogData.activities as ActivityLog[]
   );
 
   // Get unique admins for filter

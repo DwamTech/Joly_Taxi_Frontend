@@ -15,9 +15,9 @@ import { Admin } from "@/models/Permission";
 import "./PermissionsManagementContent.css";
 
 export default function PermissionsManagementContent() {
-  const [admins, setAdmins] = useState<Admin[]>(permissionsData.admins);
+  const [admins, setAdmins] = useState<Admin[]>(permissionsData.admins as Admin[]);
   const [filteredAdmins, setFilteredAdmins] = useState<Admin[]>(
-    permissionsData.admins
+    permissionsData.admins as Admin[]
   );
   const [selectedAdmin, setSelectedAdmin] = useState<Admin | null>(null);
   const [showModal, setShowModal] = useState(false);
@@ -122,8 +122,8 @@ export default function PermissionsManagementContent() {
     const updatedAdmins = admins.map((a) =>
       a.id === admin.id ? { ...a, status: newStatus } : a
     );
-    setAdmins(updatedAdmins);
-    setFilteredAdmins(updatedAdmins);
+    setAdmins(updatedAdmins as Admin[]);
+    setFilteredAdmins(updatedAdmins as Admin[]);
     showToast(
       `تم ${newStatus === "active" ? "تفعيل" : "تعطيل"} المسؤول بنجاح`,
       "success"

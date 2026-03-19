@@ -5,14 +5,11 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import "./TripsChart.css";
 import { MonthlyStats } from "@/services/dashboardService";
 
-type Period = "week" | "month" | "year";
-
 interface TripsChartProps {
   monthlyStats?: MonthlyStats[];
 }
 
 export default function TripsChart({ monthlyStats = [] }: TripsChartProps) {
-  const [period, setPeriod] = useState<Period>("year");
   const [data, setData] = useState<any[]>([]);
 
   useEffect(() => {

@@ -8,7 +8,6 @@
  * - RTL layout and Arabic text rendering
  */
 
-import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Vehicles from './Vehicles';

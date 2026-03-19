@@ -15,7 +15,6 @@ interface VehicleTypesTableProps {
 export default function VehicleTypesTable({
   vehicleTypes,
   onEdit,
-  onDelete,
   onToggleActive,
   onReorder,
 }: VehicleTypesTableProps) {

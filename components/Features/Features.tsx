@@ -1,5 +1,4 @@
- 'use client';
-import React from 'react';
+'use client';
 import styles from './Features.module.css';
 import { motion } from 'motion/react';
 import { Wallet, ShieldCheck, Car, Clock } from 'lucide-react';

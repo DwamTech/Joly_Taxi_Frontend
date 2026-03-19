@@ -79,6 +79,13 @@ interface VehiclesChartProps {
 export default function VehiclesChart({ monthlyStats = [] }: VehiclesChartProps)  // قيمة افتراضية
 ```
 
+### 5. Unused Imports ✅
+```typescript
+// تم إزالة imports غير مستخدمة من:
+// - app/dashboard/notifications/page.tsx
+// - app/dashboard/statistics/page.tsx
+```
+
 ## خطوات البناء على السيرفر
 
 بعد هذه الإصلاحات، قم بالتالي على السيرفر:
@@ -118,6 +125,11 @@ Route (app)                              Size     First Load JS
 - ✅ `components/dashboard/StatsCards/StatsCards.tsx`
 - ✅ `components/dashboard/TripsChart/TripsChart.tsx`
 - ✅ `components/dashboard/VehiclesChart/VehiclesChart.tsx`
+- ✅ `app/dashboard/notifications/page.tsx` - إزالة import غير مستخدم
+- ✅ `app/dashboard/statistics/page.tsx` - إزالة import غير مستخدم
+- ✅ `app/dashboard/users/page.tsx` - إزالة getAllUsers غير مستخدم
+- ✅ `components/dashboard/ActivityLogManagement/ActivityLogContent/ActivityLogContent.tsx` - إصلاح type assertion
+- ✅ `components/dashboard/ActivityLogManagement/ActivityLogTable/ActivityLogTable.tsx` - إزالة دالة غير مستخدمة
 
 ## ملاحظات
 

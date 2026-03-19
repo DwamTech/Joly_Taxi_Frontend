@@ -64,11 +64,11 @@ export default function TagsManagement() {
       const tagsData = await getAllRatingTags();
       setTags(tagsData);
       setFilteredTags(tagsData);
-      
+
       // حساب معلومات الصفحات
       setTotalItems(tagsData.length);
       setTotalPages(Math.ceil(tagsData.length / itemsPerPage));
-      
+
     } catch (err: any) {
       console.error('Error fetching tags:', err);
       setError(err.message || 'فشل في جلب وسوم التقييمات');
@@ -84,7 +84,7 @@ export default function TagsManagement() {
     // فلتر البحث
     if (filters.search.trim()) {
       const searchTerm = filters.search.toLowerCase().trim();
-      filtered = filtered.filter(tag => 
+      filtered = filtered.filter(tag =>
         tag.label_ar.toLowerCase().includes(searchTerm) ||
         tag.label_en.toLowerCase().includes(searchTerm)
       );
@@ -240,16 +240,16 @@ export default function TagsManagement() {
     try {
       setLoading(true);
       const message = await toggleRatingTagStatus(id);
-      
+
       // إعادة تحميل البيانات للحصول على أحدث حالة
       await fetchTags();
-      
+
       // إظهار رسالة نجاح
       setToast({
         message: `✅ ${message}`,
         type: 'success'
       });
-      
+
     } catch (error: any) {
       console.error('Error toggling tag status:', error);
       setToast({
@@ -269,18 +269,18 @@ export default function TagsManagement() {
     try {
       setLoading(true);
       const message = await forceDeleteRatingTag(deleteConfirm.id);
-      
+
       // إعادة تحميل البيانات للحصول على أحدث حالة
       await fetchTags();
-      
+
       // إظهار رسالة نجاح
       setToast({
         message: `✅ ${message}`,
         type: 'success'
       });
-      
+
       setDeleteConfirm({ show: false, id: 0, label: "" });
-      
+
     } catch (error: any) {
       console.error('Error deleting tag:', error);
       setToast({
@@ -295,10 +295,10 @@ export default function TagsManagement() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       setLoading(true);
-      
+
       if (editingTag) {
         // تعديل وسم موجود عبر API
         const updateData: UpdateRatingTagRequest = {
@@ -310,12 +310,12 @@ export default function TagsManagement() {
           is_positive: formData.is_positive,
           active: formData.is_active,
         };
-        
-        const updatedTag = await updateRatingTag(editingTag.id!, updateData);
-        
+
+        await updateRatingTag(editingTag.id!, updateData);
+
         // إعادة تحميل البيانات للحصول على أحدث حالة
         await fetchTags();
-        
+
         // إعادة تطبيق الفلاتر الحالية
         const savedFiltersAfterUpdate = localStorage.getItem("tagsFilters");
         if (savedFiltersAfterUpdate) {
@@ -326,7 +326,7 @@ export default function TagsManagement() {
             console.error("Error applying filters after update:", error);
           }
         }
-        
+
         setToast({
           message: '✅ تم تحديث الوسم بنجاح',
           type: 'success'
@@ -342,12 +342,12 @@ export default function TagsManagement() {
           is_positive: formData.is_positive,
           active: formData.is_active,
         };
-        
-        const createdTag = await createRatingTag(newTagData);
-        
+
+        await createRatingTag(newTagData);
+
         // إعادة تحميل البيانات للحصول على أحدث حالة
         await fetchTags();
-        
+
         // إعادة تطبيق الفلاتر الحالية
         const savedFiltersAfterCreate = localStorage.getItem("tagsFilters");
         if (savedFiltersAfterCreate) {
@@ -358,15 +358,15 @@ export default function TagsManagement() {
             console.error("Error applying filters after create:", error);
           }
         }
-        
+
         setToast({
           message: '✅ تم إنشاء الوسم بنجاح',
           type: 'success'
         });
       }
-      
+
       setShowModal(false);
-      
+
     } catch (error: any) {
       console.error('Error saving tag:', error);
       setToast({
@@ -453,21 +453,21 @@ export default function TagsManagement() {
                       </td>
                       <td>
                         <div className="tag-actions">
-                          <button 
-                            className="tag-action-btn view" 
+                          <button
+                            className="tag-action-btn view"
                             title="عرض التفاصيل"
                             onClick={() => handleViewDetails(tag.id)}
                           >
                             📄
                           </button>
-                          <button 
-                            className="tag-action-btn edit" 
+                          <button
+                            className="tag-action-btn edit"
                             title="تعديل"
                             onClick={() => handleEditTag(tag)}
                           >
                             ✏️
                           </button>
-                          <button 
+                          <button
                             className={`tag-action-btn toggle ${tag.is_active ? 'active' : 'inactive'}`}
                             title={loading ? "جاري التحديث..." : (tag.is_active ? "تعطيل الوسم" : "تفعيل الوسم")}
                             onClick={() => handleToggleActive(tag.id)}
@@ -475,8 +475,8 @@ export default function TagsManagement() {
                           >
                             {loading ? "⏳" : (tag.is_active ? "⏸️" : "▶️")}
                           </button>
-                          <button 
-                            className="tag-action-btn delete" 
+                          <button
+                            className="tag-action-btn delete"
                             title={loading ? "جاري الحذف..." : "حذف نهائي"}
                             onClick={() => handleDeleteClick(tag.id, tag.label_ar)}
                             disabled={loading}
@@ -514,13 +514,13 @@ export default function TagsManagement() {
                       </span>
                     </div>
                   </div>
-                  
+
                   <div className="tag-card-content">
                     <div className="tag-card-labels">
                       <div className="tag-label-ar">{tag.label_ar}</div>
                       <div className="tag-label-en">{tag.label_en}</div>
                     </div>
-                    
+
                     <div className="tag-card-details">
                       <div className="tag-detail-item">
                         <span className="detail-label">ينطبق على:</span>
@@ -528,12 +528,12 @@ export default function TagsManagement() {
                           {getAppliesTo(tag.applies_to)}
                         </span>
                       </div>
-                      
+
                       <div className="tag-detail-item">
                         <span className="detail-label">النجوم:</span>
                         <span className="stars-range">{tag.min_stars} - {tag.max_stars} ⭐</span>
                       </div>
-                      
+
                       <div className="tag-detail-item">
                         <span className="detail-label">النوع:</span>
                         <span className={`type-badge ${tag.is_positive ? "positive" : "negative"}`}>
@@ -542,23 +542,23 @@ export default function TagsManagement() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="tag-card-actions">
-                    <button 
-                      className="tag-action-btn view" 
+                    <button
+                      className="tag-action-btn view"
                       title="عرض التفاصيل"
                       onClick={() => handleViewDetails(tag.id)}
                     >
                       📄
                     </button>
-                    <button 
-                      className="tag-action-btn edit" 
+                    <button
+                      className="tag-action-btn edit"
                       title="تعديل"
                       onClick={() => handleEditTag(tag)}
                     >
                       ✏️
                     </button>
-                    <button 
+                    <button
                       className={`tag-action-btn toggle ${tag.is_active ? 'active' : 'inactive'}`}
                       title={loading ? "جاري التحديث..." : (tag.is_active ? "تعطيل الوسم" : "تفعيل الوسم")}
                       onClick={() => handleToggleActive(tag.id)}
@@ -566,8 +566,8 @@ export default function TagsManagement() {
                     >
                       {loading ? "⏳" : (tag.is_active ? "⏸️" : "▶️")}
                     </button>
-                    <button 
-                      className="tag-action-btn delete" 
+                    <button
+                      className="tag-action-btn delete"
                       title={loading ? "جاري الحذف..." : "حذف نهائي"}
                       onClick={() => handleDeleteClick(tag.id, tag.label_ar)}
                       disabled={loading}
@@ -612,7 +612,7 @@ export default function TagsManagement() {
               <h3>{editingTag ? "تعديل وسم" : "إضافة وسم جديد"}</h3>
               <button className="tag-modal-close" onClick={() => setShowModal(false)}>✕</button>
             </div>
-            
+
             <form onSubmit={handleSubmit} className="tag-form">
               <div className="form-row">
                 <div className="form-group">
@@ -626,7 +626,7 @@ export default function TagsManagement() {
                     disabled={loading}
                   />
                 </div>
-                
+
                 <div className="form-group">
                   <label>النص بالإنجليزية *</label>
                   <input

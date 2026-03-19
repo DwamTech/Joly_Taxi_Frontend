@@ -6,7 +6,7 @@
  * @jest-environment node
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { middleware } from './middleware';
 import fc from 'fast-check';
 import { jwtVerify } from 'jose';

@@ -1,5 +1,4 @@
- 'use client';
-import React from 'react';
+'use client';
 import styles from './HowItWorks.module.css';
 import { motion } from 'motion/react';
 

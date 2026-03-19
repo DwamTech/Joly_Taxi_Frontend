@@ -255,7 +255,7 @@ describe('Property 3: Complete session cleanup on logout', () => {
    */
   it('should clear both HTTP-only cookie and LocalStorage on explicit logout for any session', async () => {
     await fc.assert(
-      fc.asyncProperty(credentialsArbitrary, async (credentials) => {
+      fc.asyncProperty(credentialsArbitrary, async (_credentials) => {
         // Reset state for each property test iteration
         mockLocalStorage.clear();
         mockCookies = [];
@@ -408,7 +408,7 @@ describe('Property 3: Complete session cleanup on logout', () => {
     await fc.assert(
       fc.asyncProperty(
         credentialsArbitrary,
-        async (credentials) => {
+        async (_credentials) => {
           // Reset state
           mockLocalStorage.clear();
           mockCookies = [];

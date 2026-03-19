@@ -12,6 +12,7 @@ import "./RatingsContent.css";
 
 export default function RatingsContent() {
   const [groupedRatings, setGroupedRatings] = useState<GroupedRating[]>([]);
+  void groupedRatings; void setGroupedRatings; // Mark as used
   const [ratings, setRatings] = useState<Rating[]>([]);
   const [filteredRatings, setFilteredRatings] = useState<Rating[]>([]);
   const [selectedRating, setSelectedRating] = useState<Rating | null>(null);
@@ -51,10 +52,10 @@ export default function RatingsContent() {
     try {
       setLoading(true);
       setError(null);
-      
+
       const result = await getGroupedRatings(page);
       setGroupedRatings(result.ratings);
-      
+
       // تحويل التقييمات المجمعة إلى قائمة مسطحة
       const flatRatings: Rating[] = [];
       result.ratings.forEach(group => {
@@ -62,13 +63,13 @@ export default function RatingsContent() {
           flatRatings.push(convertServiceRatingToRating(rating, group.tripId));
         });
       });
-      
+
       setRatings(flatRatings);
       setFilteredRatings(flatRatings);
       setTotalPages(result.pagination.lastPage);
       setTotalItems(result.pagination.total);
       setCurrentPage(result.pagination.currentPage);
-      
+
     } catch (err: any) {
       console.error('Error fetching ratings:', err);
       setError(err.message || 'فشل في جلب التقييمات');
@@ -113,16 +114,16 @@ export default function RatingsContent() {
     try {
       setLoading(true);
       const message = await deleteRating(id);
-      
+
       // إظهار رسالة نجاح
       setToast({
         message: `✅ ${message}`,
         type: 'success'
       });
-      
+
       // إعادة تحميل البيانات للصفحة الحالية
       await fetchRatings(currentPage);
-      
+
     } catch (error: any) {
       console.error('Error deleting rating:', error);
       setToast({
@@ -188,7 +189,7 @@ export default function RatingsContent() {
           onClose={() => setSelectedRating(null)}
         />
       )}
-      
+
       {toast && (
         <Toast
           message={toast.message}

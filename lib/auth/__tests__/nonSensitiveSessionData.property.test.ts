@@ -26,17 +26,6 @@ const credentialsArbitrary = fc.record({
 });
 
 /**
- * Arbitrary generator for sensitive data patterns
- * These patterns should NEVER appear in LocalStorage
- */
-const sensitiveDataArbitrary = fc.record({
-  token: fc.string({ minLength: 10, maxLength: 100 }),
-  password: fc.string({ minLength: 8, maxLength: 100 }),
-  apiKey: fc.string({ minLength: 20, maxLength: 64 }),
-  secret: fc.string({ minLength: 16, maxLength: 128 }),
-});
-
-/**
  * Mock localStorage for testing
  * Simulates browser localStorage behavior
  */
@@ -222,8 +211,6 @@ describe('Property 2: Non-sensitive session data in LocalStorage', () => {
           // Get all LocalStorage data
           const allKeys = mockLocalStorage.getAllKeys();
           const allValues = mockLocalStorage.getAllValues();
-          const allData = mockLocalStorage.getAll();
-
           // Assert 1: Verify LocalStorage contains session data
           const sessionKey = allKeys.find(key => key.includes('session'));
           expect(sessionKey).toBeDefined();

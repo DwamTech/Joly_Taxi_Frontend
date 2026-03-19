@@ -20,8 +20,7 @@ export default function ReportDetailsModal({
 }: ReportDetailsModalProps) {
   const { showToast } = useToast();
   const [adminNotes, setAdminNotes] = useState(report.admin_notes || "");
-  const [actionTaken, setActionTaken] = useState(report.action_taken || "");
-  const [showUserDetails, setShowUserDetails] = useState<"reporter" | "reported" | null>(null);
+  const [, setShowUserDetails] = useState<"reporter" | "reported" | null>(null);
   const [isSavingNotes, setIsSavingNotes] = useState(false);
   const [isNotifyOpen, setIsNotifyOpen] = useState(false);
   const [isWarningOpen, setIsWarningOpen] = useState(false);
@@ -120,15 +119,6 @@ export default function ReportDetailsModal({
     } finally {
       setIsSendingWarning(false);
     }
-  };
-
-  const getPriorityColor = (priority: string) => {
-    const colors = {
-      high: "#c62828",
-      medium: "#f57c00",
-      low: "#1976d2",
-    };
-    return colors[priority as keyof typeof colors] || colors.medium;
   };
 
   return (

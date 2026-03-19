@@ -6,7 +6,7 @@
  * Validates: Requirements 2.2, 2.5, 11.1, 11.2, 11.5
  */
 
-import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import { AuthState, SessionData } from './types';
 import { 
   getSessionFromStorage, 

@@ -105,10 +105,6 @@ export default function NotificationTemplates({
     setShowAddModal(true);
   };
 
-  const handleDelete = (template: Template) => {
-    setDeleteConfirm({ show: true, id: template.id, name: template.name });
-  };
-
   const confirmDelete = () => {
     onDeleteTemplate(deleteConfirm.id);
     setDeleteConfirm({ show: false, id: 0, name: "" });

@@ -226,12 +226,6 @@ export default function ExportSchedule() {
     dateTo: "",
   });
 
-  const [scheduleForm, setScheduleForm] = useState({
-    reportType: "trips",
-    frequency: "weekly",
-    email: "",
-  });
-
   const reportTypeOptions = [
     { value: "trips", label: "تقرير الرحلات", icon: "🚗" },
   //  { value: "drivers", label: "تقرير السائقين", icon: "👨‍✈️" },
@@ -282,12 +276,6 @@ export default function ExportSchedule() {
       const message = error instanceof Error ? error.message : "فشل في تصدير الجدول المحدد";
       showToast(message, "error");
     }
-  };
-
-  const handleSchedule = (e: React.FormEvent) => {
-    e.preventDefault();
-    showToast("تم جدولة التقرير بنجاح", "success");
-    setScheduleForm({ ...scheduleForm, email: "" });
   };
 
   return (

@@ -74,7 +74,7 @@ export default function NotificationsHistory({
   incomingAdminNotificationsTotal = 0,
   incomingAdminNotificationsPerPage = 20,
   onIncomingAdminNotificationsPageChange,
-  onResend,
+  onResend: _onResend,
   onDelete,
   unreadNotificationsCount = 0,
   onMarkNotificationAsRead,
@@ -341,12 +341,12 @@ export default function NotificationsHistory({
       user:
         group.users.length === 1
           ? {
-              id: group.users[0].id,
-              name: group.users[0].name,
-              phone: group.users[0].phone,
-              role_name: group.users[0].role_name,
-              role: group.users[0].role,
-            }
+            id: group.users[0].id,
+            name: group.users[0].name,
+            phone: group.users[0].phone,
+            role_name: group.users[0].role_name,
+            role: group.users[0].role,
+          }
           : null,
     };
   });
@@ -661,65 +661,65 @@ export default function NotificationsHistory({
             {filteredNotifications.map((notif) => {
               const dateTime = formatDate(notif.sent_at || notif.created_at);
               return (
-              <tr key={notif.id}>
-                <td>#{notif.id}</td>
-                <td>
-                  <div className="recipient-cell">
-                    <span className="recipient-name">{getRecipientLabel(notif)}</span>
-                    {!!notif.recipient_count && notif.recipient_count > 1 && (
-                      <span className="recipient-meta">{notif.recipient_count} مستلم</span>
-                    )}
-                  </div>
-                </td>
-                <td>{getTypeBadge(String(notif.notification_type || notif.type || "info"))}</td>
-                <td>
-                  <div className="notification-titles">
-                    <div className="title-ar">{notif.title_ar}</div>
-                  </div>
-                </td>
-                <td>
-                  <div className="date-time-cell">
-                    <span className="date-line">{dateTime.date}</span>
-                    {dateTime.time && <span className="time-line">{dateTime.time}</span>}
-                  </div>
-                </td>
-                <td>
-                  <div className="status-cell">
-                    {historyTab === "admin_sent" && getStatusBadge(notif.status)}
-                    {historyTab === "sent_to_admin" && (
-                      <span className={`read-state-badge ${notif.is_read ? "is-read" : "is-unread"}`}>
-                        {notif.is_read ? "مقروء" : "غير مقروء"}
-                      </span>
-                    )}
-                  </div>
-                </td>
-                <td>
-                  <div className="action-buttons">
-                    <button
-                      className="action-btn view-btn"
-                      onClick={() => handleViewNotificationDetails(notif)}
-                      title="عرض التفاصيل"
-                      disabled={markingNotificationId === notif.id}
-                    >
-                      {markingNotificationId === notif.id ? "⏳" : "👁️"}
-                    </button>
-                    {/*<button
+                <tr key={notif.id}>
+                  <td>#{notif.id}</td>
+                  <td>
+                    <div className="recipient-cell">
+                      <span className="recipient-name">{getRecipientLabel(notif)}</span>
+                      {!!notif.recipient_count && notif.recipient_count > 1 && (
+                        <span className="recipient-meta">{notif.recipient_count} مستلم</span>
+                      )}
+                    </div>
+                  </td>
+                  <td>{getTypeBadge(String(notif.notification_type || notif.type || "info"))}</td>
+                  <td>
+                    <div className="notification-titles">
+                      <div className="title-ar">{notif.title_ar}</div>
+                    </div>
+                  </td>
+                  <td>
+                    <div className="date-time-cell">
+                      <span className="date-line">{dateTime.date}</span>
+                      {dateTime.time && <span className="time-line">{dateTime.time}</span>}
+                    </div>
+                  </td>
+                  <td>
+                    <div className="status-cell">
+                      {historyTab === "admin_sent" && getStatusBadge(notif.status)}
+                      {historyTab === "sent_to_admin" && (
+                        <span className={`read-state-badge ${notif.is_read ? "is-read" : "is-unread"}`}>
+                          {notif.is_read ? "مقروء" : "غير مقروء"}
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td>
+                    <div className="action-buttons">
+                      <button
+                        className="action-btn view-btn"
+                        onClick={() => handleViewNotificationDetails(notif)}
+                        title="عرض التفاصيل"
+                        disabled={markingNotificationId === notif.id}
+                      >
+                        {markingNotificationId === notif.id ? "⏳" : "👁️"}
+                      </button>
+                      {/*<button
                       className="action-btn resend-btn"
                       onClick={() => onResend(notif.id)}
                       title="إعادة إرسال"
                     >
                       🔄
                     </button>*/}
-                    <button
-                      className="action-btn delete-btn"
-                      onClick={() => handleDelete(notif.id)}
-                      title="حذف"
-                    >
-                      🗑️
-                    </button>
-                  </div>
-                </td>
-              </tr>
+                      <button
+                        className="action-btn delete-btn"
+                        onClick={() => handleDelete(notif.id)}
+                        title="حذف"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </td>
+                </tr>
               );
             })}
             {filteredNotifications.length === 0 && (
@@ -768,40 +768,40 @@ export default function NotificationsHistory({
               )}
               {!isLoadingNotificationDetails && (
                 <>
-              <div className="detail-row">
-                <strong>النوع:</strong>{" "}
-                {getTypeBadge(String(selectedNotification.notification_type || selectedNotification.type || "info"))}
-              </div>
-              <div className="detail-row">
-                <strong>العنوان (عربي):</strong> {selectedNotification.title_ar}
-              </div>
-              <div className="detail-row">
-                <strong>العنوان (إنجليزي):</strong> {selectedNotification.title_en}
-              </div>
-              <div className="detail-row">
-                <strong>النص (عربي):</strong> {selectedNotification.body_ar}
-              </div>
-              <div className="detail-row">
-                <strong>النص (إنجليزي):</strong> {selectedNotification.body_en}
-              </div>
-              <div className="detail-row">
-                <strong>المستلمون:</strong> {getRecipientLabel(selectedNotification)}
-              </div>
-              {getRecipientLabel(selectedNotification) === "مجموعة مخصصة" &&
-                !!selectedNotification.recipient_names?.length && (
                   <div className="detail-row">
-                    <strong>أسماء المجموعة:</strong> {selectedNotification.recipient_names.join("، ")}
+                    <strong>النوع:</strong>{" "}
+                    {getTypeBadge(String(selectedNotification.notification_type || selectedNotification.type || "info"))}
                   </div>
-                )}
-              <div className="detail-row">
-                <strong>قنوات الإرسال:</strong> {selectedNotification.sent_via.join("، ")}
-              </div>
-              <div className="detail-row">
-                <strong>الحالة:</strong>{" "}
-                {historyTab === "sent_to_admin"
-                  ? getStatusBadge("pending")
-                  : getStatusBadge(selectedNotification.status)}
-              </div>
+                  <div className="detail-row">
+                    <strong>العنوان (عربي):</strong> {selectedNotification.title_ar}
+                  </div>
+                  <div className="detail-row">
+                    <strong>العنوان (إنجليزي):</strong> {selectedNotification.title_en}
+                  </div>
+                  <div className="detail-row">
+                    <strong>النص (عربي):</strong> {selectedNotification.body_ar}
+                  </div>
+                  <div className="detail-row">
+                    <strong>النص (إنجليزي):</strong> {selectedNotification.body_en}
+                  </div>
+                  <div className="detail-row">
+                    <strong>المستلمون:</strong> {getRecipientLabel(selectedNotification)}
+                  </div>
+                  {getRecipientLabel(selectedNotification) === "مجموعة مخصصة" &&
+                    !!selectedNotification.recipient_names?.length && (
+                      <div className="detail-row">
+                        <strong>أسماء المجموعة:</strong> {selectedNotification.recipient_names.join("، ")}
+                      </div>
+                    )}
+                  <div className="detail-row">
+                    <strong>قنوات الإرسال:</strong> {selectedNotification.sent_via.join("، ")}
+                  </div>
+                  <div className="detail-row">
+                    <strong>الحالة:</strong>{" "}
+                    {historyTab === "sent_to_admin"
+                      ? getStatusBadge("pending")
+                      : getStatusBadge(selectedNotification.status)}
+                  </div>
                 </>
               )}
             </div>

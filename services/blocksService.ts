@@ -48,7 +48,7 @@ class BlocksService {
       : Array.isArray(data)
       ? data
       : [];
-    const list = rawList.map((item) => this.toSafeBlockItem(item));
+    const list = rawList.map((item: any) => this.toSafeBlockItem(item));
     const currentPage = Number(data?.current_page ?? page);
     const perPage = Number(data?.per_page ?? (list.length > 0 ? list.length : 15));
     const total = Number(data?.total ?? list.length);

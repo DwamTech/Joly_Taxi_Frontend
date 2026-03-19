@@ -50,10 +50,10 @@ export default function LiveMapContent() {
       <MapFilters filters={filters} onFilterChange={setFilters} />
 
       <div className="map-container">
-        <MapView drivers={filteredDrivers} trips={filteredTrips} />
-        <MapSidebar 
-          drivers={filteredDrivers} 
-          trips={filteredTrips}
+        <MapView drivers={filteredDrivers as any} trips={filteredTrips as any} />
+        <MapSidebar
+          drivers={filteredDrivers as any}
+          trips={filteredTrips as any}
           lastUpdate={lastUpdate}
         />
       </div>

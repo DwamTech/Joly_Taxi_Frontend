@@ -50,13 +50,6 @@ export default function ReportsFilters({
     { value: "أخرى", label: "أخرى", icon: "📌" },
   ];
 
-  const priorityOptions = [
-    { value: "all", label: "الكل", icon: "🎯" },
-    { value: "high", label: "عالية", icon: "🔴" },
-    { value: "medium", label: "متوسطة", icon: "🔴" },
-    { value: "low", label: "منخفضة", icon: "🔴" },
-  ];
-
   const sortOptions = [
     { value: "newest", label: "الأحدث", icon: "🆕" },
     { value: "oldest", label: "الأقدم", icon: "📅" },

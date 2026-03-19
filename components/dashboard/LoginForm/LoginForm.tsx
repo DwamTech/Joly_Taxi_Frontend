@@ -43,18 +43,18 @@ export default function LoginForm() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
 
     setIsLoading(true);
     setErrors({ email: "", password: "", general: "" });
-    
+
     try {
-      const response = await AuthService.login({ email, password });
+      const response = await AuthService.login({ phone: email, password });
       console.log("Login successful:", response);
-      
+
       // الانتظار قليلاً للتأكد من حفظ البيانات
       setTimeout(() => {
         router.push("/dashboard");
@@ -74,11 +74,11 @@ export default function LoginForm() {
   return (
     <form className="login-form" onSubmit={handleSubmit}>
       <h2 className="login-title">تسجيل الدخول</h2>
-      
+
       {errors.general && (
         <div className="error-message-general">{errors.general}</div>
       )}
-      
+
       <div className="form-group">
         <label htmlFor="email">البريد الإلكتروني</label>
         <input

@@ -8,23 +8,6 @@ interface ActivityLogTableProps {
 }
 
 export default function ActivityLogTable({ activities }: ActivityLogTableProps) {
-  const getActionIcon = (actionType: string) => {
-    const icons: Record<string, string> = {
-      login: "🔓",
-      logout: "🔒",
-      create: "➕",
-      update: "✏️",
-      delete: "🗑️",
-      block: "🚫",
-      unblock: "✅",
-      approve: "✔️",
-      reject: "❌",
-      send: "📤",
-      settings: "⚙️",
-    };
-    return icons[actionType] || "📝";
-  };
-
   const getActionColor = (actionType: string) => {
     const colors: Record<string, string> = {
       login: "#3498db",

@@ -15,7 +15,7 @@ import UserDetailsModal from "@/components/dashboard/UsersManagement/UserDetails
 import AddUserModal from "@/components/dashboard/UsersManagement/AddUserModal/AddUserModal";
 import EditUserModal from "@/components/dashboard/UsersManagement/EditUserModal/EditUserModal";
 import SendNotificationModal from "@/components/dashboard/UsersManagement/SendNotificationModal/SendNotificationModal";
-import { CreateAdminUserPayload, createUser, getAllUsers, getUsers, getUsersStats, getUserDetails, updateUser, toggleBlockUser, deleteUser, convertToUIUser } from "@/services/usersService";
+import { CreateAdminUserPayload, createUser, getUsers, getUsersStats, getUserDetails, updateUser, toggleBlockUser, deleteUser, convertToUIUser } from "@/services/usersService";
 import { exportUsersToExcel } from "@/utils/exportToExcel";
 import "./users.css";
 
@@ -113,14 +113,14 @@ function UsersManagementContent() {
         console.log('Loading page:', currentPage);
         const response = await getUsers(currentPage);
         console.log('Response received:', response);
-        
+
         const convertedUsers = response.data.map(convertToUIUser);
         console.log('Converted users:', convertedUsers);
         console.log('Sample user roles:', convertedUsers.slice(0, 3).map(u => ({ name: u.name, role: u.role })));
         setUsers(convertedUsers);
         setTotalPages(response.pagination.last_page);
         setTotalItems(response.pagination.total);
-        
+
         setApiStats((prev) => {
           if (prev.totalUsers > 0 || prev.activeDrivers > 0 || prev.activeRiders > 0) {
             return prev;
@@ -263,7 +263,7 @@ function UsersManagementContent() {
           : "user";
       const createdAt = userDetails.registration_date || new Date().toISOString();
       const lastLogin = userDetails.last_login || createdAt;
-      
+
       // Convert API response to User model
       const fullUser: User = {
         id: userDetails.id,
@@ -320,7 +320,7 @@ function UsersManagementContent() {
           updated_at: lastLogin,
         })) || undefined,
       };
-      
+
       setSelectedUser(fullUser);
     } catch (error) {
       showToast("فشل في تحميل تفاصيل المستخدم", "error");
@@ -365,14 +365,14 @@ function UsersManagementContent() {
     try {
       // Call API to update user
       await updateUser(updatedUser.id, updatedUser);
-      
+
       // Update local state
       setUsers((prevUsers) =>
         prevUsers.map((user) => (user.id === updatedUser.id ? updatedUser : user))
       );
-      
+
       showToast("تم تحديث بيانات المستخدم بنجاح", "success");
-      
+
       // Reload stats after update
       try {
         const stats = await getUsersStats();
@@ -390,7 +390,7 @@ function UsersManagementContent() {
     try {
       // Call API to toggle block status
       const result = await toggleBlockUser(userId, reason);
-      
+
       // Update local state with new status
       setUsers((prevUsers) =>
         prevUsers.map((user) =>
@@ -399,7 +399,7 @@ function UsersManagementContent() {
             : user
         )
       );
-      
+
       if (result.status === "blocked") {
         showToast("تم حظر المستخدم", "warning");
       } else {
@@ -426,13 +426,13 @@ function UsersManagementContent() {
     try {
       // Call API to delete user
       await deleteUser(deleteConfirm.userId);
-      
+
       // Remove from local state
       setUsers((prevUsers) => prevUsers.filter((user) => user.id !== deleteConfirm.userId));
-      
+
       showToast("تم حذف المستخدم بنجاح", "success");
       setDeleteConfirm({ show: false, userId: 0, userName: "" });
-      
+
       // Reload stats after deletion
       try {
         const stats = await getUsersStats();
@@ -469,13 +469,13 @@ function UsersManagementContent() {
       prevUsers.map((user) =>
         user.id === userId && user.driver_profile
           ? {
-              ...user,
-              driver_profile: {
-                ...user.driver_profile,
-                verification_status: status,
-                profile_status: status,
-              },
-            }
+            ...user,
+            driver_profile: {
+              ...user.driver_profile,
+              verification_status: status,
+              profile_status: status,
+            },
+          }
           : user
       )
     );

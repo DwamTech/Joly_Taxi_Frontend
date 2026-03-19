@@ -1,8 +1,6 @@
- 'use client';
-import React from 'react';
+'use client';
 import styles from './Hero.module.css';
 import { motion } from 'motion/react';
-import { Smartphone, MapPin } from 'lucide-react';
 
 export default function Hero() {
   return (

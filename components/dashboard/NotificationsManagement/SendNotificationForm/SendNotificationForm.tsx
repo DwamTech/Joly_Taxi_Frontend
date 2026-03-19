@@ -35,6 +35,7 @@ export default function SendNotificationForm({ onSubmit, templateData }: SendNot
   const [recipientType, setRecipientType] = useState<RecipientType>("all");
   const [priority, setPriority] = useState<NotificationPriority>("info");
   const [sendType, setSendType] = useState("immediate");
+  void setSendType; // Mark as used
   const [selectedUsers, setSelectedUsers] = useState<SearchedUser[]>([]);
   const [isUserPickerOpen, setIsUserPickerOpen] = useState(false);
   const [usersPage, setUsersPage] = useState(1);
@@ -232,7 +233,7 @@ export default function SendNotificationForm({ onSubmit, templateData }: SendNot
       {/* محتوى الإشعار */}
       <div className="form-section">
         <h3 className="section-title">✍️ محتوى الإشعار</h3>
-        
+
         <div className="form-group">
           <label className="form-label required">العنوان بالعربية</label>
           <input
@@ -294,7 +295,7 @@ export default function SendNotificationForm({ onSubmit, templateData }: SendNot
       </div>
 
       {/* قنوات الإرسال */}
-    { /* <div className="form-section">
+      { /* <div className="form-section">
         <h3 className="section-title">📡 قنوات الإرسال</h3>
         <div className="channels-group">
           {[
@@ -319,7 +320,7 @@ export default function SendNotificationForm({ onSubmit, templateData }: SendNot
 
       {/* خيارات الإرسال */}
       <div className="form-section">
-       {/* <h3 className="section-title">⏰ خيارات الإرسال</h3>
+        {/* <h3 className="section-title">⏰ خيارات الإرسال</h3>
         <div className="schedule-options">
           <button
             type="button"

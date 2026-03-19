@@ -9,7 +9,7 @@ interface HeroSectionProps {
   stats?: DashboardStatistics | null;
 }
 
-export default function HeroSection({ stats }: HeroSectionProps) {
+export default function HeroSection({ stats: _stats }: HeroSectionProps) {
   const { title, subtitle, actions, image } = heroData;
 
   return (

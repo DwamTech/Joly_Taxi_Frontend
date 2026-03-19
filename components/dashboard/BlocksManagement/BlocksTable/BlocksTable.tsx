@@ -12,7 +12,7 @@ interface BlocksTableProps {
 export default function BlocksTable({
   blocks,
   onViewBlock,
-  onUnblock,
+  onUnblock: _onUnblock,
 }: BlocksTableProps) {
   const formatDateTimeParts = (dateValue: string) => {
     const date = new Date(dateValue.replace(" ", "T"));
@@ -70,44 +70,44 @@ export default function BlocksTable({
           {blocks.map((block) => {
             const createdAt = formatDateTimeParts(block.created_at);
             return (
-            <tr key={block.id}>
-              <td data-label="الرقم">#{block.id}</td>
-              <td data-label="الحاظر">
-                <div className="user-cell">
-                  <div className="user-name">{block.blocker.name}</div>
-                  <div className="user-badges">
-                    {getUserTypeBadge(block.blocker.role)}
+              <tr key={block.id}>
+                <td data-label="الرقم">#{block.id}</td>
+                <td data-label="الحاظر">
+                  <div className="user-cell">
+                    <div className="user-name">{block.blocker.name}</div>
+                    <div className="user-badges">
+                      {getUserTypeBadge(block.blocker.role)}
+                    </div>
                   </div>
-                </div>
-              </td>
-              <td data-label="المحظور">
-                <div className="user-cell">
-                  <div className="user-name">{block.blocked.name}</div>
-                  <div className="user-badges">
-                    {getUserTypeBadge(block.blocked.role)}
+                </td>
+                <td data-label="المحظور">
+                  <div className="user-cell">
+                    <div className="user-name">{block.blocked.name}</div>
+                    <div className="user-badges">
+                      {getUserTypeBadge(block.blocked.role)}
+                    </div>
                   </div>
-                </div>
-              </td>
-              <td data-label="السبب">
-                <div className="reason-cell">{block.reason}</div>
-              </td>
-              <td data-label="الحالة">{getStatusBadge(block.status)}</td>
-              <td data-label="تاريخ الحظر">
-                <div className="date-time-cell">
-                  <span className="date-line">{createdAt.dateText}</span>
-                  <span className="time-line">{createdAt.timeText}</span>
-                </div>
-              </td>
-              <td data-label="الإجراءات">
-                <div className="action-buttons">
-                  <button
-                    className="action-btn view-btn"
-                    onClick={() => onViewBlock(block)}
-                    title="عرض التفاصيل"
-                  >
-                    👁️
-                  </button>
-                  {/*{block.status === "active" && (
+                </td>
+                <td data-label="السبب">
+                  <div className="reason-cell">{block.reason}</div>
+                </td>
+                <td data-label="الحالة">{getStatusBadge(block.status)}</td>
+                <td data-label="تاريخ الحظر">
+                  <div className="date-time-cell">
+                    <span className="date-line">{createdAt.dateText}</span>
+                    <span className="time-line">{createdAt.timeText}</span>
+                  </div>
+                </td>
+                <td data-label="الإجراءات">
+                  <div className="action-buttons">
+                    <button
+                      className="action-btn view-btn"
+                      onClick={() => onViewBlock(block)}
+                      title="عرض التفاصيل"
+                    >
+                      👁️
+                    </button>
+                    {/*{block.status === "active" && (
                    <button
                       className="action-btn unblock-btn"
                       onClick={() => onUnblock(block.id)}
@@ -116,9 +116,9 @@ export default function BlocksTable({
                       ✅
                     </button>
                   )}*/}
-                </div>
-              </td>
-            </tr>
+                  </div>
+                </td>
+              </tr>
             );
           })}
         </tbody>

@@ -24,15 +24,6 @@ export default function TripDetailsModal({
     return labels[status] || status;
   };
 
-  const getPaymentMethodLabel = (method?: string) => {
-    const labels: Record<string, string> = {
-      cash: "نقدي",
-      card: "بطاقة",
-      wallet: "محفظة",
-    };
-    return method ? labels[method] || method : "-";
-  };
-
   const formatDateTime = (dateString?: string) => {
     if (!dateString) return "-";
     const date = new Date(dateString);
