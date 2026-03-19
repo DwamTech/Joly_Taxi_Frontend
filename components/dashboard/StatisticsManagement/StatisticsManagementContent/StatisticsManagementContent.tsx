@@ -1,15 +1,24 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import StatisticsHero from "../StatisticsHero/StatisticsHero";
 import TripReports from "../TripReports/TripReports";
 import UserReports from "../UserReports/UserReports";
 import RevenueReports from "../RevenueReports/RevenueReports";
-import ExportSchedule from "../ExportSchedule/ExportSchedule";
 import statisticsData from "@/data/statistics/statistics-data.json";
 import "./StatisticsManagementContent.css";
 
 type TabType = "trips" | "users" | "revenue" | "export";
+
+const ExportSchedule = dynamic(() => import("../ExportSchedule/ExportSchedule"), {
+  ssr: false,
+  loading: () => (
+    <div style={{ textAlign: "center", padding: "2rem" }}>
+      <p>جاري تحميل أدوات التصدير...</p>
+    </div>
+  ),
+});
 
 export default function StatisticsManagementContent() {
   const [activeTab, setActiveTab] = useState<TabType>("trips");
