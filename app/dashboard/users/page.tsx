@@ -15,7 +15,7 @@ import UserDetailsModal from "@/components/dashboard/UsersManagement/UserDetails
 import AddUserModal from "@/components/dashboard/UsersManagement/AddUserModal/AddUserModal";
 import EditUserModal from "@/components/dashboard/UsersManagement/EditUserModal/EditUserModal";
 import SendNotificationModal from "@/components/dashboard/UsersManagement/SendNotificationModal/SendNotificationModal";
-import { getAllUsers, getUsers, getUsersStats, getUserDetails, updateUser, toggleBlockUser, deleteUser, convertToUIUser } from "@/services/usersService";
+import { CreateAdminUserPayload, createUser, getAllUsers, getUsers, getUsersStats, getUserDetails, updateUser, toggleBlockUser, deleteUser, convertToUIUser } from "@/services/usersService";
 import { exportUsersToExcel } from "@/utils/exportToExcel";
 import "./users.css";
 
@@ -68,22 +68,34 @@ function UsersManagementContent() {
     activeRiders: 0,
   });
 
+  const mapStatsToUi = (
+    stats: Partial<{
+      total_users: number;
+      total_drivers: number;
+      total_riders: number;
+      total_both: number;
+      active_users: number;
+      active_drivers: number;
+      active_riders: number;
+      verified_drivers?: number;
+    }>,
+    totalUsersFallback = 0
+  ) => ({
+    totalUsers: stats.total_users ?? totalUsersFallback,
+    totalDrivers: stats.total_drivers ?? stats.verified_drivers ?? 0,
+    totalRiders: stats.total_riders ?? 0,
+    totalBoth: stats.total_both ?? 0,
+    activeDrivers: stats.active_drivers ?? stats.verified_drivers ?? 0,
+    activeRiders: stats.active_riders ?? stats.total_riders ?? 0,
+  });
+
   // Load stats from API
   useEffect(() => {
     const fetchStats = async () => {
       try {
         const stats = await getUsersStats();
         console.log('Received stats:', stats);
-        
-        // Map API response to our format
-        setApiStats({
-          totalUsers: stats.active_users || 0,
-          totalDrivers: stats.verified_drivers || 0,
-          totalRiders: stats.total_riders || 0,
-          totalBoth: 0, // Not provided by API
-          activeDrivers: stats.verified_drivers || 0,
-          activeRiders: stats.total_riders || 0,
-        });
+        setApiStats(mapStatsToUi(stats));
       } catch (error) {
         console.warn("Stats endpoint not available, will use pagination total:", error);
         // Fallback: stats will be updated when users are loaded
@@ -109,8 +121,18 @@ function UsersManagementContent() {
         setTotalPages(response.pagination.last_page);
         setTotalItems(response.pagination.total);
         
-        // Stats are loaded separately from /api/admin/users/status
-        // No need to update from users response
+        setApiStats((prev) => {
+          if (prev.totalUsers > 0 || prev.activeDrivers > 0 || prev.activeRiders > 0) {
+            return prev;
+          }
+          if (response.stats) {
+            return mapStatsToUi(response.stats, response.pagination.total);
+          }
+          return {
+            ...prev,
+            totalUsers: response.pagination.total,
+          };
+        });
       } catch (error: any) {
         console.error("Error loading users:", error);
         console.error("Error message:", error.message);
@@ -306,11 +328,28 @@ function UsersManagementContent() {
     }
   };
 
-  const handleAddUser = (userData: any) => {
-    setUsers((prevUsers) => [userData, ...prevUsers]);
-    showToast("تم إضافة المستخدم بنجاح", "success");
-    // TODO: Call API to add user
-    console.log("Add user:", userData);
+  const handleAddUser = async (userData: CreateAdminUserPayload) => {
+    try {
+      await createUser(userData);
+      showToast("تم إضافة المستخدم بنجاح", "success");
+
+      const response = await getUsers(1);
+      const convertedUsers = response.data.map(convertToUIUser);
+      setUsers(convertedUsers);
+      setCurrentPage(1);
+      setTotalPages(response.pagination.last_page);
+      setTotalItems(response.pagination.total);
+
+      try {
+        const stats = await getUsersStats();
+        setApiStats(mapStatsToUi(stats, response.pagination.total));
+      } catch (error) {
+        console.warn("Failed to reload stats after create");
+      }
+    } catch (error: any) {
+      showToast(`فشل في إضافة المستخدم: ${error.message}`, "error");
+      throw error;
+    }
   };
 
   const handleExportData = () => {
@@ -337,14 +376,7 @@ function UsersManagementContent() {
       // Reload stats after update
       try {
         const stats = await getUsersStats();
-        setApiStats({
-          totalUsers: stats.active_users,
-          totalDrivers: stats.verified_drivers,
-          totalRiders: stats.total_riders,
-          totalBoth: 0,
-          activeDrivers: stats.verified_drivers,
-          activeRiders: stats.total_riders,
-        });
+        setApiStats(mapStatsToUi(stats, totalItems));
       } catch (error) {
         console.warn("Failed to reload stats after update");
       }
@@ -404,14 +436,7 @@ function UsersManagementContent() {
       // Reload stats after deletion
       try {
         const stats = await getUsersStats();
-        setApiStats({
-          totalUsers: stats.active_users,
-          totalDrivers: stats.verified_drivers,
-          totalRiders: stats.total_riders,
-          totalBoth: 0,
-          activeDrivers: stats.verified_drivers,
-          activeRiders: stats.total_riders,
-        });
+        setApiStats(mapStatsToUi(stats, totalItems));
       } catch (error) {
         console.warn("Failed to reload stats after deletion");
       }

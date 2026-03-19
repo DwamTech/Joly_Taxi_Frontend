@@ -44,9 +44,37 @@
 
 .history-filters {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr auto;
   gap: 1rem;
   margin-bottom: 2rem;
+}
+
+.history-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.mark-all-read-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  background: linear-gradient(135deg, #2d2d2d 0%, #fdb913 100%);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.mark-all-read-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(45, 45, 45, 0.28);
+}
+
+.mark-all-read-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .filter-input {
@@ -132,6 +160,35 @@
   font-weight: 600;
 }
 
+.status-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: flex-start;
+}
+
+.read-state-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.28rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.read-state-badge.is-read {
+  background: #ecfdf3;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.read-state-badge.is-unread {
+  background: #fff7ed;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+}
+
 .type-badge {
   display: inline-block;
   padding: 0.4rem 0.8rem;
@@ -195,6 +252,11 @@
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: 1.2rem;
+}
+
+.action-btn:disabled {
+  opacity: 0.65;
+  cursor: wait;
 }
 
 .view-btn {
@@ -303,6 +365,10 @@
 
   .history-filters {
     grid-template-columns: 1fr;
+  }
+
+  .mark-all-read-btn {
+    width: 100%;
   }
 
   .history-table {

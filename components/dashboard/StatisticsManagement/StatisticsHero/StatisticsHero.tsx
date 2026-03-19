@@ -10,10 +10,10 @@ interface StatisticsHeroProps {
 }
 
 export default function StatisticsHero({
-  totalTrips,
-  totalRevenue,
-  activeDrivers,
-  activeRiders,
+ // totalTrips,
+  //totalRevenue,
+ // activeDrivers,
+ // activeRiders,
 }: StatisticsHeroProps) {
   return (
     <section className="statistics-hero">
@@ -25,7 +25,7 @@ export default function StatisticsHero({
           </p>
         </div>
 
-        <div className="statistics-hero-stats">
+        {/*<div className="statistics-hero-stats">
           <div className="hero-stat-card">
             <div className="stat-icon" style={{ background: "linear-gradient(135deg, #FDB913 0%, #FFA500 100%)" }}>
               🚗
@@ -65,7 +65,7 @@ export default function StatisticsHero({
               <div className="stat-label">الركاب النشطين</div>
             </div>
           </div>
-        </div>
+        </div>*/}
       </div>
     </section>
   );

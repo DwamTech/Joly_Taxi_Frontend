@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useToast } from "@/components/Toast/ToastContainer";
 import { AdminSettingsData, UpdateAdminSettingsPayload } from "@/models/Settings";
 import "./GeneralSettings.css";
 
@@ -11,6 +12,7 @@ interface GeneralSettingsProps {
 }
 
 export default function GeneralSettings({ data, onSave, isSaving = false }: GeneralSettingsProps) {
+  const { showToast } = useToast();
   const [formData, setFormData] = useState(data);
   const [bannerArFile, setBannerArFile] = useState<File | null>(null);
   const [bannerEnFile, setBannerEnFile] = useState<File | null>(null);
@@ -31,9 +33,52 @@ export default function GeneralSettings({ data, onSave, isSaving = false }: Gene
     }));
   };
 
+  const toEnglishDigits = (value: string) =>
+    value.replace(/[٠-٩]/g, (digit) => "٠١٢٣٤٥٦٧٨٩".indexOf(digit).toString());
+
+  const normalizeIntegerString = (value: string | number) =>
+    toEnglishDigits(String(value ?? "")).trim();
+
   const handleSave = async () => {
+    const supportEmail = formData.support_email.trim();
+    const integerPattern = /^\d+$/;
+    const maxCancellations = normalizeIntegerString(formData.max_cancellations_before_alert);
+    const dataRetentionDays = normalizeIntegerString(formData.data_retention_days);
+    const renewalDays = normalizeIntegerString(formData.subscription_renewal_days_before_expiry);
+    const otpMaxAttempts = normalizeIntegerString(formData.otp_max_attempts);
+
+    if (!supportEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(supportEmail)) {
+      showToast("برجاء إدخال بريد دعم صحيح", "error");
+      return;
+    }
+
+    if (!integerPattern.test(maxCancellations) || Number(maxCancellations) < 1) {
+      showToast("الحد الأقصى للإلغاءات يجب أن يكون رقمًا صحيحًا أكبر من صفر", "error");
+      return;
+    }
+
+    if (!integerPattern.test(dataRetentionDays) || Number(dataRetentionDays) < 1) {
+      showToast("عدد أيام حفظ البيانات يجب أن يكون رقمًا صحيحًا أكبر من صفر", "error");
+      return;
+    }
+
+    if (!integerPattern.test(renewalDays) || Number(renewalDays) < 1) {
+      showToast("أيام التجديد قبل الانتهاء يجب أن تكون رقمًا صحيحًا أكبر من صفر", "error");
+      return;
+    }
+
+    if (!integerPattern.test(otpMaxAttempts) || Number(otpMaxAttempts) < 1) {
+      showToast("الحد الأقصى لمحاولات OTP يجب أن يكون رقمًا صحيحًا أكبر من صفر", "error");
+      return;
+    }
+
     await onSave({
       ...formData,
+      otp_max_attempts: otpMaxAttempts,
+      max_cancellations_before_alert: Number(maxCancellations),
+      data_retention_days: dataRetentionDays,
+      subscription_renewal_days_before_expiry: renewalDays,
+      support_email: supportEmail,
       banner_ar: bannerArFile,
       banner_en: bannerEnFile,
       _method: "PUT",

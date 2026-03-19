@@ -33,6 +33,8 @@ interface Notification {
   recipient_summary?: string;
   recipient_names?: string[];
   recipient_ids?: number[] | null;
+  is_read?: boolean;
+  read_at?: string | null;
 }
 
 interface NotificationsHistoryProps {
@@ -52,6 +54,9 @@ interface NotificationsHistoryProps {
   onIncomingAdminNotificationsPageChange?: (page: number) => void;
   onResend: (id: number) => void;
   onDelete: (id: number) => Promise<void> | void;
+  unreadNotificationsCount?: number;
+  onMarkNotificationAsRead?: (id: number) => Promise<void> | void;
+  onMarkAllNotificationsAsRead?: () => Promise<void> | void;
 }
 
 export default function NotificationsHistory({
@@ -71,6 +76,9 @@ export default function NotificationsHistory({
   onIncomingAdminNotificationsPageChange,
   onResend,
   onDelete,
+  unreadNotificationsCount = 0,
+  onMarkNotificationAsRead,
+  onMarkAllNotificationsAsRead,
 }: NotificationsHistoryProps) {
   const { showToast } = useToast();
   const [historyTab, setHistoryTab] = useState<"admin_sent" | "sent_to_admin">("admin_sent");
@@ -87,6 +95,8 @@ export default function NotificationsHistory({
     show: false,
     id: 0,
   });
+  const [markingNotificationId, setMarkingNotificationId] = useState<number | null>(null);
+  const [isMarkingAllAsRead, setIsMarkingAllAsRead] = useState(false);
 
   const isSentToAdmin = (notif: Record<string, any>) => {
     const direction = String(notif?.direction || "").toLowerCase();
@@ -326,6 +336,8 @@ export default function NotificationsHistory({
       recipient_summary: recipientSummary,
       recipient_names: group.users.map((user) => user.name || "").filter(Boolean),
       recipient_ids: group.recipientIds,
+      is_read: Boolean(group.base.is_read),
+      read_at: group.base.read_at,
       user:
         group.users.length === 1
           ? {
@@ -501,10 +513,28 @@ export default function NotificationsHistory({
     recipient_summary: notification?.recipient_summary,
     recipient_names: Array.isArray(notification?.recipient_names) ? notification.recipient_names : [],
     recipient_ids: Array.isArray(notification?.recipient_ids) ? notification.recipient_ids : null,
+    is_read: Boolean(notification?.is_read),
+    read_at: notification?.read_at || null,
   });
 
   const handleViewNotificationDetails = async (notif: Notification) => {
-    setSelectedNotification(notif);
+    let preparedNotification = notif;
+    if (historyTab === "sent_to_admin" && !notif.is_read && onMarkNotificationAsRead) {
+      try {
+        setMarkingNotificationId(notif.id);
+        await onMarkNotificationAsRead(notif.id);
+        preparedNotification = {
+          ...notif,
+          is_read: true,
+          read_at: new Date().toISOString(),
+        };
+      } catch (error: any) {
+        showToast(error?.message || "فشل في تعليم الإشعار كمقروء", "error");
+      } finally {
+        setMarkingNotificationId(null);
+      }
+    }
+    setSelectedNotification(preparedNotification);
     setIsLoadingNotificationDetails(true);
     try {
       const response = await adminNotificationsService.getAdminNotificationDetails(notif.id);
@@ -519,6 +549,21 @@ export default function NotificationsHistory({
       showToast(error?.message || "فشل في جلب تفاصيل الإشعار", "error");
     } finally {
       setIsLoadingNotificationDetails(false);
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    if (!onMarkAllNotificationsAsRead || unreadNotificationsCount <= 0) {
+      return;
+    }
+    try {
+      setIsMarkingAllAsRead(true);
+      await onMarkAllNotificationsAsRead();
+      showToast("تم تعليم كل الإشعارات كمقروءة", "success");
+    } catch (error: any) {
+      showToast(error?.message || "فشل في تعليم كل الإشعارات كمقروءة", "error");
+    } finally {
+      setIsMarkingAllAsRead(false);
     }
   };
 
@@ -565,6 +610,18 @@ export default function NotificationsHistory({
           value={filters.status}
           onChange={(value) => setFilters({ ...filters, status: value })}
         />
+        <div className="history-actions">
+          <button
+            type="button"
+            className="mark-all-read-btn"
+            onClick={handleMarkAllAsRead}
+            disabled={historyTab !== "sent_to_admin" || unreadNotificationsCount <= 0 || isMarkingAllAsRead}
+          >
+            {isMarkingAllAsRead
+              ? "⏳ جاري التعليم..."
+              : `✅ تعليم الكل كمقروء (${unreadNotificationsCount})`}
+          </button>
+        </div>
       </div>
 
       <div className="history-table-container">
@@ -626,15 +683,25 @@ export default function NotificationsHistory({
                     {dateTime.time && <span className="time-line">{dateTime.time}</span>}
                   </div>
                 </td>
-                <td>{getStatusBadge(notif.status)}</td>
+                <td>
+                  <div className="status-cell">
+                    {historyTab === "admin_sent" && getStatusBadge(notif.status)}
+                    {historyTab === "sent_to_admin" && (
+                      <span className={`read-state-badge ${notif.is_read ? "is-read" : "is-unread"}`}>
+                        {notif.is_read ? "مقروء" : "غير مقروء"}
+                      </span>
+                    )}
+                  </div>
+                </td>
                 <td>
                   <div className="action-buttons">
                     <button
                       className="action-btn view-btn"
                       onClick={() => handleViewNotificationDetails(notif)}
-                      title="عرض"
+                      title="عرض التفاصيل"
+                      disabled={markingNotificationId === notif.id}
                     >
-                      👁️
+                      {markingNotificationId === notif.id ? "⏳" : "👁️"}
                     </button>
                     {/*<button
                       className="action-btn resend-btn"
@@ -730,7 +797,10 @@ export default function NotificationsHistory({
                 <strong>قنوات الإرسال:</strong> {selectedNotification.sent_via.join("، ")}
               </div>
               <div className="detail-row">
-                <strong>الحالة:</strong> {getStatusBadge(selectedNotification.status)}
+                <strong>الحالة:</strong>{" "}
+                {historyTab === "sent_to_admin"
+                  ? getStatusBadge("pending")
+                  : getStatusBadge(selectedNotification.status)}
               </div>
                 </>
               )}

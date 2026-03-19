@@ -1,8 +1,6 @@
 "use client";
 
-import { useState } from "react";
 import { User } from "@/models/User";
-import { useToast } from "@/components/Toast/ToastContainer";
 import "./UsersTable.css";
 
 interface UsersTableProps {
@@ -22,17 +20,6 @@ export default function UsersTable({
   onDeleteUser,
   onSendNotification,
 }: UsersTableProps) {
-  const { showToast } = useToast();
-  const [blockReasonModal, setBlockReasonModal] = useState<{
-    isOpen: boolean;
-    userId: number | null;
-    userName: string;
-  }>({
-    isOpen: false,
-    userId: null,
-    userName: "",
-  });
-  const [blockReason, setBlockReason] = useState("");
   const getRoleLabel = (role: string) => {
     console.log('Getting role label for:', role);
     const labels: Record<string, string> = {
@@ -101,41 +88,7 @@ export default function UsersTable({
   };
 
   const handleBlockClick = (user: User) => {
-    if (user.status === "blocked") {
-      onBlockUser(user.id);
-      return;
-    }
-
-    setBlockReasonModal({
-      isOpen: true,
-      userId: user.id,
-      userName: user.name,
-    });
-    setBlockReason("");
-  };
-
-  const closeBlockReasonModal = () => {
-    setBlockReasonModal({
-      isOpen: false,
-      userId: null,
-      userName: "",
-    });
-    setBlockReason("");
-  };
-
-  const confirmBlockWithReason = () => {
-    if (!blockReason.trim()) {
-      showToast("لازم تكتبي سبب الحظر قبل التأكيد", "error");
-      return;
-    }
-
-    if (!blockReasonModal.userId) {
-      showToast("حدث خطأ أثناء تحديد المستخدم", "error");
-      return;
-    }
-
-    onBlockUser(blockReasonModal.userId, blockReason.trim());
-    closeBlockReasonModal();
+    onBlockUser(user.id);
   };
 
   return (
@@ -249,39 +202,6 @@ export default function UsersTable({
           </table>
         </div>
       </div>
-      {blockReasonModal.isOpen && (
-        <div className="users-table-block-reason-overlay" onClick={closeBlockReasonModal}>
-          <div className="users-table-block-reason-modal" onClick={(e) => e.stopPropagation()}>
-            <h3 className="users-table-block-reason-title">سبب الحظر</h3>
-            <p className="users-table-block-reason-subtitle">
-              اكتبي سبب حظر المستخدم {blockReasonModal.userName}
-            </p>
-            <textarea
-              className="users-table-block-reason-input"
-              value={blockReason}
-              onChange={(e) => setBlockReason(e.target.value)}
-              placeholder="مثال: إساءة استخدام التطبيق أو مخالفات متكررة..."
-              rows={4}
-            />
-            <div className="users-table-block-reason-actions">
-              <button
-                type="button"
-                className="users-table-block-reason-cancel"
-                onClick={closeBlockReasonModal}
-              >
-                إلغاء
-              </button>
-              <button
-                type="button"
-                className="users-table-block-reason-confirm"
-                onClick={confirmBlockWithReason}
-              >
-                تأكيد الحظر
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }

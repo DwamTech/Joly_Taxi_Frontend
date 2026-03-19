@@ -10,6 +10,14 @@ const API_BASE_URL = (
 ).replace(/\/+$/, "");
 
 class SettingsService {
+  private toEnglishDigits(value: string) {
+    return value.replace(/[٠-٩]/g, (digit) => "٠١٢٣٤٥٦٧٨٩".indexOf(digit).toString());
+  }
+
+  private normalizeIntegerField(value: string | number) {
+    return this.toEnglishDigits(String(value ?? "")).trim();
+  }
+
   async getSettings(): Promise<GetAdminSettingsResponse> {
     const token = AuthService.getToken();
     const headers: HeadersInit = {
@@ -48,29 +56,29 @@ class SettingsService {
 
     const formData = new FormData();
     formData.append("_method", payload._method || "PUT");
-    formData.append("otp_max_attempts", payload.otp_max_attempts);
+    formData.append("otp_max_attempts", this.normalizeIntegerField(payload.otp_max_attempts));
     formData.append("instapay_number", payload.instapay_number);
     formData.append("vodafone_cash_number", payload.vodafone_cash_number);
     formData.append("payment_inquiries_number", payload.payment_inquiries_number);
     formData.append("emergency_number", payload.emergency_number);
     formData.append(
       "max_cancellations_before_alert",
-      String(payload.max_cancellations_before_alert)
+      this.normalizeIntegerField(payload.max_cancellations_before_alert)
     );
     formData.append("whatsapp_number", payload.whatsapp_number);
     formData.append("app_name", payload.app_name);
     formData.append("app_version", payload.app_version);
-    formData.append("support_email", payload.support_email);
+    formData.append("support_email", payload.support_email.trim());
     formData.append(
       "subscription_renewal_days_before_expiry",
-      payload.subscription_renewal_days_before_expiry
+      this.normalizeIntegerField(payload.subscription_renewal_days_before_expiry)
     );
     formData.append("banner_image_size", payload.banner_image_size);
     formData.append("privacy_policy_ar", payload.privacy_policy_ar);
     formData.append("privacy_policy_en", payload.privacy_policy_en);
     formData.append("terms_of_use_ar", payload.terms_of_use_ar);
     formData.append("terms_of_use_en", payload.terms_of_use_en);
-    formData.append("data_retention_days", payload.data_retention_days);
+    formData.append("data_retention_days", this.normalizeIntegerField(payload.data_retention_days));
 
     if (payload.banner_ar instanceof File) {
       formData.append("banner_ar", payload.banner_ar);

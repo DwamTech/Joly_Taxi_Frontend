@@ -1,21 +1,11 @@
 "use client";
 
+import { UserBlockItem } from "@/models/Block";
 import "./BlocksTable.css";
 
-interface Block {
-  id: number;
-  blocker_name: string;
-  blocker_type: string;
-  blocked_name: string;
-  blocked_type: string;
-  reason: string;
-  status: string;
-  created_at: string;
-}
-
 interface BlocksTableProps {
-  blocks: Block[];
-  onViewBlock: (block: Block) => void;
+  blocks: UserBlockItem[];
+  onViewBlock: (block: UserBlockItem) => void;
   onUnblock: (id: number) => void;
 }
 
@@ -24,6 +14,16 @@ export default function BlocksTable({
   onViewBlock,
   onUnblock,
 }: BlocksTableProps) {
+  const formatDateTimeParts = (dateValue: string) => {
+    const date = new Date(dateValue.replace(" ", "T"));
+    const dateText = date.toLocaleDateString("ar-EG");
+    const timeText = date.toLocaleTimeString("ar-EG", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    return { dateText, timeText };
+  };
+
   const getStatusBadge = (status: string) => {
     if (status === "active") {
       return <span className="status-badge status-active">🚫 نشط</span>;
@@ -35,8 +35,22 @@ export default function BlocksTable({
     if (type === "driver") {
       return <span className="user-type-badge driver">🚗 سائق</span>;
     }
-    return <span className="user-type-badge rider">👤 راكب</span>;
+    if (type === "user" || type === "rider") {
+      return <span className="user-type-badge rider">👤 راكب</span>;
+    }
+    return <span className="user-type-badge rider">👥 {type}</span>;
   };
+
+  if (blocks.length === 0) {
+    return (
+      <div className="blocks-table-container">
+        <div className="no-results">
+          <div className="no-results-icon">🔍</div>
+          <p>لا توجد حالات حظر مطابقة</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="blocks-table-container">
@@ -53,27 +67,38 @@ export default function BlocksTable({
           </tr>
         </thead>
         <tbody>
-          {blocks.map((block) => (
+          {blocks.map((block) => {
+            const createdAt = formatDateTimeParts(block.created_at);
+            return (
             <tr key={block.id}>
-              <td>#{block.id}</td>
-              <td>
+              <td data-label="الرقم">#{block.id}</td>
+              <td data-label="الحاظر">
                 <div className="user-cell">
-                  <div className="user-name">{block.blocker_name}</div>
-                  {getUserTypeBadge(block.blocker_type)}
+                  <div className="user-name">{block.blocker.name}</div>
+                  <div className="user-badges">
+                    {getUserTypeBadge(block.blocker.role)}
+                  </div>
                 </div>
               </td>
-              <td>
+              <td data-label="المحظور">
                 <div className="user-cell">
-                  <div className="user-name">{block.blocked_name}</div>
-                  {getUserTypeBadge(block.blocked_type)}
+                  <div className="user-name">{block.blocked.name}</div>
+                  <div className="user-badges">
+                    {getUserTypeBadge(block.blocked.role)}
+                  </div>
                 </div>
               </td>
-              <td>
+              <td data-label="السبب">
                 <div className="reason-cell">{block.reason}</div>
               </td>
-              <td>{getStatusBadge(block.status)}</td>
-              <td>{new Date(block.created_at).toLocaleString("ar-EG")}</td>
-              <td>
+              <td data-label="الحالة">{getStatusBadge(block.status)}</td>
+              <td data-label="تاريخ الحظر">
+                <div className="date-time-cell">
+                  <span className="date-line">{createdAt.dateText}</span>
+                  <span className="time-line">{createdAt.timeText}</span>
+                </div>
+              </td>
+              <td data-label="الإجراءات">
                 <div className="action-buttons">
                   <button
                     className="action-btn view-btn"
@@ -82,19 +107,20 @@ export default function BlocksTable({
                   >
                     👁️
                   </button>
-                  {block.status === "active" && (
-                    <button
+                  {/*{block.status === "active" && (
+                   <button
                       className="action-btn unblock-btn"
                       onClick={() => onUnblock(block.id)}
                       title="إلغاء الحظر"
                     >
                       ✅
                     </button>
-                  )}
+                  )}*/}
                 </div>
               </td>
             </tr>
-          ))}
+            );
+          })}
         </tbody>
       </table>
     </div>

@@ -42,21 +42,39 @@
   overflow-wrap: break-word;
 }
 
-.user-cell {
+.blocks-table-container .user-cell {
   display: flex;
-  flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 0.75rem;
   width: 100%;
 }
 
-.user-name {
+.blocks-table-container .user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.blocks-table-container .user-name {
   font-weight: 600;
   color: #2c3e50;
 }
 
-.user-type-badge {
+.blocks-table-container .user-meta {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.blocks-table-container .user-badges {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+}
+
+.blocks-table-container .user-type-badge {
   display: inline-block;
   padding: 4px 10px;
   border-radius: 20px;
@@ -65,22 +83,46 @@
   white-space: nowrap;
 }
 
-.user-type-badge.driver {
+.blocks-table-container .user-type-badge.driver {
   background: #e3f2fd;
   color: #1976d2;
 }
 
-.user-type-badge.rider {
+.blocks-table-container .user-type-badge.rider {
   background: #f3e5f5;
   color: #7b1fa2;
 }
 
-.reason-cell {
+.blocks-table-container .user-status-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.blocks-table-container .user-status-badge.user-status-active {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.blocks-table-container .user-status-badge.user-status-blocked {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.blocks-table-container .user-status-badge.user-status-inactive {
+  background: #eceff1;
+  color: #455a64;
+}
+
+.blocks-table-container .reason-cell {
   max-width: 200px;
   color: #666;
 }
 
-.status-badge {
+.blocks-table-container .status-badge {
   display: inline-block;
   padding: 6px 12px;
   border-radius: 20px;
@@ -89,23 +131,40 @@
   white-space: nowrap;
 }
 
-.status-badge.status-active {
+.blocks-table-container .status-badge.status-active {
   background: #ffebee;
   color: #c62828;
 }
 
-.status-badge.status-cancelled {
+.blocks-table-container .status-badge.status-cancelled {
   background: #e8f5e9;
   color: #2e7d32;
 }
 
-.action-buttons {
+.blocks-table-container .date-time-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.35;
+}
+
+.blocks-table-container .date-line {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.blocks-table-container .time-line {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+.blocks-table-container .action-buttons {
   display: flex;
   gap: 8px;
   justify-content: flex-start;
 }
 
-.action-btn {
+.blocks-table-container .action-btn {
   width: 36px;
   height: 36px;
   border: none;
@@ -119,17 +178,33 @@
   background: #f5f5f5;
 }
 
-.action-btn:hover {
+.blocks-table-container .action-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.view-btn:hover {
+.blocks-table-container .view-btn:hover {
   background: #e3f2fd;
 }
 
-.unblock-btn:hover {
+.blocks-table-container .unblock-btn:hover {
   background: #e8f5e9;
+}
+
+.blocks-table-container .ltr-text {
+  direction: ltr;
+  text-align: left;
+}
+
+.blocks-table-container .no-results {
+  padding: 2rem;
+  text-align: center;
+  color: #6c757d;
+}
+
+.blocks-table-container .no-results-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
 }
 
 @media (max-width: 1200px) {
@@ -139,7 +214,7 @@
     font-size: 13px;
   }
 
-  .action-btn {
+  .blocks-table-container .action-btn {
     width: 32px;
     height: 32px;
     font-size: 14px;
@@ -193,19 +268,28 @@
     width: 120px;
   }
 
-  .user-cell {
+  .blocks-table-container .user-cell {
     flex-direction: row;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: space-between;
     width: 100%;
     gap: 0.75rem;
   }
 
-  .reason-cell {
+  .blocks-table-container .user-badges {
+    align-items: flex-start;
+  }
+
+  .blocks-table-container .reason-cell {
     max-width: 100%;
   }
 
-  .action-buttons {
+  .blocks-table-container .date-time-cell {
+    align-items: flex-end;
+    text-align: right;
+  }
+
+  .blocks-table-container .action-buttons {
     flex-wrap: wrap;
     justify-content: flex-end;
     padding-top: 12px;
@@ -213,7 +297,7 @@
     border-top: 1px solid #f0f0f0;
   }
 
-  .action-btn {
+  .blocks-table-container .action-btn {
     width: 40px;
     height: 40px;
     min-width: 40px;

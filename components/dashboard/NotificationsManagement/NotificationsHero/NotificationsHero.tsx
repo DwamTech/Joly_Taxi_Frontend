@@ -6,12 +6,14 @@ interface NotificationsHeroProps {
   totalNotifications: number;
   todayNotifications: number;
   failedNotifications: number;
+  unreadNotifications: number;
 }
 
 export default function NotificationsHero({
   totalNotifications,
   todayNotifications,
   failedNotifications,
+  unreadNotifications,
 }: NotificationsHeroProps) {
   return (
     <section className="notifications-hero">
@@ -51,6 +53,16 @@ export default function NotificationsHero({
             <div className="stat-info">
               <div className="stat-value">{failedNotifications.toLocaleString()}</div>
               <div className="stat-label">الإشعارات الفاشلة</div>
+            </div>
+          </div>
+
+          <div className="hero-stat-card">
+            <div className="stat-icon" style={{ background: "linear-gradient(135deg, #8e44ad 0%, #6f2da8 100%)" }}>
+              🔕
+            </div>
+            <div className="stat-info">
+              <div className="stat-value">{unreadNotifications.toLocaleString()}</div>
+              <div className="stat-label">الإشعارات غير المقروءة</div>
             </div>
           </div>
         </div>

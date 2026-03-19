@@ -123,9 +123,16 @@ export interface UserReportsResponse {
 }
 
 export interface UsersStatsResponse {
-  active_users: number;
+  total_users: number;
+  total_drivers: number;
   total_riders: number;
-  verified_drivers: number;
+  total_both: number;
+  active_users: number;
+  active_drivers: number;
+  active_riders: number;
+  inactive_users: number;
+  blocked_users: number;
+  verified_drivers?: number;
 }
 
 export interface UsersResponse {
@@ -142,7 +149,164 @@ export interface UsersResponse {
   stats?: UsersStatsResponse;
 }
 
+export interface CreateAdminUserPayload {
+  name: string;
+  phone: string;
+  email?: string;
+  password: string;
+  role: "driver" | "rider" | "admin";
+  status?: "active" | "blocked";
+  agent_code?: number;
+  national_id_number?: string;
+  driver_license_expiry?: string;
+  vehicle_type_id?: number;
+  brand_id?: number;
+  model_id?: number;
+  vehicle_year_id?: number;
+  brand?: string;
+  model?: string;
+  year?: number;
+  has_ac?: boolean;
+  vehicle_license_number?: string;
+  vehicle_license_expiry?: string;
+  driver_photo?: File | null;
+  national_id_front?: File | null;
+  national_id_back?: File | null;
+  driver_license_front?: File | null;
+  driver_license_back?: File | null;
+  vehicle_license_front?: File | null;
+  vehicle_license_back?: File | null;
+}
+
+function toSafeNumber(value: unknown): number {
+  if (typeof value === "number") return Number.isFinite(value) ? value : 0;
+  if (typeof value === "string") {
+    const parsed = Number(value.replace(/,/g, "").trim());
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+  return 0;
+}
+
+function normalizeUsersStatsResponse(raw: unknown): UsersStatsResponse {
+  const source =
+    raw && typeof raw === "object"
+      ? ((raw as { stats?: unknown }).stats ??
+        (raw as { data?: unknown }).data ??
+        raw)
+      : {};
+  const payload = (source && typeof source === "object" ? source : {}) as Record<string, unknown>;
+  const totalUsers = toSafeNumber(payload.total_users ?? payload.active_users);
+  const totalDrivers = toSafeNumber(payload.total_drivers ?? payload.verified_drivers);
+  const totalRiders = toSafeNumber(payload.total_riders);
+  const totalBoth = toSafeNumber(payload.total_both);
+  const activeUsers = toSafeNumber(payload.active_users);
+  const activeDrivers = toSafeNumber(payload.active_drivers ?? payload.verified_drivers);
+  const activeRiders = toSafeNumber(payload.active_riders ?? payload.total_riders);
+  const inactiveUsers = toSafeNumber(payload.inactive_users);
+  const blockedUsers = toSafeNumber(payload.blocked_users);
+
+  return {
+    total_users: totalUsers,
+    total_drivers: totalDrivers,
+    total_riders: totalRiders,
+    total_both: totalBoth,
+    active_users: activeUsers,
+    active_drivers: activeDrivers,
+    active_riders: activeRiders,
+    inactive_users: inactiveUsers,
+    blocked_users: blockedUsers,
+    verified_drivers: toSafeNumber(payload.verified_drivers),
+  };
+}
+
 export const usersService = {
+  async createUser(payload: CreateAdminUserPayload): Promise<any> {
+    try {
+      const token = AuthService.getToken();
+      const headers: HeadersInit = {
+        Accept: "application/json",
+        "x-lang": "ar",
+      };
+
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
+      const formData = new FormData();
+      formData.append("name", payload.name.trim());
+      formData.append("phone", payload.phone.trim());
+      formData.append("password", payload.password);
+      formData.append("role", payload.role);
+
+      if (payload.email?.trim()) formData.append("email", payload.email.trim());
+      if (payload.status) formData.append("status", payload.status);
+      if (payload.agent_code !== undefined) formData.append("agent_code", String(payload.agent_code));
+
+      if (payload.national_id_number?.trim()) {
+        formData.append("national_id_number", payload.national_id_number.trim());
+      }
+      if (payload.driver_license_expiry) formData.append("driver_license_expiry", payload.driver_license_expiry);
+      if (payload.vehicle_type_id !== undefined) {
+        formData.append("vehicle_type_id", String(payload.vehicle_type_id));
+      }
+      if (payload.brand_id !== undefined) formData.append("brand_id", String(payload.brand_id));
+      if (payload.model_id !== undefined) formData.append("model_id", String(payload.model_id));
+      if (payload.vehicle_year_id !== undefined) {
+        formData.append("vehicle_year_id", String(payload.vehicle_year_id));
+      }
+      if (payload.brand?.trim()) formData.append("brand", payload.brand.trim());
+      if (payload.model?.trim()) formData.append("model", payload.model.trim());
+      if (payload.year !== undefined) formData.append("year", String(payload.year));
+      if (payload.has_ac !== undefined) formData.append("has_ac", payload.has_ac ? "1" : "0");
+      if (payload.vehicle_license_number?.trim()) {
+        formData.append("vehicle_license_number", payload.vehicle_license_number.trim());
+      }
+      if (payload.vehicle_license_expiry) {
+        formData.append("vehicle_license_expiry", payload.vehicle_license_expiry);
+      }
+
+      if (payload.driver_photo instanceof File) formData.append("driver_photo", payload.driver_photo);
+      if (payload.national_id_front instanceof File) {
+        formData.append("national_id_front", payload.national_id_front);
+      }
+      if (payload.national_id_back instanceof File) formData.append("national_id_back", payload.national_id_back);
+      if (payload.driver_license_front instanceof File) {
+        formData.append("driver_license_front", payload.driver_license_front);
+      }
+      if (payload.driver_license_back instanceof File) {
+        formData.append("driver_license_back", payload.driver_license_back);
+      }
+      if (payload.vehicle_license_front instanceof File) {
+        formData.append("vehicle_license_front", payload.vehicle_license_front);
+      }
+      if (payload.vehicle_license_back instanceof File) {
+        formData.append("vehicle_license_back", payload.vehicle_license_back);
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/admin/users`, {
+        method: "POST",
+        headers,
+        credentials: "include",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errJson = await response.json().catch(() => null);
+        const message = errJson?.message || "فشل في إضافة المستخدم";
+        const details =
+          errJson?.errors && typeof errJson.errors === "object"
+            ? Object.values(errJson.errors).flat().join(" | ")
+            : "";
+        throw new Error(details ? `${message}: ${details}` : message);
+      }
+
+      return response.json();
+    } catch (error) {
+      console.error("Error creating user:", error);
+      throw error;
+    }
+  },
+
   async getUsers(page: number = 1): Promise<UsersResponse> {
     try {
       // Get token from Cookie using AuthService
@@ -206,7 +370,7 @@ export const usersService = {
 
         if (response.ok) {
           const result = await response.json();
-          return result.data;
+          return normalizeUsersStatsResponse(result);
         }
       }
 
@@ -558,6 +722,7 @@ export const usersService = {
 // Named exports for direct imports
 export const getAllUsers = (page?: number) => usersService.getUsers(page);
 export const getUsers = (page?: number) => usersService.getUsers(page);
+export const createUser = (payload: CreateAdminUserPayload) => usersService.createUser(payload);
 export const getUsersStats = () => usersService.getUsersStats();
 export const getUserDetails = (userId: number) => usersService.getUserDetails(userId);
 export const updateUser = (userId: number, userData: Partial<User>) => usersService.updateUser(userId, userData);

@@ -52,7 +52,7 @@
   gap: 1.5rem;
 }
 
-.hero-stat-card {
+.statistics-hero .hero-stat-card {
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
   border-radius: 16px;
@@ -64,14 +64,14 @@
   border: 1.5px solid rgba(255, 255, 255, 0.3);
 }
 
-.hero-stat-card:hover {
+.statistics-hero .hero-stat-card:hover {
   transform: translateY(-5px);
   background: rgba(255, 255, 255, 0.25);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
   border-color: rgba(255, 255, 255, 0.5);
 }
 
-.stat-icon {
+.statistics-hero .stat-icon {
   width: 50px;
   height: 50px;
   border-radius: 12px;
@@ -83,11 +83,11 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.stat-info {
+.statistics-hero .stat-info {
   flex: 1;
 }
 
-.stat-value {
+.statistics-hero .stat-value {
   font-size: 1.5rem;
   font-weight: 700;
   margin-bottom: 0.15rem;
@@ -95,7 +95,7 @@
   color: #2c3e50;
 }
 
-.stat-label {
+.statistics-hero .stat-label {
   font-size: 0.85rem;
   color: #34495e;
   font-weight: 500;
@@ -126,21 +126,21 @@
     gap: 1rem;
   }
 
-  .hero-stat-card {
+  .statistics-hero .hero-stat-card {
     padding: 1.25rem;
   }
 
-  .stat-icon {
+  .statistics-hero .stat-icon {
     width: 50px;
     height: 50px;
     font-size: 1.5rem;
   }
 
-  .stat-value {
+  .statistics-hero .stat-value {
     font-size: 1.5rem;
   }
 
-  .stat-label {
+  .statistics-hero .stat-label {
     font-size: 0.85rem;
   }
 }

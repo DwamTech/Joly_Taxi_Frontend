@@ -2,7 +2,7 @@
   min-height: 100vh;
 }
 
-.statistics-tabs {
+.statistics-management-page .statistics-tabs {
   display: flex;
   gap: 1rem;
   margin-bottom: 2rem;
@@ -12,7 +12,7 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-.stat-tab {
+.statistics-management-page .stat-tab {
   flex: 1;
   display: flex;
   align-items: center;
@@ -29,29 +29,29 @@
   color: #666;
 }
 
-.stat-tab:hover {
+.statistics-management-page .stat-tab:hover {
   border-color: #FDB913;
   background: #fffbf0;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(253, 185, 19, 0.2);
 }
 
-.stat-tab.active {
+.statistics-management-page .stat-tab.active {
   background: linear-gradient(135deg, #FDB913 0%, #FFA500 100%);
   border-color: #FDB913;
   color: white;
   box-shadow: 0 4px 16px rgba(253, 185, 19, 0.4);
 }
 
-.tab-icon {
+.statistics-management-page .tab-icon {
   font-size: 1.5rem;
 }
 
-.tab-text {
+.statistics-management-page .tab-text {
   font-size: 1rem;
 }
 
-.statistics-content {
+.statistics-management-page .statistics-content {
   animation: fadeIn 0.3s ease;
 }
 
@@ -67,15 +67,15 @@
 }
 
 @media (max-width: 768px) {
-  .statistics-tabs {
+  .statistics-management-page .statistics-tabs {
     flex-direction: column;
   }
 
-  .stat-tab {
+  .statistics-management-page .stat-tab {
     padding: 0.875rem 1rem;
   }
 
-  .tab-text {
+  .statistics-management-page .tab-text {
     font-size: 0.95rem;
   }
 }

@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { useToast } from "@/components/Toast/ToastContainer";
+import { CreateAdminUserPayload } from "@/services/usersService";
 import CustomSelect from "../CustomSelect/CustomSelect";
 import "./AddUserModal.css";
 
 interface AddUserModalProps {
   onClose: () => void;
-  onAddUser: (userData: any) => void;
+  onAddUser: (userData: CreateAdminUserPayload) => Promise<void>;
 }
 
 export default function AddUserModal({ onClose, onAddUser }: AddUserModalProps) {
@@ -16,28 +17,40 @@ export default function AddUserModal({ onClose, onAddUser }: AddUserModalProps) 
     name: "",
     phone: "",
     email: "",
-    role: "user",
+    password: "",
+    role: "rider" as CreateAdminUserPayload["role"],
     status: "active",
     agent_code: "",
-    delegate_number: "",
-    // Driver fields
     national_id_number: "",
     driver_license_expiry: "",
-    expire_profile_at: "",
-    verification_status: "pending",
-    // Vehicle fields
-    vehicle_type: "",
-    vehicle_brand: "",
-    vehicle_model: "",
-    vehicle_year: "",
+    vehicle_type_id: "",
+    brand_id: "",
+    model_id: "",
+    vehicle_year_id: "",
+    brand: "",
+    model: "",
+    year: "",
     vehicle_license_number: "",
     vehicle_license_expiry: "",
     has_ac: true,
-    // Rider fields
-    reliability_percent: "100",
-    preferred_vehicle_types: "",
-    requires_ac: true,
-    language: "ar",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [files, setFiles] = useState<{
+    driver_photo: File | null;
+    national_id_front: File | null;
+    national_id_back: File | null;
+    driver_license_front: File | null;
+    driver_license_back: File | null;
+    vehicle_license_front: File | null;
+    vehicle_license_back: File | null;
+  }>({
+    driver_photo: null,
+    national_id_front: null,
+    national_id_back: null,
+    driver_license_front: null,
+    driver_license_back: null,
+    vehicle_license_front: null,
+    vehicle_license_back: null,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -51,103 +64,130 @@ export default function AddUserModal({ onClose, onAddUser }: AddUserModalProps) 
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleFileChange = (field: keyof typeof files, file: File | null) => {
+    setFiles((prev) => ({ ...prev, [field]: file }));
+  };
+
+  const normalizeNumber = (value: string) => {
+    const trimmed = value.trim();
+    if (!trimmed) return undefined;
+    const parsed = Number(trimmed);
+    return Number.isFinite(parsed) ? parsed : undefined;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Validate required fields
-    if (!formData.name || !formData.phone) {
+
+    if (!formData.name.trim() || !formData.phone.trim()) {
       showToast("الرجاء إدخال الاسم ورقم الهاتف", "error");
       return;
     }
 
-    const now = new Date().toISOString();
-    
-    // Create new user object
-    const newUser: any = {
-      id: Date.now(),
-      name: formData.name,
-      phone: formData.phone,
-      email: formData.email || null,
+    if (!/^\+\d{7,15}$/.test(formData.phone.trim())) {
+      showToast("رقم الهاتف يجب أن يبدأ بـ + ويتكون من 7 إلى 15 رقمًا", "error");
+      return;
+    }
+
+    if (formData.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      showToast("صيغة البريد الإلكتروني غير صحيحة", "error");
+      return;
+    }
+
+    if (!formData.password || formData.password.length < 6) {
+      showToast("كلمة المرور يجب أن تكون 6 أحرف على الأقل", "error");
+      return;
+    }
+
+    const isDriver = formData.role === "driver";
+    const vehicleTypeId = normalizeNumber(formData.vehicle_type_id);
+    const brandId = normalizeNumber(formData.brand_id);
+    const modelId = normalizeNumber(formData.model_id);
+    const vehicleYearId = normalizeNumber(formData.vehicle_year_id);
+    const yearNumber = normalizeNumber(formData.year);
+    const agentCode = normalizeNumber(formData.agent_code);
+
+    if (isDriver) {
+      if (!formData.national_id_number.trim()) {
+        showToast("رقم الهوية مطلوب للسائق", "error");
+        return;
+      }
+      if (!formData.driver_license_expiry) {
+        showToast("تاريخ انتهاء رخصة القيادة مطلوب للسائق", "error");
+        return;
+      }
+      if (vehicleTypeId === undefined) {
+        showToast("رقم نوع المركبة مطلوب للسائق", "error");
+        return;
+      }
+      if (!brandId && !formData.brand.trim()) {
+        showToast("يجب إدخال معرف الماركة أو اسم الماركة", "error");
+        return;
+      }
+      if (!modelId && !formData.model.trim()) {
+        showToast("يجب إدخال معرف الموديل أو اسم الموديل", "error");
+        return;
+      }
+      if (!vehicleYearId && !yearNumber) {
+        showToast("يجب إدخال معرف سنة المركبة أو السنة", "error");
+        return;
+      }
+      if (!formData.vehicle_license_number.trim()) {
+        showToast("رقم رخصة المركبة مطلوب للسائق", "error");
+        return;
+      }
+      if (!formData.vehicle_license_expiry) {
+        showToast("تاريخ انتهاء رخصة المركبة مطلوب للسائق", "error");
+        return;
+      }
+    }
+
+    if (yearNumber !== undefined) {
+      const maxYear = new Date().getFullYear() + 1;
+      if (yearNumber < 1990 || yearNumber > maxYear) {
+        showToast(`السنة يجب أن تكون بين 1990 و ${maxYear}`, "error");
+        return;
+      }
+    }
+
+    const payload: CreateAdminUserPayload = {
+      name: formData.name.trim(),
+      phone: formData.phone.trim(),
+      password: formData.password,
       role: formData.role,
-      status: formData.status,
-      agent_code: formData.agent_code || null,
-      delegate_number: formData.delegate_number || null,
-      created_at: now,
-      last_active_at: now,
-      last_login_at: now,
+      status: formData.status as "active" | "blocked",
+      email: formData.email.trim() || undefined,
+      agent_code: agentCode,
+      national_id_number: formData.national_id_number.trim() || undefined,
+      driver_license_expiry: formData.driver_license_expiry || undefined,
+      vehicle_type_id: vehicleTypeId,
+      brand_id: brandId,
+      model_id: modelId,
+      vehicle_year_id: vehicleYearId,
+      brand: formData.brand.trim() || undefined,
+      model: formData.model.trim() || undefined,
+      year: yearNumber,
+      has_ac: formData.has_ac,
+      vehicle_license_number: formData.vehicle_license_number.trim() || undefined,
+      vehicle_license_expiry: formData.vehicle_license_expiry || undefined,
+      driver_photo: files.driver_photo,
+      national_id_front: files.national_id_front,
+      national_id_back: files.national_id_back,
+      driver_license_front: files.driver_license_front,
+      driver_license_back: files.driver_license_back,
+      vehicle_license_front: files.vehicle_license_front,
+      vehicle_license_back: files.vehicle_license_back,
     };
 
-    // Add driver profile if driver or both
-    if (formData.role === "driver" || formData.role === "both") {
-      newUser.driver_profile = {
-        national_id_number: formData.national_id_number,
-        driver_license_expiry: formData.driver_license_expiry || now,
-        expire_profile_at: formData.expire_profile_at || now,
-        verification_status: formData.verification_status,
-        online_status: false,
-        rating_avg: 0,
-        rating_count: 0,
-        completed_trips_count: 0,
-        cancelled_trips_count: 0,
-      };
-
-      if (formData.vehicle_type) {
-        newUser.vehicle = {
-          id: Date.now(),
-          driver_user_id: newUser.id,
-          type: formData.vehicle_type,
-          brand: formData.vehicle_brand,
-          model: formData.vehicle_model,
-          year: parseInt(formData.vehicle_year) || new Date().getFullYear(),
-          vehicle_license_number: formData.vehicle_license_number,
-          vehicle_license_expiry: formData.vehicle_license_expiry || now,
-          has_ac: formData.has_ac,
-          is_active: true,
-          created_at: now,
-          updated_at: now,
-        };
-      }
-
-      newUser.subscriptions = [];
-      newUser.documents = [];
+    try {
+      setIsSubmitting(true);
+      await onAddUser(payload);
+      onClose();
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // Add rider profile if user or both
-    if (formData.role === "user" || formData.role === "both") {
-      newUser.rider_profile = {
-        id: Date.now(),
-        user_id: newUser.id,
-        rating_avg: 0,
-        rating_count: 0,
-        reliability_percent: parseInt(formData.reliability_percent) || 100,
-        completed_trips_count: 0,
-        cancelled_trips_count: 0,
-        preferences: {
-          preferred_vehicle_types: formData.preferred_vehicle_types 
-            ? formData.preferred_vehicle_types.split(',').map(t => t.trim())
-            : [],
-          requires_ac: formData.requires_ac,
-          language: formData.language,
-        },
-        created_at: now,
-        updated_at: now,
-      };
-
-      newUser.favorite_trips = [];
-      newUser.received_ratings = [];
-      newUser.sent_ratings = [];
-    }
-
-    newUser.devices = [];
-    newUser.blocked_users = [];
-    newUser.blocked_by_users = [];
-
-    onAddUser(newUser);
-    onClose();
   };
 
-  const isDriver = formData.role === "driver" || formData.role === "both";
-  const isRider = formData.role === "user" || formData.role === "both";
+  const isDriver = formData.role === "driver";
 
   return (
     <div className="add-user-overlay" onClick={onClose}>
@@ -199,7 +239,7 @@ export default function AddUserModal({ onClose, onAddUser }: AddUserModalProps) 
                   value={formData.phone}
                   onChange={handleChange}
                   className="form-input"
-                  placeholder="01xxxxxxxxx"
+                  placeholder="+201001234567"
                   required
                 />
               </div>
@@ -221,18 +261,39 @@ export default function AddUserModal({ onClose, onAddUser }: AddUserModalProps) 
 
               <div className="form-group">
                 <label className="form-label">
+                  <span>🔐</span>
+                  كلمة المرور
+                  <span className="required">*</span>
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="form-input"
+                  placeholder="6 أحرف على الأقل"
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">
                   <span>👥</span>
                   النوع
                 </label>
                 <CustomSelect
                   options={[
-                    { value: "user", label: "راكب", icon: "🚶" },
+                    { value: "rider", label: "راكب", icon: "🚶" },
                     { value: "driver", label: "سائق", icon: "🚗" },
-                    { value: "both", label: "كلاهما", icon: "👥" },
                     { value: "admin", label: "إداري", icon: "👔" },
                   ]}
                   value={formData.role}
-                  onChange={(value) => setFormData(prev => ({ ...prev, role: value }))}
+                  onChange={(value) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      role: value as CreateAdminUserPayload["role"],
+                    }))
+                  }
                 />
               </div>
 
@@ -244,7 +305,6 @@ export default function AddUserModal({ onClose, onAddUser }: AddUserModalProps) 
                 <CustomSelect
                   options={[
                     { value: "active", label: "نشط", icon: "✅" },
-                    { value: "inactive", label: "غير نشط", icon: "⏸️" },
                     { value: "blocked", label: "محظور", icon: "🚫" },
                   ]}
                   value={formData.status}
@@ -258,27 +318,12 @@ export default function AddUserModal({ onClose, onAddUser }: AddUserModalProps) 
                   كود الوكيل
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   name="agent_code"
                   value={formData.agent_code}
                   onChange={handleChange}
                   className="form-input"
-                  placeholder="AG001"
-                />
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">
-                  <span>🔢</span>
-                  رقم المندوب
-                </label>
-                <input
-                  type="text"
-                  name="delegate_number"
-                  value={formData.delegate_number}
-                  onChange={handleChange}
-                  className="form-input"
-                  placeholder="DEL123"
+                  placeholder="مثال: 12"
                 />
               </div>
             </div>
@@ -296,6 +341,7 @@ export default function AddUserModal({ onClose, onAddUser }: AddUserModalProps) 
                   <label className="form-label">
                     <span>🪪</span>
                     رقم الهوية
+                    <span className="required">*</span>
                   </label>
                   <input
                     type="text"
@@ -311,6 +357,7 @@ export default function AddUserModal({ onClose, onAddUser }: AddUserModalProps) 
                   <label className="form-label">
                     <span>📅</span>
                     تاريخ انتهاء رخصة القيادة
+                    <span className="required">*</span>
                   </label>
                   <input
                     type="date"
@@ -318,67 +365,57 @@ export default function AddUserModal({ onClose, onAddUser }: AddUserModalProps) 
                     value={formData.driver_license_expiry}
                     onChange={handleChange}
                     className="form-input"
+                    required={isDriver}
                   />
                 </div>
 
                 <div className="form-group">
                   <label className="form-label">
-                    <span>📅</span>
-                    تاريخ انتهاء صلاحية الملف
+                    <span>🚙</span>
+                    معرف نوع المركبة
+                    <span className="required">*</span>
                   </label>
                   <input
-                    type="date"
-                    name="expire_profile_at"
-                    value={formData.expire_profile_at}
+                    type="number"
+                    name="vehicle_type_id"
+                    value={formData.vehicle_type_id}
                     onChange={handleChange}
                     className="form-input"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label">
-                    <span>✓</span>
-                    حالة التحقق
-                  </label>
-                  <CustomSelect
-                    options={[
-                      { value: "pending", label: "قيد المراجعة", icon: "⏳" },
-                      { value: "approved", label: "موافق عليه", icon: "✅" },
-                      { value: "rejected", label: "مرفوض", icon: "❌" },
-                    ]}
-                    value={formData.verification_status}
-                    onChange={(value) => setFormData(prev => ({ ...prev, verification_status: value }))}
+                    placeholder="مثال: 1"
+                    min="1"
+                    required={isDriver}
                   />
                 </div>
               </div>
 
-              {/* Vehicle Information */}
               <h4 className="subsection-title">معلومات المركبة</h4>
               <div className="form-grid">
                 <div className="form-group">
                   <label className="form-label">
-                    <span>🚙</span>
-                    نوع المركبة
+                    <span>#</span>
+                    معرف الماركة
                   </label>
                   <input
-                    type="text"
-                    name="vehicle_type"
-                    value={formData.vehicle_type}
+                    type="number"
+                    name="brand_id"
+                    value={formData.brand_id}
                     onChange={handleChange}
                     className="form-input"
-                    placeholder="سيدان، SUV، فان..."
+                    placeholder="اختياري"
+                    min="1"
                   />
                 </div>
 
                 <div className="form-group">
                   <label className="form-label">
                     <span>🏭</span>
-                    الماركة
+                    اسم الماركة
+                    {!formData.brand_id && <span className="required">*</span>}
                   </label>
                   <input
                     type="text"
-                    name="vehicle_brand"
-                    value={formData.vehicle_brand}
+                    name="brand"
+                    value={formData.brand}
                     onChange={handleChange}
                     className="form-input"
                     placeholder="تويوتا، هيونداي..."
@@ -387,13 +424,30 @@ export default function AddUserModal({ onClose, onAddUser }: AddUserModalProps) 
 
                 <div className="form-group">
                   <label className="form-label">
+                    <span>#</span>
+                    معرف الموديل
+                  </label>
+                  <input
+                    type="number"
+                    name="model_id"
+                    value={formData.model_id}
+                    onChange={handleChange}
+                    className="form-input"
+                    placeholder="اختياري"
+                    min="1"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">
                     <span>🚗</span>
-                    الموديل
+                    اسم الموديل
+                    {!formData.model_id && <span className="required">*</span>}
                   </label>
                   <input
                     type="text"
-                    name="vehicle_model"
-                    value={formData.vehicle_model}
+                    name="model"
+                    value={formData.model}
                     onChange={handleChange}
                     className="form-input"
                     placeholder="كورولا، توسان..."
@@ -402,16 +456,33 @@ export default function AddUserModal({ onClose, onAddUser }: AddUserModalProps) 
 
                 <div className="form-group">
                   <label className="form-label">
-                    <span>📅</span>
-                    السنة
+                    <span>#</span>
+                    معرف سنة المركبة
                   </label>
                   <input
                     type="number"
-                    name="vehicle_year"
-                    value={formData.vehicle_year}
+                    name="vehicle_year_id"
+                    value={formData.vehicle_year_id}
                     onChange={handleChange}
                     className="form-input"
-                    placeholder="2023"
+                    placeholder="اختياري"
+                    min="1"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">
+                    <span>📅</span>
+                    السنة
+                    {!formData.vehicle_year_id && <span className="required">*</span>}
+                  </label>
+                  <input
+                    type="number"
+                    name="year"
+                    value={formData.year}
+                    onChange={handleChange}
+                    className="form-input"
+                    placeholder="2024"
                     min="1990"
                     max={new Date().getFullYear() + 1}
                   />
@@ -421,6 +492,7 @@ export default function AddUserModal({ onClose, onAddUser }: AddUserModalProps) 
                   <label className="form-label">
                     <span>🔢</span>
                     رقم رخصة المركبة
+                    <span className="required">*</span>
                   </label>
                   <input
                     type="text"
@@ -429,6 +501,7 @@ export default function AddUserModal({ onClose, onAddUser }: AddUserModalProps) 
                     onChange={handleChange}
                     className="form-input"
                     placeholder="أ ب ج 1234"
+                    required={isDriver}
                   />
                 </div>
 
@@ -436,6 +509,7 @@ export default function AddUserModal({ onClose, onAddUser }: AddUserModalProps) 
                   <label className="form-label">
                     <span>📅</span>
                     تاريخ انتهاء رخصة المركبة
+                    <span className="required">*</span>
                   </label>
                   <input
                     type="date"
@@ -443,6 +517,7 @@ export default function AddUserModal({ onClose, onAddUser }: AddUserModalProps) 
                     value={formData.vehicle_license_expiry}
                     onChange={handleChange}
                     className="form-input"
+                    required={isDriver}
                   />
                 </div>
 
@@ -459,74 +534,107 @@ export default function AddUserModal({ onClose, onAddUser }: AddUserModalProps) 
                   </label>
                 </div>
               </div>
-            </div>
-          )}
 
-          {/* Rider Information */}
-          {isRider && (
-            <div className="form-section">
-              <h3 className="section-title">
-                <span>🚶</span>
-                معلومات الراكب
-              </h3>
+              <h4 className="subsection-title">المستندات</h4>
               <div className="form-grid">
                 <div className="form-group">
                   <label className="form-label">
-                    <span>📊</span>
-                    نسبة الموثوقية (%)
+                    <span>📎</span>
+                    صورة السائق
                   </label>
                   <input
-                    type="number"
-                    name="reliability_percent"
-                    value={formData.reliability_percent}
-                    onChange={handleChange}
+                    type="file"
+                    accept=".jpg,.jpeg,.png,.pdf"
+                    onChange={(e) => handleFileChange("driver_photo", e.target.files?.[0] || null)}
                     className="form-input"
-                    placeholder="100"
-                    min="0"
-                    max="100"
                   />
                 </div>
 
                 <div className="form-group">
                   <label className="form-label">
-                    <span>🚗</span>
-                    أنواع المركبات المفضلة
+                    <span>📎</span>
+                    الهوية (أمام)
                   </label>
                   <input
-                    type="text"
-                    name="preferred_vehicle_types"
-                    value={formData.preferred_vehicle_types}
-                    onChange={handleChange}
+                    type="file"
+                    accept=".jpg,.jpeg,.png,.pdf"
+                    onChange={(e) =>
+                      handleFileChange("national_id_front", e.target.files?.[0] || null)
+                    }
                     className="form-input"
-                    placeholder="سيدان, SUV (افصل بفاصلة)"
                   />
                 </div>
 
                 <div className="form-group">
-                  <label className="form-label checkbox-label">
-                    <input
-                      type="checkbox"
-                      name="requires_ac"
-                      checked={formData.requires_ac}
-                      onChange={handleChange}
-                      className="form-checkbox"
-                    />
-                    <span>❄️ يفضل التكييف</span>
+                  <label className="form-label">
+                    <span>📎</span>
+                    الهوية (خلف)
                   </label>
+                  <input
+                    type="file"
+                    accept=".jpg,.jpeg,.png,.pdf"
+                    onChange={(e) => handleFileChange("national_id_back", e.target.files?.[0] || null)}
+                    className="form-input"
+                  />
                 </div>
 
                 <div className="form-group">
                   <label className="form-label">
-                    <span>🌐</span>
-                    اللغة المفضلة
+                    <span>📎</span>
+                    رخصة القيادة (أمام)
                   </label>
-                  <CustomSelect
-                    options={[
-                      { value: "ar", label: "العربية", icon: "🇪🇬" },
-                      { value: "en", label: "English", icon: "🇬🇧" },
-                    ]}
-                    value={formData.language}
-                    onChange={(value) => setFormData(prev => ({ ...prev, language: value }))}
+                  <input
+                    type="file"
+                    accept=".jpg,.jpeg,.png,.pdf"
+                    onChange={(e) =>
+                      handleFileChange("driver_license_front", e.target.files?.[0] || null)
+                    }
+                    className="form-input"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">
+                    <span>📎</span>
+                    رخصة القيادة (خلف)
+                  </label>
+                  <input
+                    type="file"
+                    accept=".jpg,.jpeg,.png,.pdf"
+                    onChange={(e) =>
+                      handleFileChange("driver_license_back", e.target.files?.[0] || null)
+                    }
+                    className="form-input"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">
+                    <span>📎</span>
+                    رخصة المركبة (أمام)
+                  </label>
+                  <input
+                    type="file"
+                    accept=".jpg,.jpeg,.png,.pdf"
+                    onChange={(e) =>
+                      handleFileChange("vehicle_license_front", e.target.files?.[0] || null)
+                    }
+                    className="form-input"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">
+                    <span>📎</span>
+                    رخصة المركبة (خلف)
+                  </label>
+                  <input
+                    type="file"
+                    accept=".jpg,.jpeg,.png,.pdf"
+                    onChange={(e) =>
+                      handleFileChange("vehicle_license_back", e.target.files?.[0] || null)
+                    }
+                    className="form-input"
                   />
                 </div>
               </div>
@@ -537,9 +645,9 @@ export default function AddUserModal({ onClose, onAddUser }: AddUserModalProps) 
             <button type="button" className="btn-cancel" onClick={onClose}>
               إلغاء
             </button>
-            <button type="submit" className="btn-submit">
+            <button type="submit" className="btn-submit" disabled={isSubmitting}>
               <span>✓</span>
-              إضافة المستخدم
+              {isSubmitting ? "جاري الإضافة..." : "إضافة المستخدم"}
             </button>
           </div>
         </form>

@@ -4,14 +4,20 @@
   gap: 2rem;
 }
 
-.report-section {
+.trip-reports .report-section,
+.user-reports .report-section,
+.revenue-reports .report-section,
+.export-schedule .report-section {
   background: white;
   border-radius: 16px;
   padding: 2rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-.section-title {
+.trip-reports .section-title,
+.user-reports .section-title,
+.revenue-reports .section-title,
+.export-schedule .section-title {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -21,17 +27,22 @@
   margin-bottom: 1.5rem;
 }
 
-.title-icon {
+.trip-reports .title-icon,
+.user-reports .title-icon,
+.revenue-reports .title-icon,
+.export-schedule .title-icon {
   font-size: 1.8rem;
 }
 
-.stats-grid {
+.trip-reports .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
 }
 
-.stat-card {
+.trip-reports .stat-card,
+.user-reports .stat-card,
+.revenue-reports .stat-card {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -41,12 +52,16 @@
   transition: all 0.3s ease;
 }
 
-.stat-card:hover {
+.trip-reports .stat-card:hover,
+.user-reports .stat-card:hover,
+.revenue-reports .stat-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
 
-.stat-icon-wrapper {
+.trip-reports .stat-icon-wrapper,
+.user-reports .stat-icon-wrapper,
+.revenue-reports .stat-icon-wrapper {
   width: 50px;
   height: 50px;
   border-radius: 12px;
@@ -56,16 +71,22 @@
   flex-shrink: 0;
 }
 
-.stat-icon-emoji {
+.trip-reports .stat-icon-emoji,
+.user-reports .stat-icon-emoji,
+.revenue-reports .stat-icon-emoji {
   font-size: 1.5rem;
 }
 
-.stat-details {
+.trip-reports .stat-details,
+.user-reports .stat-details,
+.revenue-reports .stat-details {
   flex: 1;
   min-width: 0;
 }
 
-.stat-value {
+.trip-reports .stat-value,
+.user-reports .stat-value,
+.revenue-reports .stat-value {
   font-size: 1.3rem;
   font-weight: 700;
   color: #2c3e50;
@@ -73,14 +94,64 @@
   word-wrap: break-word;
 }
 
-.stat-label {
+.trip-reports .stat-label,
+.user-reports .stat-label,
+.revenue-reports .stat-label {
   font-size: 0.85rem;
   color: #7f8c8d;
   font-weight: 500;
   word-wrap: break-word;
 }
 
-.table-container {
+.trip-reports .stats-grid {
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+}
+
+.trip-reports .stat-card {
+  position: relative;
+  padding: 1.1rem;
+  border: 1px solid #eef1f5;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #ffffff 0%, #fbfcfe 100%);
+  box-shadow: 0 6px 18px rgba(17, 24, 39, 0.08);
+  overflow: hidden;
+}
+
+.trip-reports .stat-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: linear-gradient(180deg, #FDB913 0%, #F59E0B 100%);
+  opacity: 0.9;
+}
+
+.trip-reports .stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 14px 30px rgba(17, 24, 39, 0.14);
+  border-color: #ffe3b0;
+}
+
+.trip-reports .stat-icon-wrapper {
+  width: 54px;
+  height: 54px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.65), 0 6px 14px rgba(17, 24, 39, 0.1);
+}
+
+.trip-reports .stat-value {
+  font-size: 1.4rem;
+  line-height: 1.1;
+}
+
+.trip-reports .stat-label {
+  font-size: 0.82rem;
+  color: #5f6c7b;
+}
+
+.trip-reports .table-container,
+.user-reports .table-container,
+.revenue-reports .table-container {
   background: white;
   border-radius: 0 0 12px 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -89,18 +160,24 @@
   margin-bottom: 1rem;
 }
 
-.report-table {
+.trip-reports .report-table,
+.user-reports .report-table,
+.revenue-reports .report-table {
   width: 100%;
   border-collapse: collapse;
   direction: rtl;
 }
 
-.report-table thead {
+.trip-reports .report-table thead,
+.user-reports .report-table thead,
+.revenue-reports .report-table thead {
   background: linear-gradient(135deg, #8a8a8a 0%, #F59E0B 100%);
   color: white;
 }
 
-.report-table th {
+.trip-reports .report-table th,
+.user-reports .report-table th,
+.revenue-reports .report-table th {
   padding: 16px;
   text-align: right;
   font-weight: 600;
@@ -108,16 +185,22 @@
   white-space: nowrap;
 }
 
-.report-table tbody tr {
+.trip-reports .report-table tbody tr,
+.user-reports .report-table tbody tr,
+.revenue-reports .report-table tbody tr {
   border-bottom: 1px solid #f0f0f0;
   transition: background-color 0.2s;
 }
 
-.report-table tbody tr:hover {
+.trip-reports .report-table tbody tr:hover,
+.user-reports .report-table tbody tr:hover,
+.revenue-reports .report-table tbody tr:hover {
   background-color: #f8f9fa;
 }
 
-.report-table td {
+.trip-reports .report-table td,
+.user-reports .report-table td,
+.revenue-reports .report-table td {
   padding: 16px;
   font-size: 14px;
   color: #333;
@@ -126,17 +209,19 @@
   overflow-wrap: break-word;
 }
 
-.vehicle-name {
+.trip-reports .vehicle-name,
+.revenue-reports .vehicle-name {
   font-weight: 600;
   color: #2c3e50;
 }
 
-.revenue-cell {
+.trip-reports .revenue-cell,
+.revenue-reports .revenue-cell {
   color: #27ae60;
   font-weight: 600;
 }
 
-.highlight-box {
+.trip-reports .highlight-box {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -147,33 +232,148 @@
   font-size: 1.1rem;
 }
 
-.highlight-icon {
+.trip-reports .highlight-icon {
   font-size: 2rem;
 }
 
-.highlight-text strong {
+.trip-reports .highlight-text strong {
   font-weight: 700;
 }
 
-.chart-container {
+.trip-reports .trip-report-filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(180px, 1fr));
+  gap: 1rem;
+  align-items: end;
+}
+
+.trip-reports .filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.trip-reports .filter-field label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.trip-reports .filter-field input,
+.trip-reports .filter-field select {
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s;
+  background: #fff;
+  color: #333;
+  direction: rtl;
+  width: 100%;
+}
+
+.trip-reports .filter-field input:hover,
+.trip-reports .filter-field select:hover {
+  border-color: #FDB913;
+  background-color: #fffbf0;
+}
+
+.trip-reports .filter-field input:focus,
+.trip-reports .filter-field select:focus {
+  outline: none;
+  border-color: #FDB913;
+  box-shadow: 0 0 0 3px rgba(253, 185, 19, 0.1);
+  background-color: #fff;
+}
+
+.trip-reports .filter-field select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: left 12px center;
+  padding-left: 36px;
+}
+
+.trip-reports .filter-field select option {
+  padding: 12px;
+  background: #fff;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 4px;
+  margin: 2px 0;
+}
+
+.trip-reports .filter-field select option:hover {
+  background: #fff3e0;
+  color: #F59E0B;
+}
+
+.trip-reports .filter-field select option:checked {
+  background: linear-gradient(135deg, #FDB913 0%, #F59E0B 100%);
+  color: #fff;
+  font-weight: 600;
+}
+
+.trip-reports .filter-field select option:disabled {
+  color: #999;
+  background: #f5f5f5;
+}
+
+.trip-reports .filter-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.trip-reports .filter-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.trip-reports .filter-btn-primary {
+  background: linear-gradient(135deg, #FDB913 0%, #FFA500 100%);
+  color: #fff;
+}
+
+.trip-reports .filter-btn-secondary {
+  background: #ecf0f1;
+  color: #2c3e50;
+}
+
+.trip-reports .chart-container,
+.revenue-reports .chart-container {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.chart-bar-item {
+.trip-reports .chart-container + .table-container,
+.revenue-reports .chart-container + .table-container {
+  margin-top: 1.25rem;
+}
+
+.trip-reports .chart-bar-item,
+.revenue-reports .chart-bar-item {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
 
-.chart-label {
+.trip-reports .chart-label,
+.revenue-reports .chart-label {
   min-width: 100px;
   font-weight: 600;
   color: #2c3e50;
 }
 
-.chart-bar-wrapper {
+.trip-reports .chart-bar-wrapper,
+.revenue-reports .chart-bar-wrapper {
   flex: 1;
   background: #f0f0f0;
   border-radius: 8px;
@@ -181,7 +381,8 @@
   height: 40px;
 }
 
-.chart-bar {
+.trip-reports .chart-bar,
+.revenue-reports .chart-bar {
   height: 100%;
   background: linear-gradient(135deg, #FDB913 0%, #FFA500 100%);
   display: flex;
@@ -192,95 +393,146 @@
   min-width: 60px;
 }
 
-.chart-value {
+.trip-reports .chart-value,
+.revenue-reports .chart-value {
   color: white;
   font-weight: 700;
   font-size: 0.9rem;
 }
 
 @media (max-width: 1200px) {
-  .stats-grid {
+  .trip-reports .trip-report-filters {
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+  }
+
+  .trip-reports .stats-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
   }
 
-  .stat-card {
+  .trip-reports .stat-card,
+  .user-reports .stat-card,
+  .revenue-reports .stat-card {
     padding: 0.875rem;
     gap: 0.75rem;
   }
 
-  .stat-icon-wrapper {
+  .trip-reports .stat-icon-wrapper,
+  .user-reports .stat-icon-wrapper,
+  .revenue-reports .stat-icon-wrapper {
     width: 45px;
     height: 45px;
   }
 
-  .stat-icon-emoji {
+  .trip-reports .stat-icon-emoji,
+  .user-reports .stat-icon-emoji,
+  .revenue-reports .stat-icon-emoji {
     font-size: 1.3rem;
   }
 
-  .stat-value {
+  .trip-reports .stat-value,
+  .user-reports .stat-value,
+  .revenue-reports .stat-value {
     font-size: 1.2rem;
   }
 
-  .stat-label {
+  .trip-reports .stat-label,
+  .user-reports .stat-label,
+  .revenue-reports .stat-label {
     font-size: 0.8rem;
   }
 }
 
 @media (max-width: 768px) {
-  .report-section {
+  .trip-reports .trip-report-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .trip-reports .filter-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .trip-reports .report-section,
+  .user-reports .report-section,
+  .revenue-reports .report-section,
+  .export-schedule .report-section {
     padding: 1.5rem;
   }
 
-  .stats-grid {
+  .trip-reports .stats-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
   }
 
-  .stat-card {
+  .trip-reports .stat-card,
+  .user-reports .stat-card,
+  .revenue-reports .stat-card {
     padding: 0.75rem;
     gap: 0.5rem;
   }
 
-  .stat-icon-wrapper {
+  .trip-reports .stat-icon-wrapper,
+  .user-reports .stat-icon-wrapper,
+  .revenue-reports .stat-icon-wrapper {
     width: 40px;
     height: 40px;
   }
 
-  .stat-icon-emoji {
+  .trip-reports .stat-icon-emoji,
+  .user-reports .stat-icon-emoji,
+  .revenue-reports .stat-icon-emoji {
     font-size: 1.2rem;
   }
 
-  .stat-value {
+  .trip-reports .stat-value,
+  .user-reports .stat-value,
+  .revenue-reports .stat-value {
     font-size: 1.1rem;
   }
 
-  .stat-label {
+  .trip-reports .stat-label,
+  .user-reports .stat-label,
+  .revenue-reports .stat-label {
     font-size: 0.75rem;
     line-height: 1.3;
   }
 
-  .section-title {
+  .trip-reports .section-title,
+  .user-reports .section-title,
+  .revenue-reports .section-title,
+  .export-schedule .section-title {
     font-size: 1.2rem;
   }
 
-  .chart-label {
+  .trip-reports .chart-label,
+  .revenue-reports .chart-label {
     min-width: 80px;
     font-size: 0.9rem;
   }
 
   /* Mobile Card View for Tables */
-  .report-table thead {
+  .trip-reports .report-table thead,
+  .user-reports .report-table thead,
+  .revenue-reports .report-table thead {
     display: none;
   }
 
-  .report-table,
-  .report-table tbody,
-  .report-table tr {
+  .trip-reports .report-table,
+  .trip-reports .report-table tbody,
+  .trip-reports .report-table tr,
+  .user-reports .report-table,
+  .user-reports .report-table tbody,
+  .user-reports .report-table tr,
+  .revenue-reports .report-table,
+  .revenue-reports .report-table tbody,
+  .revenue-reports .report-table tr {
     display: block;
   }
 
-  .report-table tbody tr {
+  .trip-reports .report-table tbody tr,
+  .user-reports .report-table tbody tr,
+  .revenue-reports .report-table tbody tr {
     margin-bottom: 16px;
     border: 1px solid #e0e0e0;
     border-radius: 12px;
@@ -289,12 +541,16 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   }
 
-  .report-table tbody tr:hover {
+  .trip-reports .report-table tbody tr:hover,
+  .user-reports .report-table tbody tr:hover,
+  .revenue-reports .report-table tbody tr:hover {
     background: white;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   }
 
-  .report-table td {
+  .trip-reports .report-table td,
+  .user-reports .report-table td,
+  .revenue-reports .report-table td {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -302,11 +558,15 @@
     border-bottom: 1px solid #f0f0f0;
   }
 
-  .report-table td:last-child {
+  .trip-reports .report-table td:last-child,
+  .user-reports .report-table td:last-child,
+  .revenue-reports .report-table td:last-child {
     border-bottom: none;
   }
 
-  .report-table td::before {
+  .trip-reports .report-table td::before,
+  .user-reports .report-table td::before,
+  .revenue-reports .report-table td::before {
     content: attr(data-label);
     font-weight: 600;
     color: #666;

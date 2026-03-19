@@ -4,42 +4,42 @@
   gap: 2rem;
 }
 
-.section-description {
+.export-schedule .section-description {
   color: #7f8c8d;
   margin-bottom: 1.5rem;
   line-height: 1.6;
 }
 
-.export-form,
-.schedule-form {
+.export-schedule .export-form,
+.export-schedule .schedule-form {
   display: flex;
   flex-direction: column;
   gap: 2rem;
 }
 
-.form-grid {
+.export-schedule .form-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
 }
 
-.form-group {
+.export-schedule .form-group {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.form-group.full-width {
+.export-schedule .form-group.full-width {
   grid-column: 1 / -1;
 }
 
-.form-group label {
+.export-schedule .form-group label {
   font-weight: 600;
   color: #2c3e50;
   font-size: 0.95rem;
 }
 
-.form-input {
+.export-schedule .form-input {
   padding: 0.875rem 1rem;
   border: 2px solid #e0e0e0;
   border-radius: 10px;
@@ -47,20 +47,20 @@
   transition: all 0.3s ease;
 }
 
-.form-input:focus {
+.export-schedule .form-input:focus {
   outline: none;
   border-color: #FDB913;
   box-shadow: 0 0 0 3px rgba(253, 185, 19, 0.1);
 }
 
-.format-buttons,
-.frequency-buttons {
+.export-schedule .format-buttons,
+.export-schedule .frequency-buttons {
   display: flex;
   gap: 1rem;
 }
 
-.format-btn,
-.freq-btn {
+.export-schedule .format-btn,
+.export-schedule .freq-btn {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -76,28 +76,28 @@
   color: #666;
 }
 
-.format-btn:hover,
-.freq-btn:hover {
+.export-schedule .format-btn:hover,
+.export-schedule .freq-btn:hover {
   border-color: #FDB913;
   background: #fffbf0;
   transform: translateY(-2px);
 }
 
-.format-btn.active,
-.freq-btn.active {
+.export-schedule .format-btn.active,
+.export-schedule .freq-btn.active {
   background: linear-gradient(135deg, #FDB913 0%, #FFA500 100%);
   border-color: #FDB913;
   color: white;
   box-shadow: 0 4px 12px rgba(253, 185, 19, 0.3);
 }
 
-.format-icon,
-.freq-icon {
+.export-schedule .format-icon,
+.export-schedule .freq-icon {
   font-size: 2rem;
 }
 
-.export-btn,
-.schedule-btn {
+.export-schedule .export-btn,
+.export-schedule .schedule-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -113,13 +113,13 @@
   transition: all 0.3s ease;
 }
 
-.export-btn:hover,
-.schedule-btn:hover {
+.export-schedule .export-btn:hover,
+.export-schedule .schedule-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(253, 185, 19, 0.4);
 }
 
-.info-box {
+.export-schedule .info-box {
   display: flex;
   gap: 1.5rem;
   padding: 1.5rem;
@@ -128,19 +128,19 @@
   border-left: 4px solid #2196f3;
 }
 
-.info-icon {
+.export-schedule .info-icon {
   font-size: 2rem;
   flex-shrink: 0;
 }
 
-.info-content h3 {
+.export-schedule .info-content h3 {
   font-size: 1.1rem;
   font-weight: 700;
   color: #2c3e50;
   margin-bottom: 0.75rem;
 }
 
-.info-content ul {
+.export-schedule .info-content ul {
   list-style: none;
   padding: 0;
   margin: 0;
@@ -149,14 +149,14 @@
   gap: 0.5rem;
 }
 
-.info-content li {
+.export-schedule .info-content li {
   color: #34495e;
   line-height: 1.6;
   padding-right: 1.5rem;
   position: relative;
 }
 
-.info-content li::before {
+.export-schedule .info-content li::before {
   content: "✓";
   position: absolute;
   right: 0;
@@ -165,16 +165,16 @@
 }
 
 @media (max-width: 768px) {
-  .form-grid {
+  .export-schedule .form-grid {
     grid-template-columns: 1fr;
   }
 
-  .format-buttons,
-  .frequency-buttons {
+  .export-schedule .format-buttons,
+  .export-schedule .frequency-buttons {
     flex-direction: column;
   }
 
-  .info-box {
+  .export-schedule .info-box {
     flex-direction: column;
   }
 }

@@ -36,6 +36,7 @@ export default function NotificationsManagementContent() {
     perPage: 0,
     total: 0,
   });
+  const [unreadNotificationsCount, setUnreadNotificationsCount] = useState(0);
 
   const loadAdminNotifications = useCallback(
     async (page: number = 1, showError = true) => {
@@ -86,6 +87,8 @@ export default function NotificationsManagementContent() {
           user: notification.user || null,
           recipient_summary: notification.user?.name || "الادمن",
           recipient_ids: Array.isArray(notification.recipient_ids) ? notification.recipient_ids : null,
+          is_read: Boolean(notification.is_read),
+          read_at: notification.read_at || null,
         }));
         setIncomingAdminNotifications(mappedList);
         setIncomingAdminNotificationsPagination({
@@ -100,6 +103,20 @@ export default function NotificationsManagementContent() {
         }
       } finally {
         setIsLoadingIncomingAdminNotifications(false);
+      }
+    },
+    [showToast]
+  );
+
+  const loadUnreadNotificationsCount = useCallback(
+    async (showError = true) => {
+      try {
+        const count = await adminNotificationsService.getUnreadNotificationsCount();
+        setUnreadNotificationsCount(count);
+      } catch (error: any) {
+        if (showError) {
+          showToast(error?.message || "فشل في جلب عدد الإشعارات غير المقروءة", "error");
+        }
       }
     },
     [showToast]
@@ -153,6 +170,35 @@ export default function NotificationsManagementContent() {
     ]);
   };
 
+  const handleMarkNotificationAsRead = async (notificationId: number) => {
+    await adminNotificationsService.markNotificationAsRead(notificationId);
+    setIncomingAdminNotifications((prev) =>
+      prev.map((notification) =>
+        notification.id === notificationId
+          ? {
+              ...notification,
+              is_read: true,
+            }
+          : notification
+      )
+    );
+    await loadUnreadNotificationsCount(false);
+  };
+
+  const handleMarkAllNotificationsAsRead = async () => {
+    await adminNotificationsService.markAllNotificationsAsRead();
+    setIncomingAdminNotifications((prev) =>
+      prev.map((notification) => ({
+        ...notification,
+        is_read: true,
+      }))
+    );
+    await Promise.all([
+      loadIncomingAdminNotifications(incomingAdminNotificationsPagination.currentPage, false),
+      loadUnreadNotificationsCount(false),
+    ]);
+  };
+
   const handleAddTemplate = (template: any) => {
     setTemplates([...templates, template]);
   };
@@ -200,7 +246,8 @@ export default function NotificationsManagementContent() {
   useEffect(() => {
     loadAdminNotifications(1);
     loadIncomingAdminNotifications(1);
-  }, [loadAdminNotifications, loadIncomingAdminNotifications]);
+    loadUnreadNotificationsCount();
+  }, [loadAdminNotifications, loadIncomingAdminNotifications, loadUnreadNotificationsCount]);
 
   const handleAdminNotificationsPageChange = async (page: number) => {
     const safePage = Math.max(1, Math.min(page, adminNotificationsPagination.lastPage || 1));
@@ -218,6 +265,7 @@ export default function NotificationsManagementContent() {
         totalNotifications={stats.total}
         todayNotifications={stats.today}
         failedNotifications={stats.failed}
+        unreadNotifications={unreadNotificationsCount}
       />
 
       <div className="notifications-tabs">
@@ -279,6 +327,9 @@ export default function NotificationsManagementContent() {
               onIncomingAdminNotificationsPageChange={handleIncomingAdminNotificationsPageChange}
               onResend={handleResendNotification}
               onDelete={handleDeleteNotification}
+              unreadNotificationsCount={unreadNotificationsCount}
+              onMarkNotificationAsRead={handleMarkNotificationAsRead}
+              onMarkAllNotificationsAsRead={handleMarkAllNotificationsAsRead}
             />
           )}
           {activeTab === "templates" && (
