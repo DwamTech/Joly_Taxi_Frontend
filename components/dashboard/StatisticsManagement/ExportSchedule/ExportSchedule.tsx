@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useToast } from "@/components/Toast/ToastContainer";
 import CustomSelect from "@/components/shared/CustomSelect/CustomSelect";
 import { dashboardService, TripReportsQueryParams } from "@/services/dashboardService";
-import { jsPDF } from "jspdf";
 import "./ExportSchedule.css";
 
 type ExportTableKey = "vehicle_type" | "hourly" | "daily" | "monthly";
@@ -90,6 +89,7 @@ function downloadCsv(table: ExportTableData, filePrefix: string) {
 }
 
 async function downloadPdf(table: ExportTableData, filePrefix: string) {
+  const { jsPDF } = await import("jspdf");
   const isWideTable = table.headers.length > 3;
   const canvasWidth = isWideTable ? 1600 : 1100;
   const outerPadding = 36;
