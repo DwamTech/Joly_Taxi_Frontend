@@ -173,17 +173,28 @@ export class AuthService {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/validate`, {
+      const response = await fetch(`${API_BASE_URL}/api/user`, {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${token}`,
           "Accept": "application/json",
+          "x-lang": "ar",
         },
         credentials: 'include', // لإرسال الـ Cookies
       });
 
       if (response.ok) {
+        const user = await response.json().catch(() => null);
         const session = this.getSession();
+
+        if (user?.role !== "admin") {
+          return {
+            isValid: false,
+            reason: 'invalid',
+            message: 'غير مصرح لك بدخول لوحة التحكم',
+          };
+        }
+
         return {
           isValid: true,
           session: session || undefined,

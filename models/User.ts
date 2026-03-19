@@ -179,7 +179,7 @@ export interface User {
 }
 
 export interface LoginCredentials {
-  phone: string;
+  email: string;
   password: string;
 }
 

@@ -52,7 +52,7 @@ export default function LoginForm() {
     setErrors({ email: "", password: "", general: "" });
 
     try {
-      const response = await AuthService.login({ phone: email, password });
+      const response = await AuthService.login({ email, password });
       console.log("Login successful:", response);
 
       // الانتظار قليلاً للتأكد من حفظ البيانات

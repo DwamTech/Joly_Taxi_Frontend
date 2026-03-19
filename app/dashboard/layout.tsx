@@ -1,37 +1,52 @@
-"use client";
-
-import { useState } from "react";
-import Sidebar from "@/components/dashboard/Sidebar/Sidebar";
-import Header from "@/components/dashboard/Header/Header";
+import type { ReactNode } from "react";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import DashboardShell from "@/components/dashboard/DashboardShell/DashboardShell";
 import "./dashboard.css";
 
-export default function DashboardLayout({
+const API_BASE_URL = (
+  process.env.NEXT_PUBLIC_API_BASE_URL || "https://back.mishwar-masr.app"
+).replace(/\/+$/, "");
+
+async function hasValidAdminSession(token: string): Promise<boolean> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/user`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+        "x-lang": "ar",
+      },
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      return false;
+    }
+
+    const user = await response.json().catch(() => null);
+    return user?.role === "admin";
+  } catch {
+    return false;
+  }
+}
+
+export default async function DashboardLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const token = (await cookies()).get("auth_token")?.value;
 
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
+  if (!token) {
+    redirect("/login");
+  }
 
-  const closeSidebar = () => {
-    setIsSidebarOpen(false);
-  };
+  const isValidAdminSession = await hasValidAdminSession(token);
 
-  return (
-    <div className="dashboard-layout">
-      <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
-      <div className="dashboard-main">
-        <Header onMenuClick={toggleSidebar} />
-        <div className="dashboard-content">
-          {children}
-        </div>
-      </div>
-      {isSidebarOpen && (
-        <div className="sidebar-overlay" onClick={closeSidebar}></div>
-      )}
-    </div>
-  );
+  if (!isValidAdminSession) {
+    redirect("/login");
+  }
+
+  return <DashboardShell>{children}</DashboardShell>;
 }
