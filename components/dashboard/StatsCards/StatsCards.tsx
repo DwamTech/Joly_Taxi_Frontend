@@ -18,7 +18,7 @@ const iconMap: Record<string, string> = {
 };
 
 interface StatsCardsProps {
-  stats: DashboardStatistics | null;
+  stats?: DashboardStatistics | null;
 }
 
 export default function StatsCards({ stats }: StatsCardsProps) {
@@ -36,10 +36,10 @@ export default function StatsCards({ stats }: StatsCardsProps) {
   const initializeStats = () => {
     return statsData.stats.map(stat => ({
       ...stat,
-      title: stat.titleTemplate 
+      title: stat.titleTemplate
         ? stat.titleTemplate
-            .replace('{month}', getCurrentMonth())
-            .replace('{day}', getCurrentDay())
+          .replace('{month}', getCurrentMonth())
+          .replace('{day}', getCurrentDay())
         : stat.title,
       value: "0"
     }));
@@ -52,7 +52,7 @@ export default function StatsCards({ stats }: StatsCardsProps) {
     if (!stats) return;
 
     setDisplayStats(prevStats => prevStats.map(stat => {
-      switch(stat.id) {
+      switch (stat.id) {
         case 1: return { ...stat, value: stats.main_stats.total_users.toLocaleString() };
         case 2: return { ...stat, value: stats.main_stats.total_riders.toString() };
         case 3: return { ...stat, value: stats.main_stats.total_drivers.toString() };

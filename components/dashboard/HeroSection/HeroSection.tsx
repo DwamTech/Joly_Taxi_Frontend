@@ -6,7 +6,7 @@ import heroData from "@/data/dashboard/hero-section.json";
 import { DashboardStatistics } from "@/services/dashboardService";
 
 interface HeroSectionProps {
-  stats: DashboardStatistics | null;
+  stats?: DashboardStatistics | null;
 }
 
 export default function HeroSection({ stats }: HeroSectionProps) {
@@ -21,8 +21,8 @@ export default function HeroSection({ stats }: HeroSectionProps) {
 
           <div className="hero-actions">
             {actions.map((action, index) => (
-              <button 
-                key={index} 
+              <button
+                key={index}
                 className={`hero-btn hero-btn-${action.type}`}
               >
                 {action.text}
@@ -32,7 +32,7 @@ export default function HeroSection({ stats }: HeroSectionProps) {
         </div>
 
         <div className="hero-image">
-          <Image 
+          <Image
             src={image.src}
             alt={image.alt}
             width={image.width}
