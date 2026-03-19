@@ -1,16 +1,27 @@
 # Dashboard Deployment Fix
 
-## المشكلة التي تم حلها
+## المشاكل التي تم حلها
 
-كان هناك خطأ TypeScript في بناء Dashboard:
+كانت هناك أخطاء TypeScript في بناء Dashboard:
 
+### 1. HeroSection Props Error ✅
 ```
 Type error: Property 'stats' is missing in type '{}' but required in type 'HeroSectionProps'.
 ```
 
+### 2. TripsChart Props Error ✅
+```
+Type error: Property 'monthlyStats' is missing in type '{}' but required in type 'TripsChartProps'.
+```
+
+### 3. VehiclesChart Props Error ✅
+```
+Type error: Property 'monthlyStats' is missing in type '{}' but required in type 'VehiclesChartProps'.
+```
+
 ## الحل
 
-تم تعديل المكونات التالية لجعل prop `stats` اختيارياً:
+تم تعديل المكونات التالية لجعل props اختيارية مع قيم افتراضية:
 
 ### 1. HeroSection.tsx ✅
 ```typescript
@@ -38,9 +49,39 @@ interface StatsCardsProps {
 }
 ```
 
+### 3. TripsChart.tsx ✅
+```typescript
+// قبل
+interface TripsChartProps {
+  monthlyStats: MonthlyStats[];
+}
+export default function TripsChart({ monthlyStats }: TripsChartProps)
+
+// بعد
+interface TripsChartProps {
+  monthlyStats?: MonthlyStats[];  // أصبح اختيارياً
+}
+export default function TripsChart({ monthlyStats = [] }: TripsChartProps)  // قيمة افتراضية
+```
+
+### 4. VehiclesChart.tsx ✅
+```typescript
+// قبل
+interface VehiclesChartProps {
+  monthlyStats: MonthlyStats[];
+}
+export default function VehiclesChart({ monthlyStats }: VehiclesChartProps)
+
+// بعد
+interface VehiclesChartProps {
+  monthlyStats?: MonthlyStats[];  // أصبح اختيارياً
+}
+export default function VehiclesChart({ monthlyStats = [] }: VehiclesChartProps)  // قيمة افتراضية
+```
+
 ## خطوات البناء على السيرفر
 
-بعد هذا الإصلاح، قم بالتالي على السيرفر:
+بعد هذه الإصلاحات، قم بالتالي على السيرفر:
 
 ```bash
 cd /www/wwwroot/projects/mishwar/front
@@ -65,20 +106,36 @@ npm start
 ✓ Collecting page data
 ✓ Generating static pages
 ✓ Finalizing page optimization
+
+Route (app)                              Size     First Load JS
+┌ ○ /                                    ...      ...
+└ ○ /app-dash                            ...      ...
 ```
 
 ## الملفات المعدلة
 
 - ✅ `components/dashboard/HeroSection/HeroSection.tsx`
 - ✅ `components/dashboard/StatsCards/StatsCards.tsx`
+- ✅ `components/dashboard/TripsChart/TripsChart.tsx`
+- ✅ `components/dashboard/VehiclesChart/VehiclesChart.tsx`
 
 ## ملاحظات
 
-- المكونات الآن تعمل بدون `stats` prop (تستخدم بيانات افتراضية)
-- عندما يتم تمرير `stats` prop، سيتم استخدام البيانات الحقيقية من API
+- المكونات الآن تعمل بدون props (تستخدم بيانات افتراضية أو مصفوفات فارغة)
+- عندما يتم تمرير props، سيتم استخدام البيانات الحقيقية من API
 - هذا يسمح بالبناء بنجاح والعمل في كلا الحالتين
+- الرسوم البيانية ستظهر فارغة حتى يتم تمرير بيانات حقيقية
+
+## حل مشكلة middleware warning
+
+إذا ظهرت رسالة:
+```
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead.
+```
+
+هذا تحذير فقط ولا يمنع البناء. يمكن تجاهله حالياً.
 
 ---
 
 **التاريخ**: 19 مارس 2026  
-**الحالة**: ✅ تم الإصلاح
+**الحالة**: ✅ تم إصلاح جميع أخطاء TypeScript
