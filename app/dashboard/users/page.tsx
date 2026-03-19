@@ -15,9 +15,15 @@ import UserDetailsModal from "@/components/dashboard/UsersManagement/UserDetails
 import AddUserModal from "@/components/dashboard/UsersManagement/AddUserModal/AddUserModal";
 import EditUserModal from "@/components/dashboard/UsersManagement/EditUserModal/EditUserModal";
 import SendNotificationModal from "@/components/dashboard/UsersManagement/SendNotificationModal/SendNotificationModal";
-import { CreateAdminUserPayload, createUser, getUsers, getUsersStats, getUserDetails, updateUser, toggleBlockUser, deleteUser, convertToUIUser } from "@/services/usersService";
+import { CreateAdminUserPayload, createUser, getUsers, getUsersStats, getUserDetails, updateUser, updateUserVerificationStatus, toggleBlockUser, deleteUser, convertToUIUser } from "@/services/usersService";
 import { exportUsersToExcel } from "@/utils/exportToExcel";
 import "./users.css";
+
+const verificationLabels: Record<VerificationStatus, string> = {
+  approved: "موافق عليه",
+  pending: "قيد المراجعة",
+  rejected: "مرفوض",
+};
 
 function UsersManagementContent() {
   const { showToast } = useToast();
@@ -28,6 +34,7 @@ function UsersManagementContent() {
   const [totalItems, setTotalItems] = useState(0);
   const [itemsPerPage] = useState(20);
   const [isLoading, setIsLoading] = useState(false);
+  const [verificationUpdatingUserId, setVerificationUpdatingUserId] = useState<number | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -461,27 +468,89 @@ function UsersManagementContent() {
     }
   };
 
-  const handleVerificationChange = (
+  const handleVerificationChange = async (
     userId: number,
     status: VerificationStatus
   ) => {
-    setUsers((prevUsers) =>
-      prevUsers.map((user) =>
-        user.id === userId && user.driver_profile
+    const targetUser =
+      (selectedUser?.id === userId ? selectedUser : null) ??
+      users.find((user) => user.id === userId) ??
+      null;
+    const currentStatus =
+      targetUser?.driver_profile?.profile_status ||
+      targetUser?.driver_profile?.verification_status;
+
+    if (!targetUser?.driver_profile || currentStatus === status) {
+      return;
+    }
+
+    let rejectionReason: string | undefined;
+    if (status === "rejected") {
+      const reason = window.prompt("اكتب سبب الرفض ليتم حفظه وإرساله للسائق:");
+      if (reason === null) {
+        return;
+      }
+
+      const trimmedReason = reason.trim();
+      if (!trimmedReason) {
+        showToast("سبب الرفض مطلوب عند اختيار حالة مرفوض", "error");
+        return;
+      }
+
+      rejectionReason = trimmedReason;
+    }
+
+    setVerificationUpdatingUserId(userId);
+
+    try {
+      const response = await updateUserVerificationStatus(
+        userId,
+        status,
+        rejectionReason
+      );
+      const nextStatus = response.data.verification_status;
+
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === userId && user.driver_profile
+            ? {
+                ...user,
+                driver_profile: {
+                  ...user.driver_profile,
+                  verification_status: nextStatus,
+                  profile_status: nextStatus,
+                },
+              }
+            : user
+        )
+      );
+
+      setSelectedUser((prevUser) =>
+        prevUser?.id === userId && prevUser.driver_profile
           ? {
-            ...user,
-            driver_profile: {
-              ...user.driver_profile,
-              verification_status: status,
-              profile_status: status,
-            },
-          }
-          : user
-      )
-    );
-    showToast("تم تحديث حالة التحقق", "success");
-    // TODO: Call API to update verification status
-    console.log("Update verification status:", userId, status);
+              ...prevUser,
+              driver_profile: {
+                ...prevUser.driver_profile,
+                verification_status: nextStatus,
+                profile_status: nextStatus,
+              },
+            }
+          : prevUser
+      );
+
+      showToast(
+        `تم تحديث حالة البروفايل إلى ${verificationLabels[nextStatus]}`,
+        "success"
+      );
+    } catch (error: any) {
+      showToast(
+        `فشل في تحديث حالة البروفايل: ${error.message}`,
+        "error"
+      );
+      console.error("Error updating verification status:", error);
+    } finally {
+      setVerificationUpdatingUserId(null);
+    }
   };
 
   return (
@@ -534,6 +603,7 @@ function UsersManagementContent() {
           user={selectedUser}
           onClose={() => setSelectedUser(null)}
           onVerificationChange={handleVerificationChange}
+          isVerificationUpdating={verificationUpdatingUserId === selectedUser.id}
         />
       )}
 

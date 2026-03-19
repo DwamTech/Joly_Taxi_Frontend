@@ -149,6 +149,15 @@ export interface UsersResponse {
   stats?: UsersStatsResponse;
 }
 
+export interface UpdateVerificationStatusResponse {
+  message: string;
+  data: {
+    id: number;
+    verification_status: "approved" | "pending" | "rejected";
+    rejection_reason: string | null;
+  };
+}
+
 export interface CreateAdminUserPayload {
   name: string;
   phone: string;
@@ -640,6 +649,49 @@ export const usersService = {
     }
   },
 
+  async updateUserVerificationStatus(
+    userId: number,
+    status: "approved" | "pending" | "rejected",
+    rejectionReason?: string
+  ): Promise<UpdateVerificationStatusResponse> {
+    try {
+      const token = AuthService.getToken();
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      };
+
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(
+        `${API_BASE_URL}/api/admin/users/${userId}/verification-status`,
+        {
+          method: "POST",
+          headers,
+          credentials: "include",
+          body: JSON.stringify({
+            status,
+            ...(rejectionReason ? { rejection_reason: rejectionReason } : {}),
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.message || `فشل في تحديث حالة البروفايل: ${response.status}`
+        );
+      }
+
+      return (await response.json()) as UpdateVerificationStatusResponse;
+    } catch (error) {
+      console.error("Error updating verification status:", error);
+      throw error;
+    }
+  },
+
   async toggleBlockUser(userId: number, reason?: string): Promise<{ status: string; message: string }> {
     try {
       const token = AuthService.getToken();
@@ -726,6 +778,11 @@ export const createUser = (payload: CreateAdminUserPayload) => usersService.crea
 export const getUsersStats = () => usersService.getUsersStats();
 export const getUserDetails = (userId: number) => usersService.getUserDetails(userId);
 export const updateUser = (userId: number, userData: Partial<User>) => usersService.updateUser(userId, userData);
+export const updateUserVerificationStatus = (
+  userId: number,
+  status: "approved" | "pending" | "rejected",
+  rejectionReason?: string
+) => usersService.updateUserVerificationStatus(userId, status, rejectionReason);
 export const toggleBlockUser = (userId: number, reason?: string) => usersService.toggleBlockUser(userId, reason);
 export const deleteUser = (userId: number) => usersService.deleteUser(userId);
 export const convertToUIUser = (apiUser: ApiUser): User => usersService.convertToUIUser(apiUser);

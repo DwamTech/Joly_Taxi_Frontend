@@ -10,12 +10,14 @@ interface UserDetailsModalProps {
   user: User;
   onClose: () => void;
   onVerificationChange?: (userId: number, status: VerificationStatus) => void;
+  isVerificationUpdating?: boolean;
 }
 
 export default function UserDetailsModal({
   user,
   onClose,
   onVerificationChange,
+  isVerificationUpdating = false,
 }: UserDetailsModalProps) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [showActivityLog, setShowActivityLog] = useState(false);
@@ -203,6 +205,7 @@ export default function UserDetailsModal({
                       <select
                         className={`verification-select ${profileStatus}`}
                         value={profileStatus}
+                        disabled={isVerificationUpdating}
                         onChange={(e) =>
                           onVerificationChange(
                             user.id,
@@ -217,6 +220,14 @@ export default function UserDetailsModal({
                     ) : (
                       <span className="info-value">
                         {getVerificationLabel(profileStatus)}
+                      </span>
+                    )}
+                    {isVerificationUpdating && (
+                      <span
+                        className="info-value"
+                        style={{ display: "block", marginTop: "8px", color: "#888", fontSize: "12px" }}
+                      >
+                        جاري حفظ الحالة...
                       </span>
                     )}
                   </div>
