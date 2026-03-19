@@ -1,7 +1,7 @@
 "use client";
 
 import { Subscription, SubscriptionStatus } from "@/models/Subscription";
-import { formatText, formatNumber, formatDate } from "@/utils/formatters";
+import { formatDate } from "@/utils/formatters";
 import "./SubscriptionsTable.css";
 
 interface SubscriptionsTableProps {
@@ -25,17 +25,49 @@ export default function SubscriptionsTable({
 }: SubscriptionsTableProps) {
   const getStatusLabel = (status: string) => {
     const labels: Record<string, string> = {
-    //  pending: "قيد المراجعة",
+      pending: "قيد المراجعة",
       active: "نشط",
-     // expired: "منتهي",
+      expired: "منتهي",
       rejected: "مرفوض",
-    //  cancelled: "ملغي",
+      cancelled: "ملغي",
     };
     return labels[status] || status;
   };
 
-  const formatDateString = (dateString: string) => {
-    return formatDate(dateString);
+  const getStatusOptions = (status: SubscriptionStatus) => {
+    const current = {
+      value: status,
+      label: getStatusLabel(status),
+      disabled: true,
+    };
+
+    switch (status) {
+      case "pending":
+        return [
+          current,
+          { value: "active" as const, label: getStatusLabel("active"), disabled: false },
+          { value: "rejected" as const, label: getStatusLabel("rejected"), disabled: false },
+        ];
+      case "active":
+        return [
+          current,
+          { value: "rejected" as const, label: getStatusLabel("rejected"), disabled: false },
+        ];
+      case "rejected":
+        return [
+          current,
+          { value: "active" as const, label: getStatusLabel("active"), disabled: false },
+        ];
+      case "expired":
+      case "cancelled":
+        return [
+          current,
+          { value: "active" as const, label: getStatusLabel("active"), disabled: false },
+          { value: "rejected" as const, label: getStatusLabel("rejected"), disabled: false },
+        ];
+      default:
+        return [current];
+    }
   };
 
   return (
@@ -96,10 +128,15 @@ export default function SubscriptionsTable({
                     value={subscription.status}
                     onChange={(e) => onChangeStatus(subscription.id, e.target.value as SubscriptionStatus)}
                   >
-                  {/*  <option value="pending">قيد المراجعة</option>*/}
-                    <option value="active">نشط</option>
-                   {/* <option value="expired">منتهي</option>*/}
-                    <option value="rejected">مرفوض</option>
+                    {getStatusOptions(subscription.status).map((option) => (
+                      <option
+                        key={`${subscription.id}-${option.value}`}
+                        value={option.value}
+                        disabled={option.disabled}
+                      >
+                        {option.label}
+                      </option>
+                    ))}
                   </select>
                 </td>
                 <td data-label="الإجراءات">

@@ -62,17 +62,22 @@ function SubscriptionsManagementContent() {
     sortBy: "newest",
   });
 
+  const loadAllSubscriptions = async () => {
+    const firstPage = await getAdminSubscriptions(1);
+    let all = [...firstPage.subscriptions];
+    for (let p = 2; p <= firstPage.pagination.lastPage; p += 1) {
+      const pageResult = await getAdminSubscriptions(p);
+      all = all.concat(pageResult.subscriptions);
+    }
+    return all;
+  };
+
   // Load subscriptions from API
   useEffect(() => {
     let isActive = true;
     const load = async () => {
       try {
-        const firstPage = await getAdminSubscriptions(1);
-        let all = [...firstPage.subscriptions];
-        for (let p = 2; p <= firstPage.pagination.lastPage; p += 1) {
-          const pageResult = await getAdminSubscriptions(p);
-          all = all.concat(pageResult.subscriptions);
-        }
+        const all = await loadAllSubscriptions();
         if (!isActive) return;
         setSubscriptions(all);
         setFilteredSubscriptions(all);
@@ -225,7 +230,7 @@ function SubscriptionsManagementContent() {
 
   const refreshSubscriptions = async () => {
     try {
-      const { subscriptions: all } = await getAdminSubscriptions(1);
+      const all = await loadAllSubscriptions();
       setSubscriptions(all);
       setFilteredSubscriptions(all);
     } catch (error: any) {
@@ -281,18 +286,6 @@ function SubscriptionsManagementContent() {
       showToast(error?.message || "فشل في تمديد الاشتراك", "error");
     } finally {
       setExtendingSubscription(null);
-    }
-  };
-
-  const handleCancelSubscription = (subscriptionId: number) => {
-    const subscription = subscriptions.find((s) => s.id === subscriptionId);
-    if (subscription) {
-      setActionConfirm({
-        show: true,
-        type: "cancel",
-        subscriptionId,
-        subscriptionNumber: subscription.subscription_number,
-      });
     }
   };
 
@@ -411,6 +404,7 @@ function SubscriptionsManagementContent() {
         const withoutCurrent = prev.filter((item) => item.id !== result.subscription.id);
         return [result.subscription, ...withoutCurrent];
       });
+      await refreshSubscriptions();
       setShowCreateSubscriptionModal(false);
       showToast(result.message || "تم إنشاء/تجديد الاشتراك بنجاح", "success");
       
@@ -422,6 +416,10 @@ function SubscriptionsManagementContent() {
   };
 
   const handleChangeSubscriptionStatus = async (subscriptionId: number, status: SubscriptionStatus) => {
+    if (status !== "active" && status !== "rejected") {
+      return;
+    }
+
     try {
       const updated = await updateAdminSubscriptionStatus(subscriptionId, status);
       setSubscriptions((prev) => prev.map((s) => (s.id === subscriptionId ? updated : s)));
@@ -436,51 +434,38 @@ function SubscriptionsManagementContent() {
 
     switch (type) {
       case "activate":
-        setSubscriptions((prev) =>
-          prev.map((sub) =>
-            sub.id === subscriptionId
-              ? {
-                  ...sub,
-                  status: "active" as const,
-                  activated_at: new Date().toISOString(),
-                  start_date: new Date().toISOString(),
-                  end_date: new Date(
-                    Date.now() + sub.months_count * 30 * 24 * 60 * 60 * 1000
-                  ).toISOString(),
-                  days_remaining: sub.months_count * 30,
-                }
-              : sub
-          )
-        );
-        showToast("تم تفعيل الاشتراك بنجاح", "success");
+        try {
+          const updated = await updateAdminSubscriptionStatus(
+            subscriptionId,
+            "active"
+          );
+          setSubscriptions((prev) =>
+            prev.map((sub) => (sub.id === subscriptionId ? updated : sub))
+          );
+          showToast("تم تفعيل الاشتراك بنجاح", "success");
+        } catch (error: any) {
+          showToast(error?.message || "فشل في تفعيل الاشتراك", "error");
+        }
         break;
       case "reject":
-        setSubscriptions((prev) =>
-          prev.map((sub) =>
-            sub.id === subscriptionId
-              ? { ...sub, status: "rejected" as const, rejected_reason: "تم الرفض من قبل الإدارة" }
-              : sub
-          )
-        );
-        showToast("تم رفض الاشتراك", "warning");
+        try {
+          const updated = await updateAdminSubscriptionStatus(
+            subscriptionId,
+            "rejected"
+          );
+          setSubscriptions((prev) =>
+            prev.map((sub) => (sub.id === subscriptionId ? updated : sub))
+          );
+          showToast("تم رفض الاشتراك", "warning");
+        } catch (error: any) {
+          showToast(error?.message || "فشل في رفض الاشتراك", "error");
+        }
         break;
       case "extend":
         // Handled by ExtendSubscriptionModal
         break;
       case "cancel":
-        setSubscriptions((prev) =>
-          prev.map((sub) =>
-            sub.id === subscriptionId
-              ? {
-                  ...sub,
-                  status: "cancelled" as const,
-                  cancelled_at: new Date().toISOString(),
-                  cancelled_reason: "تم الإلغاء من قبل الإدارة",
-                }
-              : sub
-          )
-        );
-        showToast("تم إلغاء الاشتراك", "warning");
+        showToast("إلغاء الاشتراك غير مدعوم من الواجهة الحالية بعد", "warning");
         break;
       case "delete":
         try {
