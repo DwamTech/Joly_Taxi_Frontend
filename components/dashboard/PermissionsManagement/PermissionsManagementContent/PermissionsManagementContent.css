@@ -45,3 +45,47 @@
     justify-content: center;
   }
 }
+
+.permissions-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 3rem;
+  color: #7f8c8d;
+  font-size: 15px;
+}
+
+.permissions-loading .loading-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid #f0f0f0;
+  border-top-color: #FDB913;
+  border-radius: 50%;
+  animation: pm-spin 0.7s linear infinite;
+}
+
+@keyframes pm-spin { to { transform: rotate(360deg); } }
+
+.permissions-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 1.5rem;
+  background: #fff5f5;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  color: #e74c3c;
+  font-size: 14px;
+}
+
+.permissions-error button {
+  padding: 7px 16px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+}

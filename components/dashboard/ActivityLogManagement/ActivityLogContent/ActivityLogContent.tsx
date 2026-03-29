@@ -1,112 +1,126 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import ActivityLogHero from "../ActivityLogHero/ActivityLogHero";
 import ActivityLogFilters, {
   FilterValues,
 } from "../ActivityLogFilters/ActivityLogFilters";
 import ActivityLogTable from "../ActivityLogTable/ActivityLogTable";
-import activityLogData from "@/data/activity-log/activity-log-data.json";
-import { ActivityLog } from "@/models/ActivityLog";
+import { AuditLogService } from "@/services/auditLogService";
+import { AuditLog, AuditLogPagination, AuditLogStats } from "@/models/AuditLog";
 import "./ActivityLogContent.css";
 
+const PER_PAGE = 20;
+
+const defaultPagination: AuditLogPagination = {
+  current_page: 1,
+  last_page: 1,
+  per_page: PER_PAGE,
+  total: 0,
+};
+
 export default function ActivityLogContent() {
-  const [activities] = useState<ActivityLog[]>(activityLogData.activities as ActivityLog[]);
-  const [filteredActivities, setFilteredActivities] = useState<ActivityLog[]>(
-    activityLogData.activities as ActivityLog[]
+  const [activities, setActivities] = useState<AuditLog[]>([]);
+  const [pagination, setPagination] =
+    useState<AuditLogPagination>(defaultPagination);
+  const [stats, setStats] = useState<AuditLogStats | null>(null);
+  const [filters, setFilters] = useState<FilterValues>({
+    search: "",
+    actionType: "all",
+    adminId: "all",
+    dateFrom: "",
+    dateTo: "",
+  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchLogs = useCallback(
+    async (page: number, activeFilters: FilterValues) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const result = await AuditLogService.getAuditLogs({
+          search: activeFilters.search || undefined,
+          action_type: activeFilters.actionType,
+          admin_id: activeFilters.adminId,
+          date_from: activeFilters.dateFrom || undefined,
+          date_to: activeFilters.dateTo || undefined,
+          page,
+          per_page: PER_PAGE,
+        });
+        setActivities(result.data);
+        setPagination(result.pagination);
+        if (result.stats) setStats(result.stats);
+      } catch (err: any) {
+        setError(err.message || "حدث خطأ أثناء تحميل البيانات");
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
   );
 
-  // Get unique admins for filter
-  const uniqueAdmins = Array.from(
-    new Map(
-      activities.map((activity) => [
-        activity.admin_id,
-        { id: activity.admin_id, name: activity.admin_name },
-      ])
-    ).values()
-  );
+  useEffect(() => {
+    fetchLogs(currentPage, filters);
+  }, [currentPage, filters, fetchLogs]);
 
-  const handleFilterChange = (filters: FilterValues) => {
-    let filtered = [...activities];
-
-    // Search filter
-    if (filters.search) {
-      filtered = filtered.filter(
-        (activity) =>
-          activity.admin_name.toLowerCase().includes(filters.search.toLowerCase()) ||
-          activity.action.toLowerCase().includes(filters.search.toLowerCase()) ||
-          activity.details.toLowerCase().includes(filters.search.toLowerCase())
-      );
-    }
-
-    // Action type filter
-    if (filters.actionType !== "all") {
-      filtered = filtered.filter(
-        (activity) => activity.action_type === filters.actionType
-      );
-    }
-
-    // Admin filter
-    if (filters.adminId !== "all") {
-      filtered = filtered.filter(
-        (activity) => activity.admin_id === filters.adminId
-      );
-    }
-
-    // Date from filter
-    if (filters.dateFrom) {
-      filtered = filtered.filter((activity) => {
-        const activityDate = new Date(activity.created_at);
-        const fromDate = new Date(filters.dateFrom);
-        return activityDate >= fromDate;
-      });
-    }
-
-    // Date to filter
-    if (filters.dateTo) {
-      filtered = filtered.filter((activity) => {
-        const activityDate = new Date(activity.created_at);
-        const toDate = new Date(filters.dateTo);
-        toDate.setHours(23, 59, 59, 999); // End of day
-        return activityDate <= toDate;
-      });
-    }
-
-    setFilteredActivities(filtered);
+  const handleFilterChange = (newFilters: FilterValues) => {
+    setFilters(newFilters);
+    setCurrentPage(1); // reset to first page on filter change
   };
 
-  // Calculate today's activities
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const todayActivities = activities.filter((activity) => {
-    const activityDate = new Date(activity.created_at);
-    activityDate.setHours(0, 0, 0, 0);
-    return activityDate.getTime() === today.getTime();
-  }).length;
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
-  // Calculate critical actions (delete, block)
-  const criticalActions = activities.filter(
-    (activity) =>
-      activity.action_type === "delete" || activity.action_type === "block"
-  ).length;
+  // unique admins from current page (server-side filtering handles the rest)
+  const uniqueAdmins = Array.from(
+    new Map(
+      activities.map((a) => [a.admin_id, { id: String(a.admin_id), name: a.admin_name }])
+    ).values()
+  );
 
   return (
     <div className="activity-log-content">
       <ActivityLogHero
-        totalActivities={activityLogData.statistics.total_activities}
-        todayActivities={todayActivities}
-        activeAdmins={activityLogData.statistics.active_admins}
-        criticalActions={criticalActions}
+        totalActivities={stats?.total_activities ?? pagination.total}
+        todayActivities={stats?.today_activities ?? 0}
+        activeAdmins={stats?.active_admins ?? uniqueAdmins.length}
+        criticalActions={stats?.critical_actions ?? 0}
       />
 
       <div className="activity-log-content-wrapper">
         <ActivityLogFilters
           onFilterChange={handleFilterChange}
-          resultsCount={filteredActivities.length}
+          resultsCount={pagination.total}
           admins={uniqueAdmins}
         />
 
-        <ActivityLogTable activities={filteredActivities} />
+        {loading && (
+          <div className="activity-log-loading">
+            <div className="loading-spinner" />
+            <span>جاري التحميل...</span>
+          </div>
+        )}
+
+        {error && !loading && (
+          <div className="activity-log-error">
+            <span>⚠️ {error}</span>
+            <button onClick={() => fetchLogs(currentPage, filters)}>
+              إعادة المحاولة
+            </button>
+          </div>
+        )}
+
+        {!loading && !error && (
+          <ActivityLogTable
+            activities={activities}
+            pagination={pagination}
+            onPageChange={handlePageChange}
+          />
+        )}
       </div>
     </div>
   );

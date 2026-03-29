@@ -1,0 +1,58 @@
+.table-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-top: 1px solid #f0f0f0;
+  direction: rtl;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tp-info {
+  font-size: 13px;
+  color: #7f8c8d;
+}
+
+.tp-controls {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.tp-btn {
+  min-width: 34px;
+  height: 34px;
+  padding: 0 8px;
+  border: 1px solid #e0e0e0;
+  border-radius: 7px;
+  background: white;
+  color: #333;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tp-btn:hover:not(:disabled) {
+  background: #FDB913;
+  border-color: #FDB913;
+  color: white;
+}
+
+.tp-btn.active {
+  background: #FDB913;
+  border-color: #FDB913;
+  color: white;
+  font-weight: 700;
+}
+
+.tp-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.tp-ellipsis {
+  padding: 0 4px;
+  color: #aaa;
+  font-size: 13px;
+}

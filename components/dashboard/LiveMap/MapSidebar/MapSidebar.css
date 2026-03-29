@@ -177,3 +177,35 @@
     max-height: 500px;
   }
 }
+
+.clickable {
+  cursor: pointer;
+}
+
+.driver-item.clickable:hover,
+.trip-item.clickable:hover {
+  background: #fffbf0;
+  border-color: #FDB913;
+  transform: translateX(-3px);
+  box-shadow: 0 2px 8px rgba(253, 185, 19, 0.2);
+}
+
+.trip-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.trip-badge.on-trip {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.sidebar-empty {
+  font-size: 0.85rem;
+  color: #95a5a6;
+  text-align: center;
+  padding: 1rem;
+  font-style: italic;
+}

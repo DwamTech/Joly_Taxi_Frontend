@@ -1,17 +1,48 @@
 "use client";
 
-import statisticsData from "@/data/statistics/statistics-data.json";
+import { useEffect, useState } from "react";
+import { RevenueReportsService } from "@/services/revenueReportsService";
+import { RevenueReportsData } from "@/models/RevenueReports";
+import TablePagination from "@/components/shared/TablePagination/TablePagination";
+import { usePagination } from "@/hooks/usePagination";
 import "./RevenueReports.css";
 
+const PER_PAGE = 10;
+
 export default function RevenueReports() {
-  const {
-    revenueStatistics,
-    revenueByDay,
-    revenueByWeek,
-    revenueByMonth,
-    revenueByYear,
-    tripsByVehicleType
-  } = statisticsData;
+  const [data, setData] = useState<RevenueReportsData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    RevenueReportsService.getRevenueReports()
+      .then(setData)
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const periodPag  = usePagination(data?.by_period ?? [], PER_PAGE);
+  const vehiclePag = usePagination(data?.by_vehicle_type ?? [], PER_PAGE);
+
+  if (loading) {
+    return (
+      <div className="revenue-reports-loading">
+        <div className="loading-spinner" />
+        <span>جاري التحميل...</span>
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className="revenue-reports-error">
+        <span>⚠️ {error || "حدث خطأ أثناء تحميل البيانات"}</span>
+      </div>
+    );
+  }
+
+  const maxPeriodRevenue = Math.max(...(data?.by_period ?? []).map((p) => p.revenue), 1);
+  const maxVehicleRevenue = Math.max(...(data?.by_vehicle_type ?? []).map((v) => v.revenue), 1);
 
   return (
     <div className="revenue-reports">
@@ -27,7 +58,7 @@ export default function RevenueReports() {
               <span className="stat-icon-emoji">🚗</span>
             </div>
             <div className="stat-details">
-              <div className="stat-value">{revenueStatistics.trip_revenue.toLocaleString()} ج.م</div>
+              <div className="stat-value">{data.trips_revenue.toLocaleString()} ج.م</div>
               <div className="stat-label">إيرادات الرحلات</div>
             </div>
           </div>
@@ -37,7 +68,7 @@ export default function RevenueReports() {
               <span className="stat-icon-emoji">📋</span>
             </div>
             <div className="stat-details">
-              <div className="stat-value">{revenueStatistics.subscription_revenue.toLocaleString()} ج.م</div>
+              <div className="stat-value">{data.subscriptions_revenue.toLocaleString()} ج.م</div>
               <div className="stat-label">إيرادات الاشتراكات</div>
             </div>
           </div>
@@ -47,7 +78,7 @@ export default function RevenueReports() {
               <span className="stat-icon-emoji">💎</span>
             </div>
             <div className="stat-details">
-              <div className="stat-value">{revenueStatistics.total_revenue.toLocaleString()} ج.م</div>
+              <div className="stat-value">{data.total_revenue.toLocaleString()} ج.م</div>
               <div className="stat-label">إجمالي الإيرادات</div>
             </div>
           </div>
@@ -57,101 +88,40 @@ export default function RevenueReports() {
       {/* Revenue by Period */}
       <div className="report-section">
         <h2 className="section-title">
-          <span className="title-icon">📅</span>
-          الإيرادات اليومية
-        </h2>
-        <div className="chart-container">
-          {revenueByDay.map((day) => {
-            const percentage = (day.revenue / Math.max(...revenueByDay.map(d => d.revenue))) * 100;
-            return (
-              <div key={day.period} className="chart-bar-item">
-                <div className="chart-label">{day.period}</div>
-                <div className="chart-bar-wrapper">
-                  <div 
-                    className="chart-bar revenue-bar" 
-                    style={{ width: `${percentage}%` }}
-                  >
-                    <span className="chart-value">{day.revenue.toLocaleString()} ج.م</span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="report-section">
-        <h2 className="section-title">
-          <span className="title-icon">📊</span>
-          الإيرادات الأسبوعية
-        </h2>
-        <div className="chart-container">
-          {revenueByWeek.map((week) => {
-            const percentage = (week.revenue / Math.max(...revenueByWeek.map(w => w.revenue))) * 100;
-            return (
-              <div key={week.period} className="chart-bar-item">
-                <div className="chart-label">{week.period}</div>
-                <div className="chart-bar-wrapper">
-                  <div 
-                    className="chart-bar revenue-bar" 
-                    style={{ width: `${percentage}%` }}
-                  >
-                    <span className="chart-value">{week.revenue.toLocaleString()} ج.م</span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="report-section">
-        <h2 className="section-title">
           <span className="title-icon">📆</span>
           الإيرادات الشهرية
         </h2>
-        <div className="chart-container">
-          {revenueByMonth.map((month) => {
-            const percentage = (month.revenue / Math.max(...revenueByMonth.map(m => m.revenue))) * 100;
-            return (
-              <div key={month.period} className="chart-bar-item">
-                <div className="chart-label">{month.period}</div>
-                <div className="chart-bar-wrapper">
-                  <div 
-                    className="chart-bar revenue-bar" 
-                    style={{ width: `${percentage}%` }}
-                  >
-                    <span className="chart-value">{month.revenue.toLocaleString()} ج.م</span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="report-section">
-        <h2 className="section-title">
-          <span className="title-icon">📈</span>
-          الإيرادات السنوية
-        </h2>
-        <div className="chart-container">
-          {revenueByYear.map((year) => {
-            const percentage = (year.revenue / Math.max(...revenueByYear.map(y => y.revenue))) * 100;
-            return (
-              <div key={year.period} className="chart-bar-item">
-                <div className="chart-label">{year.period}</div>
-                <div className="chart-bar-wrapper">
-                  <div 
-                    className="chart-bar revenue-bar" 
-                    style={{ width: `${percentage}%` }}
-                  >
-                    <span className="chart-value">{year.revenue.toLocaleString()} ج.م</span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+        <div className="table-container">
+          <table className="report-table">
+            <thead>
+              <tr>
+                <th>الشهر</th>
+                <th>السنة</th>
+                <th>عدد الرحلات</th>
+                <th>الإيرادات</th>
+                <th>التوزيع</th>
+              </tr>
+            </thead>
+            <tbody>
+              {periodPag.paged.map((period, index) => {
+                const barWidth = (period.revenue / maxPeriodRevenue) * 100;
+                return (
+                  <tr key={index} className={period.revenue > 0 ? "active-period-row" : ""}>
+                    <td className="name-cell">{period.month_name_ar}</td>
+                    <td>{period.year}</td>
+                    <td>{period.trips_count.toLocaleString()}</td>
+                    <td className="revenue-cell">{period.revenue.toLocaleString()} ج.م</td>
+                    <td>
+                      <div className="vehicle-bar-wrapper">
+                        <div className="vehicle-bar" style={{ width: `${barWidth}%` }} />
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <TablePagination page={periodPag.page} lastPage={periodPag.lastPage} total={periodPag.total} perPage={PER_PAGE} onPageChange={periodPag.setPage} />
         </div>
       </div>
 
@@ -168,25 +138,39 @@ export default function RevenueReports() {
                 <th>نوع المركبة</th>
                 <th>عدد الرحلات</th>
                 <th>الإيرادات</th>
-                <th>متوسط السعر</th>
                 <th>النسبة من الإجمالي</th>
+                <th>التوزيع</th>
               </tr>
             </thead>
             <tbody>
-              {tripsByVehicleType.map((type) => {
-                const percentage = ((type.revenue / revenueStatistics.trip_revenue) * 100).toFixed(1);
-                return (
-                  <tr key={type.vehicle_type_id}>
-                    <td className="vehicle-name">{type.vehicle_type_name}</td>
-                    <td>{type.trip_count.toLocaleString()}</td>
-                    <td className="revenue-cell">{type.revenue.toLocaleString()} ج.م</td>
-                    <td>{type.avg_price} ج.م</td>
-                    <td className="percentage-cell">{percentage}%</td>
-                  </tr>
-                );
-              })}
+              {vehiclePag.paged.length === 0 ? (
+                <tr>
+                  <td colSpan={5} style={{ textAlign: "center", color: "#95a5a6", padding: "1.5rem" }}>لا توجد بيانات</td>
+                </tr>
+              ) : (
+                vehiclePag.paged.map((type) => {
+                  const pct = data!.trips_revenue > 0
+                    ? ((type.revenue / data!.trips_revenue) * 100).toFixed(1)
+                    : "0.0";
+                  const barWidth = (type.revenue / maxVehicleRevenue) * 100;
+                  return (
+                    <tr key={type.vehicle_type_id}>
+                      <td className="vehicle-name">{type.vehicle_type_name_ar}</td>
+                      <td>{type.trips_count.toLocaleString()}</td>
+                      <td className="revenue-cell">{type.revenue.toLocaleString()} ج.م</td>
+                      <td className="percentage-cell">{pct}%</td>
+                      <td>
+                        <div className="vehicle-bar-wrapper">
+                          <div className="vehicle-bar" style={{ width: `${barWidth}%` }} />
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
+          <TablePagination page={vehiclePag.page} lastPage={vehiclePag.lastPage} total={vehiclePag.total} perPage={PER_PAGE} onPageChange={vehiclePag.setPage} />
         </div>
       </div>
     </div>

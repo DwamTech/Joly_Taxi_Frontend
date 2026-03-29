@@ -10,7 +10,7 @@
   width: 100%;
   border-collapse: collapse;
   direction: rtl;
-  table-layout: fixed;
+  table-layout: auto;
 }
 
 .admins-table thead {
@@ -23,6 +23,13 @@
   text-align: right;
   font-weight: 600;
   font-size: 14px;
+  white-space: nowrap;
+}
+
+/* give actions column enough fixed space */
+.admins-table th:last-child,
+.admins-table td:last-child {
+  width: 1%;
   white-space: nowrap;
 }
 
@@ -41,7 +48,6 @@
   color: #333;
   word-wrap: break-word;
   overflow-wrap: break-word;
-  max-width: 200px;
 }
 
 .admin-info {
@@ -113,6 +119,17 @@
   color: #2e7d32;
 }
 
+.status-inactive {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.status-blocked {
+  background: #ffebee;
+  color: #c62828;
+}
+
+/* keep old class for backward compat */
 .status-disabled {
   background: #ffebee;
   color: #c62828;
@@ -120,22 +137,25 @@
 
 .admin-actions {
   display: flex;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 6px;
   justify-content: flex-start;
+  min-width: 160px;
 }
 
 .action-btn {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
   background: #f5f5f5;
+  flex-shrink: 0;
 }
 
 .action-btn:hover {
@@ -174,27 +194,48 @@
 @media (max-width: 1200px) {
   .admins-table th,
   .admins-table td {
-    padding: 12px 8px;
+    padding: 10px 6px;
     font-size: 13px;
   }
 
   .admin-avatar {
-    width: 36px;
-    height: 36px;
-    font-size: 14px;
+    width: 34px;
+    height: 34px;
+    font-size: 13px;
   }
 
   .action-btn {
-    width: 32px;
-    height: 32px;
-    font-size: 14px;
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
+  }
+
+  .admin-actions {
+    min-width: 130px;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 900px) {
+  /* horizontal scroll on mid-size screens */
+  .admins-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .admins-table {
+    min-width: 700px;
   }
 }
 
 /* Mobile Card View */
 @media (max-width: 768px) {
-  .table-wrapper {
+  .admins-table-container {
     overflow-x: visible;
+  }
+
+  .admins-table {
+    min-width: unset;
   }
 
   .admins-table thead {
@@ -227,10 +268,13 @@
     align-items: center;
     padding: 10px 0;
     border-bottom: 1px solid #f0f0f0;
+    white-space: normal;
   }
 
   .admins-table td:last-child {
     border-bottom: none;
+    width: auto;
+    white-space: normal;
   }
 
   .admins-table td::before {
@@ -239,7 +283,7 @@
     color: #666;
     font-size: 13px;
     flex-shrink: 0;
-    width: 120px;
+    width: 110px;
   }
 
   .admin-info {
@@ -251,21 +295,47 @@
   .admin-actions {
     flex-wrap: wrap;
     justify-content: flex-end;
-    padding-top: 12px;
-    margin-top: 8px;
+    min-width: unset;
+    gap: 8px;
+    padding-top: 10px;
+    margin-top: 6px;
     border-top: 1px solid #f0f0f0;
-  }
-
-  .admin-actions::before {
     width: 100%;
-    margin-bottom: 8px;
   }
 
   .action-btn {
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
-    min-height: 40px;
+    width: 42px;
+    height: 42px;
     font-size: 18px;
   }
+}
+
+.table-pagination-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-top: 1px solid #f0f0f0;
+  direction: rtl;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pagination-info-text {
+  font-size: 13px;
+  color: #7f8c8d;
+}
+
+.details-btn:hover { background: #fff3e0; }
+
+.date-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 13px;
+}
+
+.time-text {
+  color: #7f8c8d;
+  font-size: 12px;
 }

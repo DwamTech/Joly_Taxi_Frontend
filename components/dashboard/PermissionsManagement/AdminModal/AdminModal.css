@@ -169,3 +169,19 @@
     padding: 1.5rem;
   }
 }
+
+.admin-modal-error {
+  padding: 12px 16px;
+  background: #fff5f5;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #e74c3c;
+  font-size: 13px;
+  margin-bottom: 1rem;
+}
+
+.modal-btn-save:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none !important;
+}

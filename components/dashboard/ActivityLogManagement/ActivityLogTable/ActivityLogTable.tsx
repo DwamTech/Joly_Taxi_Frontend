@@ -1,13 +1,19 @@
 "use client";
 
-import { ActivityLog } from "@/models/ActivityLog";
+import { AuditLog, AuditLogPagination } from "@/models/AuditLog";
 import "./ActivityLogTable.css";
 
 interface ActivityLogTableProps {
-  activities: ActivityLog[];
+  activities: AuditLog[];
+  pagination: AuditLogPagination;
+  onPageChange: (page: number) => void;
 }
 
-export default function ActivityLogTable({ activities }: ActivityLogTableProps) {
+export default function ActivityLogTable({
+  activities,
+  pagination,
+  onPageChange,
+}: ActivityLogTableProps) {
   const getActionColor = (actionType: string) => {
     const colors: Record<string, string> = {
       login: "#3498db",
@@ -36,6 +42,10 @@ export default function ActivityLogTable({ activities }: ActivityLogTableProps) 
     });
   };
 
+  const { current_page, last_page, total, per_page } = pagination;
+  const from = (current_page - 1) * per_page + 1;
+  const to = Math.min(current_page * per_page, total);
+
   if (activities.length === 0) {
     return (
       <div className="activity-log-table-container">
@@ -54,8 +64,8 @@ export default function ActivityLogTable({ activities }: ActivityLogTableProps) 
           <tr>
             <th>المسؤول</th>
             <th>الإجراء</th>
-            <th>الكيان المتأثر</th>
-            <th>التفاصيل</th>
+            {/* <th>الكيان المتأثر</th>
+            <th>التفاصيل</th> */}
             <th>عنوان IP</th>
             <th>التاريخ والوقت</th>
           </tr>
@@ -75,13 +85,15 @@ export default function ActivityLogTable({ activities }: ActivityLogTableProps) 
                 <div className="action-cell">
                   <span
                     className="action-badge"
-                    style={{ backgroundColor: getActionColor(activity.action_type) }}
+                    style={{
+                      backgroundColor: getActionColor(activity.action_type),
+                    }}
                   >
                     {activity.action}
                   </span>
                 </div>
               </td>
-              <td data-label="الكيان المتأثر">
+              {/* <td data-label="الكيان المتأثر">
                 <div className="entity-cell">
                   <span className="entity-type">{activity.entity_type}</span>
                   <span className="entity-id">{activity.entity_id}</span>
@@ -89,7 +101,7 @@ export default function ActivityLogTable({ activities }: ActivityLogTableProps) 
               </td>
               <td data-label="التفاصيل" className="details-cell">
                 {activity.details}
-              </td>
+              </td> */}
               <td data-label="عنوان IP" className="ip-cell">
                 {activity.ip_address}
               </td>
@@ -100,6 +112,76 @@ export default function ActivityLogTable({ activities }: ActivityLogTableProps) 
           ))}
         </tbody>
       </table>
+
+      {/* Pagination */}
+      <div className="pagination-container">
+        <span className="pagination-info">
+          عرض {from}–{to} من {total} نشاط
+        </span>
+        <div className="pagination-controls">
+          <button
+            className="pagination-btn"
+            onClick={() => onPageChange(1)}
+            disabled={current_page === 1}
+            aria-label="الصفحة الأولى"
+          >
+            «
+          </button>
+          <button
+            className="pagination-btn"
+            onClick={() => onPageChange(current_page - 1)}
+            disabled={current_page === 1}
+            aria-label="الصفحة السابقة"
+          >
+            ‹
+          </button>
+
+          {Array.from({ length: last_page }, (_, i) => i + 1)
+            .filter(
+              (p) =>
+                p === 1 ||
+                p === last_page ||
+                Math.abs(p - current_page) <= 2
+            )
+            .reduce<(number | "...")[]>((acc, p, idx, arr) => {
+              if (idx > 0 && p - (arr[idx - 1] as number) > 1) acc.push("...");
+              acc.push(p);
+              return acc;
+            }, [])
+            .map((item, idx) =>
+              item === "..." ? (
+                <span key={`ellipsis-${idx}`} className="pagination-ellipsis">
+                  …
+                </span>
+              ) : (
+                <button
+                  key={item}
+                  className={`pagination-btn${item === current_page ? " active" : ""}`}
+                  onClick={() => onPageChange(item as number)}
+                >
+                  {item}
+                </button>
+              )
+            )}
+
+          <button
+            className="pagination-btn"
+            onClick={() => onPageChange(current_page + 1)}
+            disabled={current_page === last_page}
+            aria-label="الصفحة التالية"
+          >
+            ›
+          </button>
+          <button
+            className="pagination-btn"
+            onClick={() => onPageChange(last_page)}
+            disabled={current_page === last_page}
+            aria-label="الصفحة الأخيرة"
+          >
+            »
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

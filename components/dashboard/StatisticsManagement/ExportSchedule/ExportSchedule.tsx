@@ -2,445 +2,450 @@
 
 import { useState } from "react";
 import { useToast } from "@/components/Toast/ToastContainer";
-import CustomSelect from "@/components/shared/CustomSelect/CustomSelect";
-import { dashboardService, TripReportsQueryParams } from "@/services/dashboardService";
+import { dashboardService } from "@/services/dashboardService";
+import { UserReportsService } from "@/services/userReportsService";
+import { RevenueReportsService } from "@/services/revenueReportsService";
 import "./ExportSchedule.css";
 
-type ExportTableKey = "vehicle_type" | "hourly" | "daily" | "monthly";
-
-interface ExportTableData {
-  title: string;
-  headers: string[];
-  rows: Array<Array<string | number>>;
+// ─── Table registry ────────────────────────────────────────────────────────────
+interface TableDef {
+  key: string;
+  label: string;
+  tab: string;
+  icon: string;
+  fetchHeaders: () => Promise<{ headers: string[]; rows: Array<Array<string | number>> }>;
 }
 
 function normalizeHourLabel(hour: string): string {
-  const [hourPart] = hour.split(":");
-  const parsedHour = Number(hourPart);
-  if (Number.isNaN(parsedHour)) return hour;
-  if (parsedHour === 0) return "12 ص";
-  if (parsedHour < 12) return `${parsedHour} ص`;
-  if (parsedHour === 12) return "12 م";
-  return `${parsedHour - 12} م`;
+  const [h] = hour.split(":");
+  const n = Number(h);
+  if (Number.isNaN(n)) return hour;
+  if (n === 0) return "12 ص";
+  if (n < 12) return `${n} ص`;
+  if (n === 12) return "12 م";
+  return `${n - 12} م`;
 }
 
-function createExportTable(
-  tableKey: ExportTableKey,
-  data: Awaited<ReturnType<typeof dashboardService.getTripReports>>
-): ExportTableData {
-  if (tableKey === "vehicle_type") {
-    return {
-      title: "تقرير حسب نوع المركبة",
-      headers: ["نوع المركبة", "عدد الرحلات", "الإيرادات", "متوسط السعر"],
-      rows: data.vehicle_type_report.by_vehicle_type.map((item) => [
-        item.vehicle_type_name,
-        item.trips_count,
-        item.revenue,
-        item.average_price,
-      ]),
-    };
-  }
+const TABLE_DEFS: TableDef[] = [
+  // ── Trip Reports ──
+  {
+    key: "trip_vehicle",
+    label: "الرحلات حسب نوع المركبة",
+    tab: "تقارير الرحلات",
+    icon: "🚙",
+    fetchHeaders: async () => {
+      const d = await dashboardService.getTripReports({});
+      return {
+        headers: ["نوع المركبة", "عدد الرحلات", "الإيرادات", "متوسط السعر"],
+        rows: d.vehicle_type_report.by_vehicle_type.map((r) => [
+          r.vehicle_type_name, r.trips_count, r.revenue, r.average_price,
+        ]),
+      };
+    },
+  },
+  {
+    key: "trip_hourly",
+    label: "الرحلات حسب الساعة",
+    tab: "تقارير الرحلات",
+    icon: "🕐",
+    fetchHeaders: async () => {
+      const d = await dashboardService.getTripReports({});
+      return {
+        headers: ["الساعة", "عدد الرحلات", "الإيرادات"],
+        rows: d.time_report.by_hour.map((r) => [normalizeHourLabel(r.hour), r.trips_count, r.revenue]),
+      };
+    },
+  },
+  {
+    key: "trip_daily",
+    label: "الرحلات حسب اليوم",
+    tab: "تقارير الرحلات",
+    icon: "📅",
+    fetchHeaders: async () => {
+      const d = await dashboardService.getTripReports({});
+      return {
+        headers: ["اليوم", "عدد الرحلات", "الإيرادات"],
+        rows: d.time_report.by_day.map((r) => [r.label, r.trips_count, r.revenue]),
+      };
+    },
+  },
+  {
+    key: "trip_monthly",
+    label: "الرحلات حسب الشهر",
+    tab: "تقارير الرحلات",
+    icon: "📆",
+    fetchHeaders: async () => {
+      const d = await dashboardService.getTripReports({});
+      return {
+        headers: ["الشهر", "عدد الرحلات", "الإيرادات"],
+        rows: d.time_report.by_month.map((r) => [r.label, r.trips_count, r.revenue]),
+      };
+    },
+  },
+  // ── User Reports ──
+  {
+    key: "driver_rated",
+    label: "السائقين الأعلى تقييماً",
+    tab: "تقارير المستخدمين",
+    icon: "🌟",
+    fetchHeaders: async () => {
+      const d = await UserReportsService.getDriverReports();
+      return {
+        headers: ["الاسم", "رقم الهاتف", "التقييم", "عدد التقييمات"],
+        rows: d.top_rated.map((r) => [r.name, r.phone, r.rating_avg, r.rating_count]),
+      };
+    },
+  },
+  {
+    key: "driver_trips",
+    label: "السائقين الأكثر رحلات",
+    tab: "تقارير المستخدمين",
+    icon: "🚗",
+    fetchHeaders: async () => {
+      const d = await UserReportsService.getDriverReports();
+      return {
+        headers: ["الاسم", "رقم الهاتف", "عدد الرحلات"],
+        rows: d.most_trips.map((r) => [r.name, r.phone, r.trips_count]),
+      };
+    },
+  },
+  {
+    key: "driver_cancel",
+    label: "السائقين بمعدل إلغاء عالي",
+    tab: "تقارير المستخدمين",
+    icon: "⚠️",
+    fetchHeaders: async () => {
+      const d = await UserReportsService.getDriverReports();
+      return {
+        headers: ["الاسم", "رقم الهاتف", "عدد الإلغاءات", "معدل الإلغاء"],
+        rows: d.high_cancellation.map((r) => [r.name, r.phone, r.cancellation_count, `${r.cancellation_rate}%`]),
+      };
+    },
+  },
+  {
+    key: "rider_rated",
+    label: "الركاب الأعلى تقييماً",
+    tab: "تقارير المستخدمين",
+    icon: "🌟",
+    fetchHeaders: async () => {
+      const d = await UserReportsService.getRiderReports();
+      return {
+        headers: ["الاسم", "رقم الهاتف", "التقييم", "عدد التقييمات"],
+        rows: d.top_rated.map((r) => [r.name, r.phone, r.avg_stars, r.rating_count]),
+      };
+    },
+  },
+  {
+    key: "rider_trips",
+    label: "الركاب الأكثر رحلات",
+    tab: "تقارير المستخدمين",
+    icon: "🚗",
+    fetchHeaders: async () => {
+      const d = await UserReportsService.getRiderReports();
+      return {
+        headers: ["الاسم", "رقم الهاتف", "عدد الرحلات"],
+        rows: d.most_trips.map((r) => [r.name, r.phone, r.trips_count]),
+      };
+    },
+  },
+  {
+    key: "rider_cancel",
+    label: "الركاب بمعدل إلغاء عالي",
+    tab: "تقارير المستخدمين",
+    icon: "⚠️",
+    fetchHeaders: async () => {
+      const d = await UserReportsService.getRiderReports();
+      return {
+        headers: ["الاسم", "رقم الهاتف", "عدد الإلغاءات", "معدل الإلغاء"],
+        rows: d.high_cancellation.map((r) => [r.name, r.phone, r.cancellation_count, `${r.cancellation_rate}%`]),
+      };
+    },
+  },
+  {
+    key: "registrations",
+    label: "التسجيلات الشهرية",
+    tab: "تقارير المستخدمين",
+    icon: "📈",
+    fetchHeaders: async () => {
+      const d = await UserReportsService.getRegistrations();
+      return {
+        headers: ["الشهر", "السنة", "الإجمالي", "سائقين", "ركاب"],
+        rows: d.map((r) => [r.month_name_ar, r.year, r.total, r.drivers, r.riders]),
+      };
+    },
+  },
+  // ── Revenue Reports ──
+  {
+    key: "revenue_period",
+    label: "الإيرادات الشهرية",
+    tab: "تقارير الإيرادات",
+    icon: "📆",
+    fetchHeaders: async () => {
+      const d = await RevenueReportsService.getRevenueReports();
+      return {
+        headers: ["الشهر", "السنة", "عدد الرحلات", "الإيرادات"],
+        rows: d.by_period.map((r) => [r.month_name_ar, r.year, r.trips_count, `${r.revenue} ج.م`]),
+      };
+    },
+  },
+  {
+    key: "revenue_vehicle",
+    label: "الإيرادات حسب نوع المركبة",
+    tab: "تقارير الإيرادات",
+    icon: "🚙",
+    fetchHeaders: async () => {
+      const d = await RevenueReportsService.getRevenueReports();
+      return {
+        headers: ["نوع المركبة", "عدد الرحلات", "الإيرادات"],
+        rows: d.by_vehicle_type.map((r) => [r.vehicle_type_name_ar, r.trips_count, `${r.revenue} ج.م`]),
+      };
+    },
+  },
+];
 
-  if (tableKey === "hourly") {
-    return {
-      title: "تقرير الرحلات حسب الساعة",
-      headers: ["الساعة", "عدد الرحلات", "الإيرادات"],
-      rows: data.time_report.by_hour.map((item) => [
-        normalizeHourLabel(item.hour),
-        item.trips_count,
-        item.revenue,
-      ]),
-    };
-  }
-
-  if (tableKey === "daily") {
-    return {
-      title: "تقرير الرحلات حسب اليوم",
-      headers: ["اليوم", "عدد الرحلات", "الإيرادات"],
-      rows: data.time_report.by_day.map((item) => [item.label, item.trips_count, item.revenue]),
-    };
-  }
-
-  return {
-    title: "تقرير الرحلات حسب الشهر",
-    headers: ["الشهر", "عدد الرحلات", "الإيرادات"],
-    rows: data.time_report.by_month.map((item) => [item.label, item.trips_count, item.revenue]),
-  };
-}
-
-function downloadCsv(table: ExportTableData, filePrefix: string) {
-  const csvContent = [
-    table.headers.join(","),
-    ...table.rows.map((row) =>
-      row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")
-    ),
+// ─── Export helpers ─────────────────────────────────────────────────────────────
+function downloadCsv(headers: string[], rows: Array<Array<string | number>>, label: string) {
+  const csv = [
+    headers.join(","),
+    ...rows.map((row) => row.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")),
   ].join("\n");
-  const BOM = "\uFEFF";
-  const blob = new Blob([BOM + csvContent], { type: "text/csv;charset=utf-8;" });
-  const link = document.createElement("a");
-  const url = URL.createObjectURL(blob);
-  link.setAttribute("href", url);
-  link.setAttribute("download", `${filePrefix}_${new Date().toISOString().split("T")[0]}.csv`);
-  link.style.visibility = "hidden";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  const safeDate = new Date().toISOString().split("T")[0];
+  a.download = `${label}_${safeDate}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
 }
 
-async function downloadPdf(table: ExportTableData, filePrefix: string) {
+async function downloadPdf(headers: string[], rows: Array<Array<string | number>>, label: string) {
   const { jsPDF } = await import("jspdf");
-  const isWideTable = table.headers.length > 3;
-  const canvasWidth = isWideTable ? 1600 : 1100;
-  const outerPadding = 36;
-  const titleHeight = 54;
-  const headerHeight = 42;
-  const rowHeight = 36;
-  const contentWidth = canvasWidth - outerPadding * 2;
-  const rowsCount = Math.max(table.rows.length, 1);
-  const canvasHeight =
-    outerPadding + titleHeight + headerHeight + rowsCount * rowHeight + outerPadding;
+  const isWide = headers.length > 3;
+  const cw = isWide ? 1600 : 1100;
+  const pad = 36;
+  const titleH = 54;
+  const headH = 42;
+  const rowH = 36;
+  const colW = (cw - pad * 2) / headers.length;
+  const ch = pad + titleH + headH + Math.max(rows.length, 1) * rowH + pad;
 
   const canvas = document.createElement("canvas");
-  canvas.width = canvasWidth;
-  canvas.height = canvasHeight;
-  const context = canvas.getContext("2d");
-  if (!context) {
-    throw new Error("تعذر إنشاء ملف PDF");
-  }
+  canvas.width = cw;
+  canvas.height = ch;
+  const ctx = canvas.getContext("2d")!;
 
-  context.fillStyle = "#ffffff";
-  context.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#fff";
+  ctx.fillRect(0, 0, cw, ch);
+  ctx.fillStyle = "#111827";
+  ctx.font = "700 34px Tahoma,Arial,sans-serif";
+  ctx.textAlign = "right";
+  ctx.textBaseline = "middle";
+  ctx.fillText(label, cw - pad, pad + titleH / 2);
 
-  context.fillStyle = "#111827";
-  context.font = "700 34px Tahoma, Arial, sans-serif";
-  context.textAlign = "right";
-  context.textBaseline = "middle";
-  context.fillText(table.title, canvasWidth - outerPadding, outerPadding + titleHeight / 2);
-
-  const columnsCount = table.headers.length;
-  const columnWidth = contentWidth / columnsCount;
-  const tableTop = outerPadding + titleHeight;
-
-  table.headers.forEach((header, columnIndex) => {
-    const x = outerPadding + columnIndex * columnWidth;
-    context.fillStyle = "#f59e0b";
-    context.fillRect(x, tableTop, columnWidth, headerHeight);
-    context.strokeStyle = "#d1d5db";
-    context.lineWidth = 1;
-    context.strokeRect(x, tableTop, columnWidth, headerHeight);
-
-    context.fillStyle = "#ffffff";
-    context.font = "700 24px Tahoma, Arial, sans-serif";
-    context.textAlign = "right";
-    context.fillText(
-      header,
-      x + columnWidth - 14,
-      tableTop + headerHeight / 2
-    );
+  const tableTop = pad + titleH;
+  headers.forEach((h, ci) => {
+    const x = pad + ci * colW;
+    ctx.fillStyle = "#f59e0b";
+    ctx.fillRect(x, tableTop, colW, headH);
+    ctx.strokeStyle = "#d1d5db";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x, tableTop, colW, headH);
+    ctx.fillStyle = "#fff";
+    ctx.font = "700 22px Tahoma,Arial,sans-serif";
+    ctx.fillText(h, x + colW - 12, tableTop + headH / 2);
   });
 
-  const rowsToRender =
-    table.rows.length > 0 ? table.rows : [Array.from({ length: columnsCount }).map(() => "-")];
-
-  rowsToRender.forEach((row, rowIndex) => {
-    const y = tableTop + headerHeight + rowIndex * rowHeight;
-    row.forEach((cell, columnIndex) => {
-      const x = outerPadding + columnIndex * columnWidth;
-      context.fillStyle = rowIndex % 2 === 0 ? "#ffffff" : "#f9fafb";
-      context.fillRect(x, y, columnWidth, rowHeight);
-      context.strokeStyle = "#e5e7eb";
-      context.lineWidth = 1;
-      context.strokeRect(x, y, columnWidth, rowHeight);
-
-      context.fillStyle = "#111827";
-      context.font = "500 20px Tahoma, Arial, sans-serif";
-      context.textAlign = "right";
-      context.fillText(String(cell), x + columnWidth - 14, y + rowHeight / 2);
+  const renderRows = rows.length ? rows : [headers.map(() => "-")];
+  renderRows.forEach((row, ri) => {
+    const y = tableTop + headH + ri * rowH;
+    row.forEach((cell, ci) => {
+      const x = pad + ci * colW;
+      ctx.fillStyle = ri % 2 === 0 ? "#fff" : "#f9fafb";
+      ctx.fillRect(x, y, colW, rowH);
+      ctx.strokeStyle = "#e5e7eb";
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x, y, colW, rowH);
+      ctx.fillStyle = "#111827";
+      ctx.font = "500 19px Tahoma,Arial,sans-serif";
+      ctx.fillText(String(cell), x + colW - 12, y + rowH / 2);
     });
   });
 
-  const doc = new jsPDF({
-    orientation: isWideTable ? "landscape" : "portrait",
-    unit: "pt",
-    format: "a4",
-  });
-  const pageWidth = doc.internal.pageSize.getWidth();
-  const pageHeight = doc.internal.pageSize.getHeight();
-  const horizontalMargin = 20;
-  const verticalMargin = 20;
-  const renderWidthPt = pageWidth - horizontalMargin * 2;
-  const scale = renderWidthPt / canvas.width;
-  const sliceHeightPx = Math.floor((pageHeight - verticalMargin * 2) / scale);
+  const doc = new jsPDF({ orientation: isWide ? "landscape" : "portrait", unit: "pt", format: "a4" });
+  const pw = doc.internal.pageSize.getWidth();
+  const ph = doc.internal.pageSize.getHeight();
+  const hm = 20;
+  const vm = 20;
+  const rw = pw - hm * 2;
+  const scale = rw / cw;
+  const sliceH = Math.floor((ph - vm * 2) / scale);
 
-  let offsetY = 0;
-  let isFirstPage = true;
-  while (offsetY < canvas.height) {
-    const currentSliceHeight = Math.min(sliceHeightPx, canvas.height - offsetY);
-    const sliceCanvas = document.createElement("canvas");
-    sliceCanvas.width = canvas.width;
-    sliceCanvas.height = currentSliceHeight;
-    const sliceContext = sliceCanvas.getContext("2d");
-    if (!sliceContext) {
-      throw new Error("تعذر إنشاء ملف PDF");
-    }
-    sliceContext.drawImage(
-      canvas,
-      0,
-      offsetY,
-      canvas.width,
-      currentSliceHeight,
-      0,
-      0,
-      canvas.width,
-      currentSliceHeight
-    );
-
-    const imageData = sliceCanvas.toDataURL("image/png");
-    const renderHeightPt = currentSliceHeight * scale;
-    if (!isFirstPage) {
-      doc.addPage();
-    }
-    doc.addImage(
-      imageData,
-      "PNG",
-      horizontalMargin,
-      verticalMargin,
-      renderWidthPt,
-      renderHeightPt
-    );
-    isFirstPage = false;
-    offsetY += currentSliceHeight;
+  let oy = 0;
+  let first = true;
+  while (oy < ch) {
+    const sh = Math.min(sliceH, ch - oy);
+    const sc = document.createElement("canvas");
+    sc.width = cw;
+    sc.height = sh;
+    sc.getContext("2d")!.drawImage(canvas, 0, oy, cw, sh, 0, 0, cw, sh);
+    if (!first) doc.addPage();
+    doc.addImage(sc.toDataURL("image/png"), "PNG", hm, vm, rw, sh * scale);
+    first = false;
+    oy += sh;
   }
-
-  doc.save(`${filePrefix}_${new Date().toISOString().split("T")[0]}.pdf`);
+  doc.save(`${label}_${new Date().toISOString().split("T")[0]}.pdf`);
 }
 
+// ─── Component ──────────────────────────────────────────────────────────────────
 export default function ExportSchedule() {
   const { showToast } = useToast();
-  const [exportForm, setExportForm] = useState({
-    reportType: "trips",
-    tableType: "vehicle_type" as ExportTableKey,
-    format: "pdf",
-    dateFrom: "",
-    dateTo: "",
-  });
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [format, setFormat] = useState<"pdf" | "excel">("pdf");
+  const [exporting, setExporting] = useState(false);
 
-  const reportTypeOptions = [
-    { value: "trips", label: "تقرير الرحلات", icon: "🚗" },
-  //  { value: "drivers", label: "تقرير السائقين", icon: "👨‍✈️" },
-  //  { value: "riders", label: "تقرير الركاب", icon: "👥" },
-  //  { value: "revenue", label: "تقرير الإيرادات", icon: "💰" },
-  //  { value: "vehicle_types", label: "تقرير أنواع المركبات", icon: "🚙" },
-  //  { value: "complete", label: "تقرير شامل", icon: "📊" },
-  ];
+  const tabs = Array.from(new Set(TABLE_DEFS.map((t) => t.tab)));
 
-  const tableTypeOptions = [
-    { value: "vehicle_type", label: "جدول حسب نوع المركبة", icon: "🚙" },
-    { value: "hourly", label: "جدول حسب الساعة", icon: "🕐" },
-    { value: "daily", label: "جدول حسب اليوم", icon: "📅" },
-    { value: "monthly", label: "جدول حسب الشهر", icon: "📆" },
-  ];
+  const toggle = (key: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
+  };
 
-  const handleExport = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (exportForm.dateFrom && exportForm.dateTo && exportForm.dateFrom > exportForm.dateTo) {
-      showToast("تاريخ البداية يجب أن يكون قبل تاريخ النهاية", "error");
+  const toggleTab = (tab: string) => {
+    const tabKeys = TABLE_DEFS.filter((t) => t.tab === tab).map((t) => t.key);
+    const allSelected = tabKeys.every((k) => selected.has(k));
+    setSelected((prev) => {
+      const next = new Set(prev);
+      tabKeys.forEach((k) => (allSelected ? next.delete(k) : next.add(k)));
+      return next;
+    });
+  };
+
+  const handleExport = async () => {
+    if (selected.size === 0) {
+      showToast("اختر جدولاً واحداً على الأقل", "warning");
       return;
     }
-
-    try {
-      showToast(`جاري تجهيز ${exportForm.format.toUpperCase()}...`, "info");
-      const params: TripReportsQueryParams = {
-        from_date: exportForm.dateFrom || undefined,
-        to_date: exportForm.dateTo || undefined,
-      };
-      const reportData = await dashboardService.getTripReports(params);
-      const selectedTable = createExportTable(exportForm.tableType, reportData);
-
-      if (!selectedTable.rows.length) {
-        showToast("لا توجد بيانات في الجدول المختار ضمن الفترة المحددة", "warning");
-        return;
+    setExporting(true);
+    const defs = TABLE_DEFS.filter((t) => selected.has(t.key));
+    let done = 0;
+    for (const def of defs) {
+      try {
+        showToast(`جاري تجهيز: ${def.label}...`, "info");
+        const { headers, rows } = await def.fetchHeaders();
+        if (format === "excel") {
+          downloadCsv(headers, rows, def.label);
+        } else {
+          await downloadPdf(headers, rows, def.label);
+        }
+        done++;
+      } catch {
+        showToast(`فشل تصدير: ${def.label}`, "error");
       }
-
-      const filePrefix = `trip_reports_${exportForm.tableType}`;
-      if (exportForm.format === "excel") {
-        downloadCsv(selectedTable, filePrefix);
-        showToast("تم تنزيل ملف Excel للجدول المختار بنجاح", "success");
-        return;
-      }
-
-      await downloadPdf(selectedTable, filePrefix);
-      showToast("تم تنزيل ملف PDF للجدول المختار بنجاح", "success");
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "فشل في تصدير الجدول المحدد";
-      showToast(message, "error");
     }
+    setExporting(false);
+    if (done > 0) showToast(`تم تصدير ${done} جدول بنجاح`, "success");
   };
 
   return (
     <div className="export-schedule">
-      {/* Export Section */}
       <div className="report-section">
         <h2 className="section-title">
-          <span className="title-icon">📤</span>
-          تصدير التقارير
+          <span className="title-icon">�</span>
+          تصدير الجداول
         </h2>
-        <form onSubmit={handleExport} className="export-form">
-          <div className="form-grid">
-            <div className="form-group">
-              <label>نوع التقرير</label>
-              <CustomSelect
-                options={reportTypeOptions.slice(0, 5)}
-                value={exportForm.reportType}
-                onChange={(value) => setExportForm({ ...exportForm, reportType: value })}
-              />
-            </div>
 
-            <div className="form-group">
-              <label>صيغة التصدير</label>
-              <div className="format-buttons">
-                <button
-                  type="button"
-                  className={`format-btn ${exportForm.format === "pdf" ? "active" : ""}`}
-                  onClick={() => setExportForm({ ...exportForm, format: "pdf" })}
-                >
-                  <span className="format-icon">📄</span>
-                  <span>PDF</span>
-                </button>
-                <button
-                  type="button"
-                  className={`format-btn ${exportForm.format === "excel" ? "active" : ""}`}
-                  onClick={() => setExportForm({ ...exportForm, format: "excel" })}
-                >
-                  <span className="format-icon">📊</span>
-                  <span>Excel</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label>الجدول المراد تصديره</label>
-              <CustomSelect
-                options={tableTypeOptions}
-                value={exportForm.tableType}
-                onChange={(value) =>
-                  setExportForm({ ...exportForm, tableType: value as ExportTableKey })
-                }
-              />
-            </div>
-
-            <div className="form-group">
-              <label>من تاريخ</label>
-              <input
-                type="date"
-                value={exportForm.dateFrom}
-                onChange={(e) => setExportForm({ ...exportForm, dateFrom: e.target.value })}
-                className="form-input"
-              />
-            </div>
-
-            <div className="form-group">
-              <label>إلى تاريخ</label>
-              <input
-                type="date"
-                value={exportForm.dateTo}
-                onChange={(e) => setExportForm({ ...exportForm, dateTo: e.target.value })}
-                className="form-input"
-              />
-            </div>
+        {/* Format selector */}
+        <div className="export-format-row">
+          <span className="export-format-label">صيغة التصدير:</span>
+          <div className="format-buttons">
+            <button
+              type="button"
+              className={`format-btn ${format === "pdf" ? "active" : ""}`}
+              onClick={() => setFormat("pdf")}
+            >
+              <span className="format-icon">📄</span>
+              <span>PDF</span>
+            </button>
+            <button
+              type="button"
+              className={`format-btn ${format === "excel" ? "active" : ""}`}
+              onClick={() => setFormat("excel")}
+            >
+              <span className="format-icon">📊</span>
+              <span>Excel</span>
+            </button>
           </div>
-
-          <button type="submit" className="export-btn">
-            <span>📥</span>
-            <span>تصدير التقرير</span>
-          </button>
-        </form>
-      </div>
-
-      {/* Schedule Section */}
-      {/*<div className="report-section">
-        <h2 className="section-title">
-          <span className="title-icon">⏰</span>
-          جدولة التقارير الدورية
-        </h2>
-        <p className="section-description">
-          سيتم إرسال التقارير تلقائياً إلى البريد الإلكتروني المحدد حسب الفترة المختارة
-        </p>
-        <form onSubmit={handleSchedule} className="schedule-form">
-          <div className="form-grid">
-            <div className="form-group">
-              <label>نوع التقرير</label>
-              <CustomSelect
-                options={reportTypeOptions}
-                value={scheduleForm.reportType}
-                onChange={(value) => setScheduleForm({ ...scheduleForm, reportType: value })}
-              />
-            </div>
-
-            <div className="form-group">
-              <label>التكرار</label>
-              <div className="frequency-buttons">
-                <button
-                  type="button"
-                  className={`freq-btn ${scheduleForm.frequency === "daily" ? "active" : ""}`}
-                  onClick={() => setScheduleForm({ ...scheduleForm, frequency: "daily" })}
-                >
-                  <span className="freq-icon">📅</span>
-                  <span>يومي</span>
-                </button>
-                <button
-                  type="button"
-                  className={`freq-btn ${scheduleForm.frequency === "weekly" ? "active" : ""}`}
-                  onClick={() => setScheduleForm({ ...scheduleForm, frequency: "weekly" })}
-                >
-                  <span className="freq-icon">📊</span>
-                  <span>أسبوعي</span>
-                </button>
-                <button
-                  type="button"
-                  className={`freq-btn ${scheduleForm.frequency === "monthly" ? "active" : ""}`}
-                  onClick={() => setScheduleForm({ ...scheduleForm, frequency: "monthly" })}
-                >
-                  <span className="freq-icon">📆</span>
-                  <span>شهري</span>
-                </button>
-              </div>
-            </div>
-
-            <div className="form-group full-width">
-              <label>البريد الإلكتروني</label>
-              <input
-                type="email"
-                value={scheduleForm.email}
-                onChange={(e) => setScheduleForm({ ...scheduleForm, email: e.target.value })}
-                className="form-input"
-                placeholder="example@domain.com"
-                required
-              />
-            </div>
-          </div>
-
-          <button type="submit" className="schedule-btn">
-            <span>⏰</span>
-            <span>جدولة التقرير</span>
-          </button>
-        </form>
-      </div>*/}
-
-      {/* Info Box */}
-      {/*<div className="info-box">
-        <div className="info-icon">ℹ️</div>
-        <div className="info-content">
-          <h3>ملاحظات هامة:</h3>
-          <ul>
-            <li>سيتم إرسال التقارير المجدولة تلقائياً في الوقت المحدد</li>
-            <li>يمكنك تصدير التقارير بصيغة PDF أو Excel</li>
-            <li>التقارير المصدرة تحتوي على جميع البيانات المتاحة في الفترة المحددة</li>
-            <li>يتم استخدام البريد الإلكتروني الخاص بالمشروع لإرسال التقارير</li>
-          </ul>
         </div>
-      </div>*/}
+
+        {/* Table selection */}
+        <div className="tables-selection">
+          {tabs.map((tab) => {
+            const tabDefs = TABLE_DEFS.filter((t) => t.tab === tab);
+            const allChecked = tabDefs.every((t) => selected.has(t.key));
+            const someChecked = tabDefs.some((t) => selected.has(t.key));
+            return (
+              <div key={tab} className="tab-group">
+                <div className="tab-group-header">
+                  <label className="tab-group-label">
+                    <input
+                      type="checkbox"
+                      checked={allChecked}
+                      ref={(el) => { if (el) el.indeterminate = someChecked && !allChecked; }}
+                      onChange={() => toggleTab(tab)}
+                    />
+                    <span>{tab}</span>
+                  </label>
+                </div>
+                <div className="tab-group-items">
+                  {tabDefs.map((def) => (
+                    <label key={def.key} className={`table-item ${selected.has(def.key) ? "checked" : ""}`}>
+                      <input
+                        type="checkbox"
+                        checked={selected.has(def.key)}
+                        onChange={() => toggle(def.key)}
+                      />
+                      <span className="table-item-icon">{def.icon}</span>
+                      <span className="table-item-label">{def.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Actions */}
+        <div className="export-actions">
+          <span className="selected-count">
+            {selected.size > 0 ? `${selected.size} جدول محدد` : "لم يتم تحديد أي جدول"}
+          </span>
+          <div className="export-action-btns">
+            <button
+              type="button"
+              className="clear-btn"
+              onClick={() => setSelected(new Set())}
+              disabled={selected.size === 0}
+            >
+              مسح التحديد
+            </button>
+            <button
+              type="button"
+              className="export-btn"
+              onClick={handleExport}
+              disabled={exporting || selected.size === 0}
+            >
+              {exporting ? (
+                <><span className="btn-spinner" />جاري التصدير...</>
+              ) : (
+                <><span>📥</span>تصدير المحدد</>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

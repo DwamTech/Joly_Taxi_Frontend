@@ -1,203 +1,187 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import PermissionsHero from "../PermissionsHero/PermissionsHero";
-import PermissionsFilters, {
-  FilterValues,
-} from "../PermissionsFilters/PermissionsFilters";
+import PermissionsFilters, { FilterValues } from "../PermissionsFilters/PermissionsFilters";
 import AdminsTable from "../AdminsTable/AdminsTable";
 import AdminModal from "../AdminModal/AdminModal";
 import RolePermissionsModal from "../RolePermissionsModal/RolePermissionsModal";
 import ConfirmDialog from "@/components/ConfirmDialog/ConfirmDialog";
 import { useToast } from "@/components/Toast/ToastContainer";
-import permissionsData from "@/data/permissions/permissions-data.json";
-import { Admin } from "@/models/Permission";
+import { PermissionsService } from "@/services/permissionsService";
+import { AdminApi, AdminListPagination } from "@/models/Permission";
 import "./PermissionsManagementContent.css";
 
+const DEFAULT_PAGINATION: AdminListPagination = {
+  current_page: 1,
+  last_page: 1,
+  per_page: 20,
+  total: 0,
+};
+
 export default function PermissionsManagementContent() {
-  const [admins, setAdmins] = useState<Admin[]>(permissionsData.admins as Admin[]);
-  const [filteredAdmins, setFilteredAdmins] = useState<Admin[]>(
-    permissionsData.admins as Admin[]
-  );
-  const [selectedAdmin, setSelectedAdmin] = useState<Admin | null>(null);
+  const [admins, setAdmins] = useState<AdminApi[]>([]);
+  const [pagination, setPagination] = useState<AdminListPagination>(DEFAULT_PAGINATION);
+  const [filters, setFilters] = useState<FilterValues>({ search: "", email: "", role: "all", status: "all" });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [selectedAdmin, setSelectedAdmin] = useState<AdminApi | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [showPermissionsModal, setShowPermissionsModal] = useState(false);
-  const [adminForPermissions, setAdminForPermissions] = useState<Admin | null>(null);
+  const [adminForPermissions, setAdminForPermissions] = useState<AdminApi | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [adminToDelete, setAdminToDelete] = useState<Admin | null>(null);
+  const [adminToDelete, setAdminToDelete] = useState<AdminApi | null>(null);
   const { showToast } = useToast();
 
-  const handleFilterChange = (filters: FilterValues) => {
-    let filtered = [...admins];
-
-    if (filters.search) {
-      filtered = filtered.filter((admin) =>
-        admin.name.toLowerCase().includes(filters.search.toLowerCase())
-      );
+  const fetchAdmins = useCallback(async (page: number, f: FilterValues) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await PermissionsService.getAdmins({
+        search:   f.search   || undefined,
+        email:    f.email    || undefined,
+        role:     f.role     !== "all" ? f.role   : undefined,
+        status:   f.status   !== "all" ? f.status : undefined,
+        page,
+        per_page: 20,
+      });
+      setAdmins(result.admins);
+      setPagination(result.pagination);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
+  }, []);
 
-    if (filters.email) {
-      filtered = filtered.filter((admin) =>
-        admin.email.toLowerCase().includes(filters.email.toLowerCase())
-      );
-    }
+  useEffect(() => {
+    fetchAdmins(currentPage, filters);
+  }, [currentPage, filters, fetchAdmins]);
 
-    if (filters.role !== "all") {
-      filtered = filtered.filter((admin) => admin.role === filters.role);
-    }
-
-    if (filters.status !== "all") {
-      filtered = filtered.filter((admin) => admin.status === filters.status);
-    }
-
-    setFilteredAdmins(filtered);
+  const handleFilterChange = (f: FilterValues) => {
+    setFilters(f);
+    setCurrentPage(1);
   };
 
-  const handleAddAdmin = () => {
-    setSelectedAdmin(null);
-    setShowModal(true);
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleEditAdmin = (admin: Admin) => {
-    setSelectedAdmin(admin);
-    setShowModal(true);
+
+  const handleSavePermissions = (updatedAdmin: AdminApi) => {
+    setAdmins((prev) => prev.map((a) => a.id === updatedAdmin.id ? updatedAdmin : a));
+    showToast(`تم تحديث صلاحيات "${updatedAdmin.name}" بنجاح`, "success");
+    setShowPermissionsModal(false);
+    setAdminForPermissions(null);
   };
 
-  const handleViewPermissions = (admin: Admin) => {
-    setAdminForPermissions(admin);
-    setShowPermissionsModal(true);
-  };
-
-  const handleSavePermissions = (role: string, permissions: Record<string, boolean>) => {
-    // Here you would typically save to backend/database
-    // For now, we'll just show a success message
-    showToast(`تم تحديث صلاحيات دور "${getRoleLabel(role)}" بنجاح`, "success");
-    console.log("Updated permissions for role:", role, permissions);
-  };
-
-  const getRoleLabel = (role: string) => {
-    switch (role) {
-      case "super_admin":
-        return "مدير عام";
-      case "admin":
-        return "مدير";
-      case "moderator":
-        return "مشرف";
-      default:
-        return role;
-    }
-  };
-
-  const handleSaveAdmin = (adminData: Partial<Admin>) => {
+  const handleSaveAdmin = (updatedAdmin: AdminApi) => {
     if (selectedAdmin) {
-      // Edit existing admin
-      const updatedAdmins = admins.map((admin) =>
-        admin.id === selectedAdmin.id ? { ...admin, ...adminData } : admin
-      );
-      setAdmins(updatedAdmins);
-      setFilteredAdmins(updatedAdmins);
+      setAdmins((prev) => prev.map((a) => a.id === updatedAdmin.id ? updatedAdmin : a));
       showToast("تم تحديث بيانات المسؤول بنجاح", "success");
     } else {
-      // Add new admin
-      const newAdmin: Admin = {
-        id: String(admins.length + 1),
-        name: adminData.name!,
-        email: adminData.email!,
-        phone: adminData.phone!,
-        role: adminData.role!,
-        status: adminData.status!,
-        created_at: new Date().toISOString().split("T")[0],
-        last_login: "-",
-      };
-      const updatedAdmins = [...admins, newAdmin];
-      setAdmins(updatedAdmins);
-      setFilteredAdmins(updatedAdmins);
+      setAdmins((prev) => [updatedAdmin, ...prev]);
+      setPagination((prev) => ({ ...prev, total: prev.total + 1 }));
       showToast("تم إضافة المسؤول بنجاح", "success");
     }
     setShowModal(false);
   };
 
-  const handleToggleStatus = (admin: Admin) => {
-    const newStatus = admin.status === "active" ? "disabled" : "active";
-    const updatedAdmins = admins.map((a) =>
-      a.id === admin.id ? { ...a, status: newStatus } : a
-    );
-    setAdmins(updatedAdmins as Admin[]);
-    setFilteredAdmins(updatedAdmins as Admin[]);
-    showToast(
-      `تم ${newStatus === "active" ? "تفعيل" : "تعطيل"} المسؤول بنجاح`,
-      "success"
-    );
+  const handleToggleStatus = async (admin: AdminApi) => {
+    const newStatus: "active" | "inactive" = admin.status === "active" ? "inactive" : "active";
+    setAdmins((prev) => prev.map((a) => a.id === admin.id ? { ...a, status: newStatus } : a));
+    try {
+      await PermissionsService.updateAdminStatus(admin.id, newStatus);
+      showToast(`تم ${newStatus === "active" ? "تفعيل" : "تعطيل"} المسؤول بنجاح`, "success");
+    } catch (err: any) {
+      setAdmins((prev) => prev.map((a) => a.id === admin.id ? { ...a, status: admin.status } : a));
+      showToast(err.message || "فشل تحديث الحالة", "error");
+    }
   };
 
-  const handleDeleteClick = (admin: Admin) => {
-    setAdminToDelete(admin);
-    setShowDeleteDialog(true);
-  };
-
-  const handleConfirmDelete = () => {
-    if (adminToDelete) {
-      const updatedAdmins = admins.filter((a) => a.id !== adminToDelete.id);
-      setAdmins(updatedAdmins);
-      setFilteredAdmins(updatedAdmins);
+  const handleConfirmDelete = async () => {
+    if (!adminToDelete) return;
+    try {
+      await PermissionsService.deleteAdmin(adminToDelete.id);
+      setAdmins((prev) => prev.filter((a) => a.id !== adminToDelete.id));
+      setPagination((prev) => ({ ...prev, total: prev.total - 1 }));
       showToast("تم حذف المسؤول بنجاح", "success");
+    } catch (err: any) {
+      showToast(err.message || "فشل حذف المسؤول", "error");
+    } finally {
       setShowDeleteDialog(false);
       setAdminToDelete(null);
     }
   };
 
-  const stats = {
-    total_admins: admins.length,
-    active_admins: admins.filter((a) => a.status === "active").length,
-    disabled_admins: admins.filter((a) => a.status === "disabled").length,
-    super_admins: admins.filter((a) => a.role === "super_admin").length,
-  };
+  // Stats from current page + pagination total
+  const activeAdmins   = admins.filter((a) => a.status === "active").length;
+  const disabledAdmins = admins.filter((a) => a.status === "disabled").length;
+  const superAdmins    = admins.filter((a) => a.role === "super_admin").length;
 
   return (
     <div className="permissions-management-content">
       <PermissionsHero
-        totalAdmins={stats.total_admins}
-        activeAdmins={stats.active_admins}
-        disabledAdmins={stats.disabled_admins}
-        superAdmins={stats.super_admins}
+        totalAdmins={pagination.total}
+        activeAdmins={activeAdmins}
+        disabledAdmins={disabledAdmins}
+        superAdmins={superAdmins}
       />
 
       <div className="permissions-content-wrapper">
         <div className="permissions-actions">
-          <button className="add-admin-btn" onClick={handleAddAdmin}>
+          <button className="add-admin-btn" onClick={() => { setSelectedAdmin(null); setShowModal(true); }}>
             ➕ إضافة مسؤول جديد
           </button>
         </div>
 
         <PermissionsFilters
           onFilterChange={handleFilterChange}
-          resultsCount={filteredAdmins.length}
+          resultsCount={pagination.total}
         />
 
-        <AdminsTable
-          admins={filteredAdmins}
-          onEdit={handleEditAdmin}
-          onToggleStatus={handleToggleStatus}
-          onDelete={handleDeleteClick}
-          onViewPermissions={handleViewPermissions}
-        />
+        {loading && (
+          <div className="permissions-loading">
+            <div className="loading-spinner" />
+            <span>جاري التحميل...</span>
+          </div>
+        )}
+
+        {error && !loading && (
+          <div className="permissions-error">
+            ⚠️ {error}
+            <button onClick={() => fetchAdmins(currentPage, filters)}>إعادة المحاولة</button>
+          </div>
+        )}
+
+        {!loading && !error && (
+          <AdminsTable
+            admins={admins}
+            pagination={pagination}
+            onPageChange={handlePageChange}
+            onEdit={(admin) => { setSelectedAdmin(admin); setShowModal(true); }}
+            onToggleStatus={handleToggleStatus}
+            onDelete={(admin) => { setAdminToDelete(admin); setShowDeleteDialog(true); }}
+            onViewPermissions={(admin) => { setAdminForPermissions(admin); setShowPermissionsModal(true); }}
+          />
+        )}
       </div>
 
       {showModal && (
         <AdminModal
-          admin={selectedAdmin}
+          admin={selectedAdmin as any}
           onClose={() => setShowModal(false)}
-          onSave={handleSaveAdmin}
+          onSave={handleSaveAdmin as any}
         />
       )}
 
       {showPermissionsModal && (
         <RolePermissionsModal
-          admin={adminForPermissions}
-          onClose={() => {
-            setShowPermissionsModal(false);
-            setAdminForPermissions(null);
-          }}
+          admin={adminForPermissions as any}
+          onClose={() => { setShowPermissionsModal(false); setAdminForPermissions(null); }}
           onSave={handleSavePermissions}
         />
       )}
@@ -209,10 +193,7 @@ export default function PermissionsManagementContent() {
           confirmText="حذف"
           cancelText="إلغاء"
           onConfirm={handleConfirmDelete}
-          onCancel={() => {
-            setShowDeleteDialog(false);
-            setAdminToDelete(null);
-          }}
+          onCancel={() => { setShowDeleteDialog(false); setAdminToDelete(null); }}
         />
       )}
     </div>

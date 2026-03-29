@@ -40,7 +40,7 @@ export default function StatisticsManagementContent() {
           <span className="tab-icon">🚗</span>
           <span className="tab-text">تقارير الرحلات</span>
         </button>
-        {/*<button
+        <button
           className={`stat-tab ${activeTab === "users" ? "active" : ""}`}
           onClick={() => setActiveTab("users")}
         >
@@ -53,7 +53,7 @@ export default function StatisticsManagementContent() {
         >
           <span className="tab-icon">💰</span>
           <span className="tab-text">تقارير الإيرادات</span>
-        </button>*/}
+        </button>
         <button
           className={`stat-tab ${activeTab === "export" ? "active" : ""}`}
           onClick={() => setActiveTab("export")}

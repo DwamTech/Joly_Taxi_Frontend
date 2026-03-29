@@ -52,3 +52,39 @@ export interface MapFilters {
   area: string;
   status: DriverStatus | "all";
 }
+
+// ── API Response types ──────────────────────────────────────────────────────
+
+export interface ApiDriverSidebar {
+  name: string;
+  vehicle_type: string;
+  status: string;
+}
+
+export interface ApiDriver {
+  id: number;
+  name: string;
+  vehicle_type: string;
+  status: string;
+  latitude: number;
+  longitude: number;
+  rating: number;
+  trips_today: number;
+  sidebar: ApiDriverSidebar;
+}
+
+export interface ApiMapSummary {
+  total_online_drivers: number;
+  total_on_trip: number;
+  total_available: number;
+  total_busy: number;
+}
+
+export interface LiveMapApiResponse {
+  ok: boolean;
+  message: string;
+  data: {
+    drivers: ApiDriver[];
+    summary: ApiMapSummary;
+  };
+}

@@ -224,3 +224,91 @@
     font-size: 1rem;
   }
 }
+
+.user-reports-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 4rem;
+  color: #7f8c8d;
+  font-size: 15px;
+}
+
+.user-reports-loading .loading-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid #f0f0f0;
+  border-top-color: #FDB913;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.user-reports-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: #fff5f5;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  color: #e74c3c;
+  font-size: 14px;
+}
+
+.user-reports .empty-row {
+  text-align: center;
+  color: #95a5a6;
+  padding: 1.5rem;
+  font-style: italic;
+}
+
+.phone-cell {
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: embed;
+}
+
+/* Registration section */
+.active-month-row {
+  background: #fffbf0;
+}
+
+.reg-bar-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reg-count {
+  min-width: 28px;
+  font-weight: 700;
+  font-size: 14px;
+  color: #2c3e50;
+}
+
+.driver-count { color: #3498db; }
+.rider-count  { color: #9b59b6; }
+
+.reg-bar-wrapper {
+  flex: 1;
+  background: #f0f0f0;
+  border-radius: 6px;
+  height: 10px;
+  overflow: hidden;
+  min-width: 60px;
+}
+
+.reg-bar {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.4s ease;
+}
+
+.reg-bar.total-bar  { background: linear-gradient(90deg, #FDB913, #FFA500); }
+.reg-bar.driver-bar { background: linear-gradient(90deg, #3498db, #2980b9); }
+.reg-bar.rider-bar  { background: linear-gradient(90deg, #9b59b6, #8e44ad); }
