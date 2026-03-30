@@ -25,7 +25,11 @@ export class AuthService {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "فشل تسجيل الدخول");
+        // attach status so LoginForm can map it
+        const err = new Error(data.message || "فشل تسجيل الدخول") as any;
+        err.status = response.status;
+        err.data = data;
+        throw err;
       }
 
       // حفظ التوكن في HTTP-only Cookie (يتم من جانب الخادم)

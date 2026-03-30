@@ -1,5 +1,5 @@
 .account-settings-form {
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -99,4 +99,39 @@
   .btn-save {
     width: 100%;
   }
+}
+
+.account-settings-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 4rem;
+  color: #7f8c8d;
+  font-size: 15px;
+}
+
+.as-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid #f0f0f0;
+  border-top-color: #FDB913;
+  border-radius: 50%;
+  animation: as-spin 0.7s linear infinite;
+}
+
+@keyframes as-spin { to { transform: rotate(360deg); } }
+
+.account-settings-error {
+  padding: 1.5rem;
+  background: #fff5f5;
+  border: 1px solid #fecaca;
+  border-radius: 12px;
+  color: #e74c3c;
+  text-align: center;
+  margin: 2rem;
+}
+
+.phone-input {
+  text-align: left;
 }

@@ -19,7 +19,7 @@ export default function HeroSection({ stats: _stats }: HeroSectionProps) {
           <h1 className="hero-title">{title}</h1>
           <p className="hero-subtitle">{subtitle}</p>
 
-          <div className="hero-actions">
+          {/* <div className="hero-actions">
             {actions.map((action, index) => (
               <button
                 key={index}
@@ -28,7 +28,7 @@ export default function HeroSection({ stats: _stats }: HeroSectionProps) {
                 {action.text}
               </button>
             ))}
-          </div>
+          </div> */}
         </div>
 
         <div className="hero-image">

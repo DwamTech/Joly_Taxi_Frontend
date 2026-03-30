@@ -6,17 +6,17 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
-.hero-content {
+.reports-hero-content {
   max-width: 1400px;
   margin: 0 auto;
 }
 
-.hero-text {
+.reports-hero-text {
   text-align: center;
   margin-bottom: 1rem;
 }
 
-.hero-title {
+.reports-hero-title {
   font-size: 1.8rem;
   font-weight: 700;
   color: white;
@@ -25,7 +25,7 @@
   display: inline;
 }
 
-.hero-subtitle {
+.reports-hero-subtitle {
   font-size: 0.95rem;
   color: rgba(255, 255, 255, 0.95);
   margin: 0;
@@ -34,7 +34,7 @@
   margin-right: 0.5rem;
 }
 
-.hero-stats {
+.reports-hero-stats {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -42,7 +42,7 @@
   flex-wrap: wrap;
 }
 
-.stat-card {
+.reports-stat-card {
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
   border-radius: 10px;
@@ -55,34 +55,34 @@
   min-width: 180px;
 }
 
-.stat-card:hover {
+.reports-stat-card:hover {
   background: rgba(255, 255, 255, 0.2);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.stat-card.pending {
+.reports-stat-card.pending {
   border-bottom: 3px solid #f59e0b;
 }
 
-.stat-card.resolved {
+.reports-stat-card.resolved {
   border-bottom: 3px solid #10b981;
 }
 
-.stat-card.today {
+.reports-stat-card.today {
   border-bottom: 3px solid #3b82f6;
 }
 
-.stat-icon {
+.reports-stat-icon {
   font-size: 1.8rem;
   flex-shrink: 0;
 }
 
-.stat-info {
+.reports-stat-info {
   flex: 1;
 }
 
-.stat-value {
+.reports-stat-value {
   font-size: 1.5rem;
   font-weight: 700;
   color: white;
@@ -91,7 +91,7 @@
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.stat-label {
+.reports-stat-label {
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.85);
   white-space: nowrap;
@@ -102,35 +102,35 @@
     padding: 1.25rem 1rem;
   }
 
-  .hero-title {
+  .reports-hero-title {
     font-size: 1.5rem;
   }
 
-  .hero-subtitle {
+  .reports-hero-subtitle {
     font-size: 0.85rem;
   }
 
-  .hero-stats {
+  .reports-hero-stats {
     flex-direction: column;
     gap: 0.75rem;
     width: 100%;
   }
 
-  .stat-card {
+  .reports-stat-card {
     padding: 0.75rem 1rem;
     width: 100%;
     min-width: auto;
   }
 
-  .stat-icon {
+  .reports-stat-icon {
     font-size: 1.5rem;
   }
 
-  .stat-value {
+  .reports-stat-value {
     font-size: 1.3rem;
   }
 
-  .stat-label {
+  .reports-stat-label {
     font-size: 0.75rem;
   }
 }

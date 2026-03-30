@@ -148,3 +148,9 @@
     font-size: 24px;
   }
 }
+
+/* make Link look like the old button */
+a.action-card {
+  text-decoration: none;
+  display: flex;
+}

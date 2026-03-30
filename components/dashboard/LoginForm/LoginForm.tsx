@@ -61,13 +61,39 @@ export default function LoginForm() {
         router.refresh();
       }, 100);
     } catch (error: any) {
-      console.error("Login failed:", error);
       setIsLoading(false);
-      setErrors({
-        email: "",
-        password: "",
-        general: error.message || "حدث خطأ أثناء تسجيل الدخول"
-      });
+      const raw   = (error.message || "").toLowerCase();
+      const status = error.status ?? 0;
+
+      let emailErr = "";
+      let passwordErr = "";
+      let generalErr = "";
+
+      if (status === 401 || status === 422 ||
+          raw.includes("invalid credentials") ||
+          raw.includes("these credentials do not match") ||
+          raw.includes("بيانات غير صحيحة")
+      ) {
+        generalErr = "البريد الإلكتروني أو كلمة المرور غير صحيحة";
+      } else if (raw.includes("email")) {
+        emailErr = "البريد الإلكتروني غير صحيح أو غير مسجل";
+      } else if (raw.includes("password") || raw.includes("كلمة المرور")) {
+        passwordErr = "كلمة المرور غير صحيحة";
+      } else if (raw.includes("validation") || raw.includes("required") || raw.includes("مطلوب")) {
+        generalErr = "يرجى التحقق من البريد الإلكتروني وكلمة المرور";
+      } else if (status === 403 || raw.includes("غير مصرح") || raw.includes("unauthorized")) {
+        generalErr = "غير مصرح لك بالدخول إلى لوحة التحكم";
+      } else if (status === 429) {
+        generalErr = "محاولات كثيرة، يرجى الانتظار قليلاً ثم المحاولة مجدداً";
+      } else if (status >= 500 || raw.includes("server")) {
+        generalErr = "حدث خطأ في الخادم، يرجى المحاولة لاحقاً";
+      } else if (raw.includes("network") || raw.includes("fetch") || raw.includes("اتصال")) {
+        generalErr = "تعذر الاتصال بالخادم، تحقق من الإنترنت وحاول مجدداً";
+      } else {
+        generalErr = "حدث خطأ أثناء تسجيل الدخول، يرجى المحاولة مجدداً";
+      }
+
+      setErrors({ email: emailErr, password: passwordErr, general: generalErr });
     }
   };
 

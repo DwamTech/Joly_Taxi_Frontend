@@ -1,48 +1,103 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/components/Toast/ToastContainer";
+import { ProfileService } from "@/services/profileService";
 import "./AccountSettingsForm.css";
 
 export default function AccountSettingsForm() {
   const { showToast } = useToast();
+
   const [formData, setFormData] = useState({
-    name: "أحمد محمد",
-    email: "admin@jolytaxi.com",
-    phone: "+966 50 123 4567",
+    name: "",
+    email: "",
+    phone: "",
+    role: "",
+  });
+  const [passwords, setPasswords] = useState({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    ProfileService.getProfile()
+      .then((profile) => {
+        setFormData({
+          name:  profile.name,
+          email: profile.email,
+          phone: profile.phone,
+          role:  profile.role,
+        });
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSaveProfile = (e: React.FormEvent) => {
+  const [saving, setSaving] = useState(false);
+
+  const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    showToast("تم حفظ معلومات الحساب بنجاح", "success");
+    setSaving(true);
+    try {
+      const updated = await ProfileService.updateProfile({
+        name:  formData.name,
+        email: formData.email,
+        phone: formData.phone,
+      });
+      setFormData((prev) => ({ ...prev, ...updated }));
+      showToast("تم حفظ معلومات الحساب بنجاح", "success");
+    } catch (err: any) {
+      showToast(err.message || "فشل حفظ البيانات", "error");
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const handleChangePassword = (e: React.FormEvent) => {
+  const [savingPassword, setSavingPassword] = useState(false);
+
+  const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (formData.newPassword !== formData.confirmPassword) {
+    if (passwords.newPassword !== passwords.confirmPassword) {
       showToast("كلمة المرور الجديدة غير متطابقة", "error");
       return;
     }
-
-    showToast("تم تغيير كلمة المرور بنجاح", "success");
-    setFormData({
-      ...formData,
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    });
+    setSavingPassword(true);
+    try {
+      await ProfileService.changePassword({
+        current_password:          passwords.currentPassword,
+        new_password:              passwords.newPassword,
+        new_password_confirmation: passwords.confirmPassword,
+      });
+      showToast("تم تغيير كلمة المرور بنجاح", "success");
+      setPasswords({ currentPassword: "", newPassword: "", confirmPassword: "" });
+    } catch (err: any) {
+      showToast(err.message || "فشل تغيير كلمة المرور", "error");
+    } finally {
+      setSavingPassword(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="account-settings-loading">
+        <div className="as-spinner" />
+        <span>جاري تحميل البيانات...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="account-settings-error">⚠️ {error}</div>
+    );
+  }
 
   return (
     <div className="account-settings-form">
@@ -68,6 +123,7 @@ export default function AccountSettingsForm() {
               className="form-input"
               value={formData.email}
               onChange={handleChange}
+              dir="ltr"
             />
           </div>
           <div className="form-group">
@@ -75,15 +131,26 @@ export default function AccountSettingsForm() {
             <input
               type="tel"
               name="phone"
-              className="form-input"
+              className="form-input phone-input"
               value={formData.phone}
               onChange={handleChange}
+              dir="ltr"
+            />
+          </div>
+          <div className="form-group">
+            <label className="form-label">الدور</label>
+            <input
+              type="text"
+              className="form-input"
+              value={formData.role}
+              readOnly
+              disabled
             />
           </div>
         </div>
         <div className="form-actions">
-          <button type="submit" className="btn-save">
-            💾 حفظ التغييرات
+          <button type="submit" className="btn-save" disabled={saving}>
+            {saving ? "جاري الحفظ..." : "💾 حفظ التغييرات"}
           </button>
         </div>
       </form>
@@ -96,10 +163,9 @@ export default function AccountSettingsForm() {
             <label className="form-label">كلمة المرور الحالية</label>
             <input
               type="password"
-              name="currentPassword"
               className="form-input"
-              value={formData.currentPassword}
-              onChange={handleChange}
+              value={passwords.currentPassword}
+              onChange={(e) => setPasswords({ ...passwords, currentPassword: e.target.value })}
               placeholder="أدخل كلمة المرور الحالية"
             />
           </div>
@@ -107,10 +173,9 @@ export default function AccountSettingsForm() {
             <label className="form-label">كلمة المرور الجديدة</label>
             <input
               type="password"
-              name="newPassword"
               className="form-input"
-              value={formData.newPassword}
-              onChange={handleChange}
+              value={passwords.newPassword}
+              onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
               placeholder="أدخل كلمة المرور الجديدة"
             />
           </div>
@@ -118,17 +183,16 @@ export default function AccountSettingsForm() {
             <label className="form-label">تأكيد كلمة المرور</label>
             <input
               type="password"
-              name="confirmPassword"
               className="form-input"
-              value={formData.confirmPassword}
-              onChange={handleChange}
+              value={passwords.confirmPassword}
+              onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })}
               placeholder="أعد إدخال كلمة المرور الجديدة"
             />
           </div>
         </div>
         <div className="form-actions">
-          <button type="submit" className="btn-save">
-            🔑 تغيير كلمة المرور
+          <button type="submit" className="btn-save" disabled={savingPassword}>
+            {savingPassword ? "جاري التغيير..." : "🔑 تغيير كلمة المرور"}
           </button>
         </div>
       </form>
